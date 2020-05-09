@@ -26,9 +26,9 @@ services:
     image: mysql:5.7
     environment:
       - MYSQL_ROOT_PASSWORD=verysecret
-      - MYSQL_DATABASE=shop
-      - MYSQL_USER=root
-      - MYSQL_PASSWORD=
+      - MYSQL_DATABASE=yii2advanced
+      - MYSQL_USER=yii2advanced
+      - MYSQL_PASSWORD=secret
 
   #pgsql:
   #  image: postgres:9.5
