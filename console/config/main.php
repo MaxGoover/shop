@@ -22,6 +22,8 @@ return [
           ],
     ],
     'components' => [
+        'backendUrlManager' => require __DIR__ . '/../../backend/config/urlManager.php',
+        'frontendUrlManager' => require __DIR__ . '/../../frontend/config/urlManager.php',
         'log' => [
             'targets' => [
                 [
