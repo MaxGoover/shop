@@ -15,7 +15,7 @@ class SignupService
             $form->password
         );
 
-        if (!$user->save()) {
+        if (!$user->save()) { // todo Потом поменять на обертку
             throw new \RuntimeException('Saving error');
         }
 
