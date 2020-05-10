@@ -2,7 +2,7 @@
 return [
     'components' => [
         'db' => [
-            'dsn' => 'mysql:host=localhost;dbname=shop_test',
+            'dsn' => 'mysql:host=192.168.83.137;dbname=shop_test',
         ],
     ],
 ];

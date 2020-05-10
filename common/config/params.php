@@ -1,8 +1,11 @@
 <?php
 return [
     'adminEmail' => 'admin@example.com',
-    'supportEmail' => 'support@example.com',
+    'backendHostInfo' => 'http://backend.example.com',
+    'cookieDomain' => '.example.com',
+    'frontendHostInfo' => 'http://example.com',
     'senderEmail' => 'noreply@example.com',
     'senderName' => 'Example.com mailer',
+    'supportEmail' => 'support@example.com',
     'user.passwordResetTokenExpire' => 3600,
 ];

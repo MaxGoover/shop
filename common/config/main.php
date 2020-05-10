@@ -7,6 +7,7 @@ return [
     'vendorPath' => dirname(dirname(__DIR__)) . '/vendor',
     'components' => [
         'cache' => [
+            'cachePath' => '@common/runtime/cache',
             'class' => 'yii\caching\FileCache',
         ],
     ],

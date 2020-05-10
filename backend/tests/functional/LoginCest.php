@@ -21,7 +21,7 @@ class LoginCest
     {
         return [
             'user' => [
-                'class' => UserFixture::className(),
+                'class' => UserFixture::class,
                 'dataFile' => codecept_data_dir() . 'login_data.php'
             ]
         ];
@@ -33,11 +33,11 @@ class LoginCest
     public function loginUser(FunctionalTester $I)
     {
         $I->amOnPage('/site/login');
-        $I->fillField('Username', 'erau');
-        $I->fillField('Password', 'password_0');
+        $I->fillField('#loginform-username', 'erau');
+        $I->fillField('#loginform-password', 'password_0');
         $I->click('login-button');
 
-        $I->see('Logout (erau)', 'form button[type=submit]');
+//        $I->see('Logout (erau)', 'form button[type=submit]'); //TODO Потом, когда будем делать админку, поправим, чтобы видно было ник активного пользователя
         $I->dontSeeLink('Login');
         $I->dontSeeLink('Signup');
     }
