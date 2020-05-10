@@ -11,7 +11,6 @@ class SignupFormTest extends \Codeception\Test\Unit
      */
     protected $tester;
 
-
     public function _before() // заполняем данными из фикстур tests/_data/user
     {
         $this->tester->haveFixtures([
