@@ -28,11 +28,14 @@ $fieldOptions2 = [
         <p class="login-box-msg">Sign in to start your session</p>
 
         <?php $form = ActiveForm::begin(['id' => 'login-form', 'enableClientValidation' => false]); ?>
-
+        
         <?= $form
             ->field($model, 'username', $fieldOptions1)
             ->label(false)
-            ->textInput(['placeholder' => $model->getAttributeLabel('username')]) ?>
+            ->textInput([
+                'autofocus' => true,
+                'placeholder' => $model->getAttributeLabel('username')
+            ]) ?>
 
         <?= $form
             ->field($model, 'password', $fieldOptions2)
