@@ -9,7 +9,7 @@ class SignupTest extends Unit
 {
     public function testSuccess()
     {
-        $user = new User(
+        $user = User::create(
             $username = 'username',
             $email = 'email@site.com',
             $password = 'password'
