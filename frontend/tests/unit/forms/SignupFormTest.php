@@ -37,7 +37,7 @@ class SignupFormTest extends \Codeception\Test\Unit
         $user = $this->tester->grabRecord('common\entities\User', [
             'username' => 'some_username',
             'email' => 'some_email@example.com',
-            'status' => \common\entities\User::STATUS_INACTIVE
+            'status' => \common\entities\User::STATUS_ACTIVE
         ]);
 
         $this->tester->seeEmailIsSent();
