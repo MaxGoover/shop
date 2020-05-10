@@ -7,53 +7,6 @@ $params = array_merge(
 );
 
 return [
-    'id' => 'app-backend',
-    'basePath' => dirname(__DIR__),
-    'controllerNamespace' => 'backend\controllers',
-    'bootstrap' => [
-        'common\bootstrap\SetUp',
-        'log',
-    ],
-    'modules' => [],
-    'components' => [
-        'request' => [
-            'cookieValidationKey' => $params['cookieValidationKey'],
-            'csrfParam' => '_csrf-backend',
-        ],
-        'user' => [
-            'identityClass' => 'common\models\User',
-            'enableAutoLogin' => true,
-            'identityCookie' => [
-                'name' => '_identity',
-                'httpOnly' => true,
-                'domain' => $params['cookieDomain'],
-            ],
-        ],
-        'session' => [
-            'name' => '_session',
-            'cookieParams' => [
-                'domain' => $params['cookieDomain'],
-                'httpOnly' => true,
-            ],
-        ],
-        'log' => [
-            'traceLevel' => YII_DEBUG ? 3 : 0,
-            'targets' => [
-                [
-                    'class' => 'yii\log\FileTarget',
-                    'levels' => ['error', 'warning'],
-                ],
-            ],
-        ],
-        'errorHandler' => [
-            'errorAction' => 'site/error',
-        ],
-        'backendUrlManager' => require __DIR__ . '/urlManager.php',
-        'frontendUrlManager' => require __DIR__ . '/../../frontend/config/urlManager.php',
-        'urlManager' => function () {
-            return Yii::$app->get('backendUrlManager');
-        },
-    ],
     'as access' => [
         'class' => 'yii\filters\AccessControl',
         'except' => ['site/login', 'site/error'],
@@ -64,5 +17,52 @@ return [
             ],
         ],
     ],
+    'basePath' => dirname(__DIR__),
+    'bootstrap' => [
+        'common\bootstrap\SetUp',
+        'log',
+    ],
+    'components' => [
+        'backendUrlManager' => require __DIR__ . '/urlManager.php',
+        'errorHandler' => [
+            'errorAction' => 'site/error',
+        ],
+        'frontendUrlManager' => require __DIR__ . '/../../frontend/config/urlManager.php',
+        'log' => [
+            'traceLevel' => YII_DEBUG ? 3 : 0,
+            'targets' => [
+                [
+                    'class' => 'yii\log\FileTarget',
+                    'levels' => ['error', 'warning'],
+                ],
+            ],
+        ],
+        'request' => [
+            'cookieValidationKey' => $params['cookieValidationKey'],
+            'csrfParam' => '_csrf-backend',
+        ],
+        'session' => [
+            'name' => '_session',
+            'cookieParams' => [
+                'domain' => $params['cookieDomain'],
+                'httpOnly' => true,
+            ],
+        ],
+        'urlManager' => function () {
+            return Yii::$app->get('backendUrlManager');
+        },
+        'user' => [
+            'identityClass' => 'common\entities\User',
+            'enableAutoLogin' => true,
+            'identityCookie' => [
+                'name' => '_identity',
+                'httpOnly' => true,
+                'domain' => $params['cookieDomain'],
+            ],
+        ],
+    ],
+    'controllerNamespace' => 'backend\controllers',
+    'id' => 'app-backend',
+    'modules' => [],
     'params' => $params,
 ];
