@@ -15,6 +15,7 @@ class SignupService
             $form->password
         );
 
+        // todo сюда можно также добавить sendMail()
         if (!$user->save()) { // todo Потом поменять на обертку
             throw new \RuntimeException('Saving error');
         }
