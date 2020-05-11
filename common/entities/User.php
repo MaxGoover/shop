@@ -33,10 +33,10 @@ class User extends ActiveRecord implements IdentityInterface
         $user = new static();
         $user->username = $username;
         $user->email = $email;
-        $user->setPassword($password);
+        $user->_setPassword($password);
         $user->created_at = time();
         $user->status = self::STATUS_ACTIVE;
-        $user->generateAuthKey();
+        $user->_generateAuthKey();
         $user->generateEmailVerificationToken();
         return $user;
     }
@@ -153,14 +153,6 @@ class User extends ActiveRecord implements IdentityInterface
     }
 
     /**
-     * Generates new password reset token
-     */
-    public function generatePasswordResetToken()
-    {
-        $this->password_reset_token = Yii::$app->security->generateRandomString() . '_' . time();
-    }
-
-    /**
      * {@inheritdoc}
      */
     public function getAuthKey()
@@ -186,14 +178,6 @@ class User extends ActiveRecord implements IdentityInterface
         return $this->status === self::STATUS_ACTIVE;
     }
 
-    /**
-     * Removes password reset token
-     */
-    public function removePasswordResetToken()
-    {
-        $this->password_reset_token = null;
-    }
-
     public function requestPasswordReset(): void
     {
         if (!empty($this->password_reset_token) && self::isPasswordResetTokenValid($this->password_reset_token)) {
@@ -207,18 +191,8 @@ class User extends ActiveRecord implements IdentityInterface
         if (empty($this->password_reset_token)) {
             throw new \DomainException('Password resetting is not requested.');
         }
-        $this->setPassword($password);
+        $this->_setPassword($password);
         $this->password_reset_token = null;
-    }
-
-    /**
-     * Generates password hash from password and sets it to the model
-     *
-     * @param string $password
-     */
-    public function setPassword(string $password)
-    {
-        $this->password_hash = Yii::$app->security->generatePasswordHash($password);
     }
 
     /**
@@ -243,8 +217,34 @@ class User extends ActiveRecord implements IdentityInterface
     /**
      * Generates "remember me" authentication key
      */
-    private function generateAuthKey()
+    private function _generateAuthKey()
     {
         $this->auth_key = Yii::$app->security->generateRandomString();
+    }
+
+    /**
+     * Generates new password reset token
+     */
+    private function _generatePasswordResetToken()
+    {
+        $this->password_reset_token = Yii::$app->security->generateRandomString() . '_' . time();
+    }
+
+    /**
+     * Removes password reset token
+     */
+    private function _removePasswordResetToken()
+    {
+        $this->password_reset_token = null;
+    }
+
+    /**
+     * Generates password hash from password and sets it to the model
+     *
+     * @param string $password
+     */
+    private function _setPassword(string $password)
+    {
+        $this->password_hash = Yii::$app->security->generatePasswordHash($password);
     }
 }
