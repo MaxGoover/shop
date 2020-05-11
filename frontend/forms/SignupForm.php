@@ -22,14 +22,12 @@ class SignupForm extends Model
         return [
             ['username', 'trim'],
             ['username', 'required'],
-            ['username', 'unique', 'targetClass' => User::class, 'message' => 'This username has already been taken.'],
             ['username', 'string', 'min' => 2, 'max' => 255],
 
             ['email', 'trim'],
             ['email', 'required'],
             ['email', 'email'],
             ['email', 'string', 'max' => 255],
-            ['email', 'unique', 'targetClass' => User::class, 'message' => 'This email address has already been taken.'],
 
             ['password', 'required'],
             ['password', 'string', 'min' => 6],
@@ -52,11 +50,11 @@ class SignupForm extends Model
 //        return $user->save() && $this->sendEmail($user);
 //    }
 
-    /**
-     * Sends confirmation email to user
-     * @param User $user user model to with email should be send
-     * @return bool whether the email was sent
-     */
+//    /**
+//     * Sends confirmation email to user
+//     * @param User $user user model to with email should be send
+//     * @return bool whether the email was sent
+//     */
 //    protected function sendEmail($user)
 //    {
 //        return Yii::$app
