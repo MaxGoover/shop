@@ -15,6 +15,17 @@ class SignupService
         $this->_mailer = $mailer;
     }
 
+    public function confirm($token): void
+    {
+        if (empty($token)) {
+            throw new \DomainException('Empty confirm token.');
+        }
+
+        $user = $this->_getByEmailConfirmToken($token);
+        $user->confirmSignup();
+        $this->_save($user);
+    }
+
     public function signup(SignupForm $form): User
     {
         if (User::find()->andWhere(['username' => $form->username])) {
@@ -31,10 +42,7 @@ class SignupService
             $form->password
         );
 
-        // todo сюда можно также добавить sendMail()
-        if (!$user->save()) { // todo Потом поменять на обертку
-            throw new \RuntimeException('Saving error');
-        }
+        $this->_save($user);
 
         $sent = $this->_mailer
             ->compose(
@@ -50,21 +58,16 @@ class SignupService
         }
     }
 
-    public function confirm($token): void
+    private function _getByEmailConfirmToken(string $token): User
     {
-        if (empty($token)) {
-            throw new \DomainException('Empty confirm token.');
-        }
-
-        /* @var $user User */
-        $user = User::findOne(['email_confirm_token' => $token]);
-
-        if (!$user) {
+        if (!$user = User::findOne(['email_confirm_token' => $token])) {
             throw new \DomainException('User is not found.');
         }
+        return $user;
+    }
 
-        $user->confirmSignup();
-
+    private function _save(User $user): void
+    {
         if (!$user->save()) {
             throw new \RuntimeException('Saving error.');
         }
