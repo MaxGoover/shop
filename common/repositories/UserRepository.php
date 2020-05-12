@@ -11,17 +11,22 @@ class UserRepository
         return (bool) User::findByPasswordResetToken($token);
     }
 
+    public function findByUsernameOrEmail(string $value): ?User
+    {
+        return User::find()->andWhere(['or', ['username' => $value], ['email' => $value]])->one();
+    }
+
     public function getByEmail($email): User
     {
         return $this->_getBy(['email' => $email]);
     }
 
-    public function getByEmailConfirmToken($token): User
+    public function getByEmailConfirmToken(string $token): User
     {
         return $this->_getBy(['email_confirm_token' => $token]);
     }
 
-    public function getByPasswordResetToken($token): User
+    public function getByPasswordResetToken(string $token): User
     {
         return $this->_getBy(['password_reset_token' => $token]);
     }
