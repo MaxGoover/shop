@@ -1,8 +1,7 @@
 <?php
-namespace frontend\tests\unit\forms;
+namespace shop\tests\unit\forms;
 
-use frontend\forms\ContactForm;
-use yii\mail\MessageInterface;
+use shop\forms\ContactForm;
 
 class ContactFormTest extends \Codeception\Test\Unit
 {
@@ -17,6 +16,6 @@ class ContactFormTest extends \Codeception\Test\Unit
             'body' => 'body of current message',
         ];
 
-        expect_that($form->validate());
+        expect_that($form->validate(['name', 'email', 'subject', 'body']));
     }
 }
