@@ -6,20 +6,17 @@ use frontend\forms\ContactForm;
 
 class ContactService
 {
-    private $supportEmail;
-    private $adminEmail;
+    private $_adminEmail;
 
-    public function __construct($supportEmail, $adminEmail)
+    public function __construct(string $adminEmail)
     {
-        $this->supportEmail = $supportEmail;
-        $this->adminEmail = $adminEmail;
+        $this->_adminEmail = $adminEmail;
     }
 
     public function send(ContactForm $form): void
     {
         $sent = \Yii::$app->mailer->compose()
-            ->setFrom($this->supportEmail)
-            ->setTo($this->adminEmail)
+            ->setTo($this->_adminEmail)
             ->setSubject($form->subject)
             ->setTextBody($form->body)
             ->send();

@@ -9,13 +9,6 @@ use Yii;
 
 class PasswordResetService
 {
-    private $supportEmail;
-
-    public function __construct($supportEmail)
-    {
-        $this->supportEmail = $supportEmail;
-    }
-
     public function reset(string $token, ResetPasswordForm $form): void
     {
         $user = User::findByPasswordResetToken($token);
