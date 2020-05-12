@@ -76,7 +76,7 @@ class ResendVerificationEmailCest
         $I->seeRecord('common\entities\User', [
             'email' => 'test@mail.com',
             'username' => 'test.test',
-            'status' => \common\entities\User::STATUS_INACTIVE
+            'status' => \common\entities\User::STATUS_WAIT
         ]);
         $I->see('Check your email for further instructions.');
     }
