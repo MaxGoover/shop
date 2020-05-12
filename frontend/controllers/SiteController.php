@@ -25,17 +25,20 @@ class SiteController extends Controller
 {
     private $_contactService;
     private $_passwordResetService;
+    private $_signupService;
 
     public function __construct(
         $id,
         $module,
-        PasswordResetService $passwordResetService,
         ContactService $contactService,
+        PasswordResetService $passwordResetService,
+        SignupService $signupService,
         $config = [])
     {
         parent::__construct($id, $module, $config);
-        $this->_passwordResetService = $passwordResetService;
         $this->_contactService = $contactService;
+        $this->_passwordResetService = $passwordResetService;
+        $this->_signupService = $signupService;
     }
 
     /**
@@ -93,6 +96,19 @@ class SiteController extends Controller
     public function actionAbout()
     {
         return $this->render('about');
+    }
+
+    public function actionConfirm(string $token)
+    {
+        try {
+            $this->_signupService->confirm($token);
+            Yii::$app->session->setFlash('success', 'Your email is confirmed.');
+            return $this->redirect(['login']);
+        } catch (\DomainException $e) {
+            Yii::$app->errorHandler->logException($e);
+            Yii::$app->session->setFlash('error', $e->getMessage());
+            return $this->goHome();
+        }
     }
 
     /**
@@ -251,15 +267,13 @@ class SiteController extends Controller
         $form = new SignupForm();
         if ($form->load(Yii::$app->request->post()) && $form->validate()) {
             try {
-                $user = (new SignupService())->signup($form);
-                if (Yii::$app->getUser()->login($user)) {
-                    Yii::$app->session->setFlash('success', 'Thank you for registration. Please check your inbox for verification email.');
-                    return $this->goHome();
-                }
+                $this->_signupService->signup($form);
+                Yii::$app->session->setFlash('success', 'Check your email for further instructions.');
+                return $this->goHome();
             } catch (\Exception $e) {
+                Yii::$app->errorHandler->logException($e);
                 Yii::$app->session->setFlash('error', $e->getMessage());
             }
-
         }
 
         return $this->render('signup', [

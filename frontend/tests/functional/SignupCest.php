@@ -53,7 +53,7 @@ class SignupCest
             'status' => \common\entities\User::STATUS_WAIT
         ]);
 
-        $I->seeEmailIsSent();
+        $I->seeEmailIsSent(); // todo надо будет допилить потом на месте, что он должен увидеть
         $I->see('Thank you for registration. Please check your inbox for verification email.');
     }
 }
