@@ -13,7 +13,7 @@ class m200513_121833_create_user_networks_table extends Migration
 
         $this->createTable('{{%user_networks}}', [
             'id' => $this->primaryKey(),
-            'user_id' => $this->integer()->unsigned()->notNull(),
+            'user_id' => $this->integer()->notNull(),
             'identity' => $this->string()->notNull(),
             'network' => $this->string(16)->notNull(),
         ], $tableOptions);
