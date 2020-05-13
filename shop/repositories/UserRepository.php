@@ -21,6 +21,11 @@ class UserRepository
         return User::find()->andWhere(['or', ['username' => $value], ['email' => $value]])->one();
     }
 
+    public function get($id): User
+    {
+        return $this->_getBy(['id' => $id]);
+    }
+
     public function getByEmail($email): User
     {
         return $this->_getBy(['email' => $email]);

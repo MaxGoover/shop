@@ -159,6 +159,18 @@ class User extends ActiveRecord implements IdentityInterface
         return $timestamp + $expire >= time();
     }
 
+    public function attachNetwork($network, $identity): void
+    {
+        $networks = $this->networks;
+        foreach ($networks as $current) {
+            if ($current->isFor($network, $identity)) {
+                throw new \DomainException('Network is already attached.');
+            }
+        }
+        $networks[] = Network::create($network, $identity);
+        $this->networks = $networks;
+    }
+
     public function confirmSignup(): void
     {
         if (!$this->isWait()) {
