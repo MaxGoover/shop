@@ -208,6 +208,17 @@ class User extends ActiveRecord implements IdentityInterface
     }
 
     /**
+     * @param string $username
+     * @param string $email
+     */
+    public function edit(string $username, string $email): void
+    {
+        $this->username = $username;
+        $this->email = $email;
+        $this->updated_at = time();
+    }
+
+    /**
      * @return string
      */
     public function getAuthKey()
