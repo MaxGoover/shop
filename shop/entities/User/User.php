@@ -75,16 +75,6 @@ class User extends ActiveRecord implements IdentityInterface
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function rules()
-    {
-        return [
-            ['status', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_WAIT]],
-        ];
-    }
-
-    /**
      * Finds user by password reset token
      *
      * @param string $token password reset token
