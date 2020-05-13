@@ -1,7 +1,8 @@
 <?php
 
-use yii\helpers\Html;
+use yii\grid\ActionColumn;
 use yii\grid\GridView;
+use yii\helpers\Html;
 
 /* @var $this yii\web\View */
 /* @var $searchModel backend\forms\UserSearch */
@@ -20,27 +21,21 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
-    <?= GridView::widget([
-        'dataProvider' => $dataProvider,
-        'filterModel' => $searchModel,
-        'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
-
-            'id',
-            'username',
-            'auth_key',
-            'password_hash',
-            'password_reset_token',
-            //'email:email',
-            //'email_confirm_token:email',
-            //'status',
-            //'created_at',
-            //'updated_at',
-            //'verification_token',
-
-            ['class' => 'yii\grid\ActionColumn'],
-        ],
-    ]); ?>
-
+    <div class="box">
+        <div class="box-body">
+            <?= GridView::widget([
+                'dataProvider' => $dataProvider,
+                'filterModel' => $searchModel,
+                'columns' => [
+                    'id',
+                    'created_at:datetime',
+                    'username',
+                    'email:email',
+                    'status',
+                    ['class' => ActionColumn::class],
+                ],
+            ]); ?>
+        </div>
+    </div>
 
 </div>
