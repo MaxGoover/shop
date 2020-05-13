@@ -9,12 +9,12 @@ use yii\web\Controller;
 
 class AuthController extends Controller
 {
-    private $authService;
+    private $_authService;
 
     public function __construct($id, $module, AuthService $service, $config = [])
     {
         parent::__construct($id, $module, $config);
-        $this->authService = $service;
+        $this->_authService = $service;
     }
 
     /**
@@ -24,7 +24,7 @@ class AuthController extends Controller
     {
         return [
             'verbs' => [
-                'class' => VerbFilter::className(),
+                'class' => VerbFilter::class,
                 'actions' => [
                     'logout' => ['post'],
                 ],
@@ -46,7 +46,7 @@ class AuthController extends Controller
         $form = new LoginForm();
         if ($form->load(Yii::$app->request->post()) && $form->validate()) {
             try {
-                $user = $this->authService->auth($form);
+                $user = $this->_authService->auth($form);
                 Yii::$app->user->login($user, $form->rememberMe ? 3600 * 24 * 30 : 0);
                 return $this->goBack();
             } catch (\DomainException $e) {
