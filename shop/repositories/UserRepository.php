@@ -41,6 +41,13 @@ class UserRepository
         return $this->_getBy(['password_reset_token' => $token]);
     }
 
+    public function remove(User $user): void
+    {
+        if (!$user->delete()) {
+            throw new \RuntimeException('Removing error.');
+        }
+    }
+
     public function save(User $user): void
     {
         if (!$user->save()) {
