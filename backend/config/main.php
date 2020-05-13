@@ -9,7 +9,7 @@ $params = array_merge(
 return [
     'as access' => [
         'class' => 'yii\filters\AccessControl',
-        'except' => ['site/login', 'site/error'],
+        'except' => ['auth/login', 'site/error'],
         'rules' => [
             [
                 'allow' => true,
@@ -59,6 +59,7 @@ return [
                 'httpOnly' => true,
                 'domain' => $params['cookieDomain'],
             ],
+            'loginUrl' => ['auth/login'],
         ],
     ],
     'controllerNamespace' => 'backend\controllers',
