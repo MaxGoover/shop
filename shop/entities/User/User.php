@@ -31,7 +31,33 @@ class User extends ActiveRecord implements IdentityInterface
 {
     const STATUS_WAIT = 0;
     const STATUS_ACTIVE = 10;
-    
+
+    /**
+     * @param string $username
+     * @param string $email
+     * @param string $password
+     * @return User
+     * @throws \yii\base\Exception
+     */
+    public static function create(string $username, string $email, string $password): self
+    {
+        $user = new User();
+        $user->username = $username;
+        $user->email = $email;
+        $user->_setPassword(!empty($password) ? $password : Yii::$app->security->generateRandomString());
+        $user->created_at = time();
+        $user->status = self::STATUS_ACTIVE;
+        $user->auth_key = Yii::$app->security->generateRandomString();
+        return $user;
+    }
+
+    /**
+     * @param string $username
+     * @param string $email
+     * @param string $password
+     * @return User
+     * @throws \yii\base\Exception
+     */
     public static function requestSignup(string $username, string $email, string $password): self
     {
         $user = new static();
@@ -67,6 +93,9 @@ class User extends ActiveRecord implements IdentityInterface
         ];
     }
 
+    /**
+     * @return array
+     */
     public function transactions()
     {
         return [
@@ -117,7 +146,8 @@ class User extends ActiveRecord implements IdentityInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @param int|string $id
+     * @return User|IdentityInterface|null
      */
     public static function findIdentity($id)
     {
@@ -125,7 +155,10 @@ class User extends ActiveRecord implements IdentityInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @param mixed $token
+     * @param null $type
+     * @return void|IdentityInterface|null
+     * @throws NotSupportedException
      */
     public static function findIdentityByAccessToken($token, $type = null)
     {
@@ -149,6 +182,10 @@ class User extends ActiveRecord implements IdentityInterface
         return $timestamp + $expire >= time();
     }
 
+    /**
+     * @param $network
+     * @param $identity
+     */
     public function attachNetwork($network, $identity): void
     {
         $networks = $this->networks;
@@ -171,7 +208,7 @@ class User extends ActiveRecord implements IdentityInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @return string
      */
     public function getAuthKey()
     {
@@ -179,13 +216,16 @@ class User extends ActiveRecord implements IdentityInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @return int|mixed|string
      */
     public function getId()
     {
         return $this->getPrimaryKey();
     }
 
+    /**
+     * @return ActiveQuery
+     */
     public function getNetworks(): ActiveQuery
     {
         return $this->hasMany(Network::class, ['user_id' => 'id']);
@@ -211,6 +251,9 @@ class User extends ActiveRecord implements IdentityInterface
         return $this->status === self::STATUS_WAIT;
     }
 
+    /**
+     * @throws \yii\base\Exception
+     */
     public function requestPasswordReset(): void
     {
         if (!empty($this->password_reset_token) && self::isPasswordResetTokenValid($this->password_reset_token)) {
@@ -219,6 +262,9 @@ class User extends ActiveRecord implements IdentityInterface
         $this->password_reset_token = Yii::$app->security->generateRandomString() . '_' . time();
     }
 
+    /**
+     * @param string $password
+     */
     public function resetPassword(string $password): void
     {
         if (empty($this->password_reset_token)) {
@@ -228,6 +274,11 @@ class User extends ActiveRecord implements IdentityInterface
         $this->password_reset_token = null;
     }
 
+    /**
+     * @param $network
+     * @param $identity
+     * @return User
+     */
     public static function signupByNetwork($network, $identity): self
     {
         $user = new User();
@@ -239,7 +290,8 @@ class User extends ActiveRecord implements IdentityInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @param string $authKey
+     * @return bool
      */
     public function validateAuthKey($authKey): bool
     {
