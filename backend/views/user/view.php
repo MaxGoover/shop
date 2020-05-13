@@ -1,5 +1,6 @@
 <?php
 
+use shop\helpers\UserHelper;
 use yii\helpers\Html;
 use yii\widgets\DetailView;
 
@@ -34,7 +35,11 @@ $this->params['breadcrumbs'][] = $this->title;
                     'id',
                     'username',
                     'email:email',
-                    'status',
+                    [
+                        'attribute' => 'status',
+                        'format' => 'raw',
+                        'value' => UserHelper::statusLabel($model->status),
+                    ],
                     'created_at:datetime',
                     'updated_at:datetime',
                 ],
