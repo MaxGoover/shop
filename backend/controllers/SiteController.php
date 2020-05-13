@@ -1,11 +1,11 @@
 <?php
 namespace backend\controllers;
 
+use shop\forms\auth\LoginForm;
+use shop\services\auth\AuthService;
 use Yii;
-use yii\web\Controller;
 use yii\filters\VerbFilter;
-use common\forms\LoginForm;
-use common\services\AuthService;
+use yii\web\Controller;
 
 /**
  * Site controller
