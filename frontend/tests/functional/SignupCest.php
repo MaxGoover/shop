@@ -46,10 +46,10 @@ class SignupCest
             'SignupForm[password]' => 'tester_password',
         ]);
 
-        $I->seeRecord('shop\entities\User', [
+        $I->seeRecord('shop\entities\User\User', [
             'username' => 'tester',
             'email' => 'tester.email@example.com',
-            'status' => \shop\entities\User::STATUS_WAIT
+            'status' => \shop\entities\User\User::STATUS_WAIT
         ]);
 
         $I->seeEmailIsSent(); // todo надо будет допилить потом на месте, что он должен увидеть
