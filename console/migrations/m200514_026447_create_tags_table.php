@@ -2,9 +2,9 @@
 
 use yii\db\Migration;
 
-class m200514_126447_create_tags_table extends Migration
+class m200514_026447_create_tags_table extends Migration
 {
-    public function up()
+    public function safeUp()
     {
         $tableOptions = 'CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE=InnoDB';
 
@@ -17,7 +17,7 @@ class m200514_126447_create_tags_table extends Migration
         $this->createIndex('{{%idx-shop_tags-slug}}', '{{%shop_tags}}', 'slug', true);
     }
 
-    public function down()
+    public function safeDown()
     {
         $this->dropTable('{{%shop_tags}}');
     }
