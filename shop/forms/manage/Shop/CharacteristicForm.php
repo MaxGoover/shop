@@ -26,7 +26,7 @@ class CharacteristicForm extends Model
             $this->type = $characteristic->type;
             $this->required = $characteristic->required;
             $this->default = $characteristic->default;
-            $this->textVariants = implode(PHP_EOL, $characteristic->variants);
+            $this->textVariants = \implode(PHP_EOL, $characteristic->variants);
             $this->sort = $characteristic->sort;
             $this->_characteristic = $characteristic;
         } else {
@@ -34,6 +34,13 @@ class CharacteristicForm extends Model
         }
         parent::__construct($config);
     }
+
+    public function getVariants(): array
+    {
+        return \preg_split('#\s+#i', $this->textVariants);
+    }
+
+    ##########################
 
     public function rules(): array
     {
@@ -45,10 +52,5 @@ class CharacteristicForm extends Model
             [['sort'], 'integer'],
             [['name'], 'unique', 'targetClass' => Characteristic::class, 'filter' => $this->_characteristic ? ['<>', 'id', $this->_characteristic->id] : null]
         ];
-    }
-
-    public function getVariants(): array
-    {
-        return preg_split('#\s+#i', $this->textVariants);
     }
 }

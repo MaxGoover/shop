@@ -36,6 +36,13 @@ class CategoryForm extends CompositeForm
         parent::__construct($config);
     }
 
+    public function internalForms(): array
+    {
+        return ['meta'];
+    }
+
+    ##########################
+
     public function rules(): array
     {
         return [
@@ -46,10 +53,5 @@ class CategoryForm extends CompositeForm
             ['slug', SlugValidator::class],
             [['name', 'slug'], 'unique', 'targetClass' => Category::class, 'filter' => $this->_category ? ['<>', 'id', $this->_category->id] : null]
         ];
-    }
-
-    public function internalForms(): array
-    {
-        return ['meta'];
     }
 }
