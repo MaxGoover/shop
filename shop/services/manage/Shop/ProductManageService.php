@@ -6,6 +6,7 @@ use shop\entities\Meta;
 use shop\entities\Shop\Product\Product;
 use shop\entities\Shop\Tag;
 use shop\forms\manage\Shop\Product\CategoriesForm;
+use shop\forms\manage\Shop\Product\ModificationForm;
 use shop\forms\manage\Shop\Product\PhotosForm;
 use shop\forms\manage\Shop\Product\ProductCreateForm;
 use shop\forms\manage\Shop\Product\ProductEditForm;
@@ -17,23 +18,23 @@ use shop\services\TransactionManager;
 
 class ProductManageService
 {
-    private $products;
     private $brands;
     private $categories;
+    private $products;
     private $tags;
     private $transaction;
 
     public function __construct(
-        ProductRepository $products,
         BrandRepository $brands,
         CategoryRepository $categories,
+        ProductRepository $products,
         TagRepository $tags,
         TransactionManager $transaction
     )
     {
-        $this->products = $products;
         $this->brands = $brands;
         $this->categories = $categories;
+        $this->products = $products;
         $this->tags = $tags;
         $this->transaction = $transaction;
     }
@@ -185,6 +186,36 @@ class ProductManageService
         $product = $this->products->get($id);
         $other = $this->products->get($otherId);
         $product->revokeRelatedProduct($other->id);
+        $this->products->save($product);
+    }
+
+    public function addModification($id, ModificationForm $form): void
+    {
+        $product = $this->products->get($id);
+        $product->addModification(
+            $form->code,
+            $form->name,
+            $form->price
+        );
+        $this->products->save($product);
+    }
+
+    public function editModification($id, $modificationId, ModificationForm $form): void
+    {
+        $product = $this->products->get($id);
+        $product->editModification(
+            $modificationId,
+            $form->code,
+            $form->name,
+            $form->price
+        );
+        $this->products->save($product);
+    }
+
+    public function removeModification($id, $modificationId): void
+    {
+        $product = $this->products->get($id);
+        $product->removeModification($modificationId);
         $this->products->save($product);
     }
 

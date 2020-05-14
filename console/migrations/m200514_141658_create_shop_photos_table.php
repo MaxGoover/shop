@@ -7,7 +7,7 @@ use yii\db\Migration;
  */
 class m200514_141658_create_shop_photos_table extends Migration
 {
-    public function up()
+    public function safeUp()
     {
         $tableOptions = 'CHARACTER SET utf8 COLLATE utf8_general_ci ENGINE=InnoDB';
 
@@ -23,7 +23,7 @@ class m200514_141658_create_shop_photos_table extends Migration
         $this->addForeignKey('{{%fk-shop_photos-product_id}}', '{{%shop_photos}}', 'product_id', '{{%shop_products}}', 'id', 'CASCADE', 'RESTRICT');
     }
 
-    public function down()
+    public function safeDown()
     {
         $this->dropTable('{{%shop_photos}}');
     }
