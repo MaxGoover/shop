@@ -48,6 +48,4 @@ class ValueForm extends Model
             ['value', 'safe'],
         ]);
     }
-
-
 }

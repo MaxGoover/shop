@@ -37,6 +37,4 @@ class TagsForm extends Model
             ['textNew', 'string'],
         ];
     }
-
-
 }
