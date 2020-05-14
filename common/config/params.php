@@ -6,6 +6,6 @@ return [
     'frontendHostInfo' => 'http://example.com',
     'senderEmail' => 'noreply@example.com',
     'senderName' => 'Example.com mailer',
-    'supportEmail' => 'support@example.com',
     'user.passwordResetTokenExpire' => 3600,
+    'user.rememberMeDuration' => 2592000, // 1 month
 ];

@@ -1,5 +1,5 @@
 <?php
-$params = array_merge(
+$params = \array_merge(
     require __DIR__ . '/../../common/config/params.php',
     require __DIR__ . '/../../common/config/params-local.php',
     require __DIR__ . '/params.php',
@@ -7,26 +7,25 @@ $params = array_merge(
 );
 
 return [
-    'id' => 'app-frontend',
     'basePath' => dirname(__DIR__),
     'bootstrap' => [
         'common\bootstrap\SetUp',
         'log',
     ],
-    'controllerNamespace' => 'frontend\controllers',
     'components' => [
         'request' => [
             'cookieValidationKey' => $params['cookieValidationKey'],
             'csrfParam' => '_csrf-frontend',
         ],
         'user' => [
-            'identityClass' => 'common\models\User',
+            'identityClass' => 'shop\entities\User\User',
             'enableAutoLogin' => true,
             'identityCookie' => [
                 'name' => '_identity',
                 'httpOnly' => true,
                 'domain' => $params['cookieDomain']
             ],
+            'loginUrl' => ['auth/auth/login'],
         ],
         'session' => [
             'name' => '_session',
@@ -53,5 +52,7 @@ return [
             return Yii::$app->get('frontendUrlManager');
         },
     ],
+    'controllerNamespace' => 'frontend\controllers',
+    'id' => 'app-frontend',
     'params' => $params,
 ];

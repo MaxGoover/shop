@@ -15,10 +15,15 @@
     "minimum-stability": "stable",
     "require": {
         "dmstr/yii2-adminlte-asset": "^2.4",
+        "kartik-v/yii2-field-range": "*",
+        "kartik-v/yii2-widgets": "*",
+        "la-haute-societe/yii2-save-relations-behavior": "^1.2",
         "php": ">=7.2.0",
         "yiisoft/yii2": "~2.0.14",
+        "yiisoft/yii2-authclient": "^2.1",
         "yiisoft/yii2-bootstrap": "~2.0.0",
-        "yiisoft/yii2-swiftmailer": "~2.0.0 || ~2.1.0"
+        "yiisoft/yii2-swiftmailer": "~2.0.0 || ~2.1.0",
+        "webmozart/assert": "^1.2"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.1.0",
