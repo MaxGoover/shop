@@ -7,15 +7,14 @@ use yii\base\Model;
 
 class UserEditForm extends Model
 {
-    public $username;
-    public $email;
-
-    public $_user;
+    private $_username;
+    private $_email;
+    private $_user;
 
     public function __construct(User $user, $config = [])
     {
-        $this->username = $user->username;
-        $this->email = $user->email;
+        $this->_username = $user->username;
+        $this->_email = $user->email;
         $this->_user = $user;
         parent::__construct($config);
     }
