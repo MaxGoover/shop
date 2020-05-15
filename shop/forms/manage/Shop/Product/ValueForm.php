@@ -24,12 +24,16 @@ class ValueForm extends Model
         parent::__construct($config);
     }
 
-    public function getId(): int
+    public function rules(): array
     {
-        return $this->_characteristic->id;
+        return array_filter([
+            $this->_characteristic->required ? ['value', 'required'] : false,
+            $this->_characteristic->isString() ? ['value', 'string', 'max' => 255] : false,
+            $this->_characteristic->isInteger() ? ['value', 'integer'] : false,
+            $this->_characteristic->isFloat() ? ['value', 'number'] : false,
+            ['value', 'safe'],
+        ]);
     }
-
-    ##########################
 
     public function attributeLabels(): array
     {
@@ -38,14 +42,13 @@ class ValueForm extends Model
         ];
     }
 
-    public function rules(): array
+    public function variantsList(): array
     {
-        return \array_filter([
-            $this->_characteristic->required ? ['value', 'required'] : false,
-            $this->_characteristic->isString() ? ['value', 'string', 'max' => 255] : false,
-            $this->_characteristic->isInteger() ? ['value', 'integer'] : false,
-            $this->_characteristic->isFloat() ? ['value', 'number'] : false,
-            ['value', 'safe'],
-        ]);
+        return $this->_characteristic->variants ? array_combine($this->_characteristic->variants, $this->_characteristic->variants) : [];
+    }
+
+    public function getId(): int
+    {
+        return $this->_characteristic->id;
     }
 }
