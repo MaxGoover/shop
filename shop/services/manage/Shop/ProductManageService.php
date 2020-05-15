@@ -18,23 +18,23 @@ use shop\services\TransactionManager;
 
 class ProductManageService
 {
+    private $products;
     private $brands;
     private $categories;
-    private $products;
     private $tags;
     private $transaction;
 
     public function __construct(
+        ProductRepository $products,
         BrandRepository $brands,
         CategoryRepository $categories,
-        ProductRepository $products,
         TagRepository $tags,
         TransactionManager $transaction
     )
     {
+        $this->products = $products;
         $this->brands = $brands;
         $this->categories = $categories;
-        $this->products = $products;
         $this->tags = $tags;
         $this->transaction = $transaction;
     }
@@ -49,6 +49,7 @@ class ProductManageService
             $category->id,
             $form->code,
             $form->name,
+            $form->description,
             new Meta(
                 $form->meta->title,
                 $form->meta->description,
@@ -99,6 +100,7 @@ class ProductManageService
             $brand->id,
             $form->code,
             $form->name,
+            $form->description,
             new Meta(
                 $form->meta->title,
                 $form->meta->description,
