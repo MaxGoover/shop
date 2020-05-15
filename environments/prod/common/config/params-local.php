@@ -1,7 +1,8 @@
 <?php
 return [
-    'backendHostInfo' => 'http://backend.shop.test',
     'cookieValidationKey' => '',
-    'cookieDomain' => '.shop.test',
-    'frontendHostInfo' => 'http://shop.test',
+    'cookieDomain' => '.shop.dev',
+    'frontendHostInfo' => 'http://shop.dev',
+    'backendHostInfo' => 'http://backend.shop.dev',
+    'staticHostInfo' => 'http://static.shop.dev',
 ];
