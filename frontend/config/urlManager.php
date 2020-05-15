@@ -4,8 +4,9 @@
 
 return [
     'class' => 'yii\web\UrlManager',
-    'enablePrettyUrl' => true,
     'hostInfo' => $params['frontendHostInfo'],
+    'enablePrettyUrl' => true,
+    'showScriptName' => false,
     'rules' => [
         '' => 'site/index',
         '<_a:about>' => 'site/<_a>',
@@ -13,6 +14,8 @@ return [
         'signup' => 'auth/signup/request',
         'signup/<_a:[\w-]+>' => 'auth/signup/<_a>',
         '<_a:login|logout>' => 'auth/auth/<_a>',
+
+        'catalog' => 'shop/catalog/index',
 
         'cabinet' => 'cabinet/default/index',
         'cabinet/<_c:[\w\-]+>' => 'cabinet/<_c>/index',
@@ -25,5 +28,4 @@ return [
         '<_c:[\w\-]+>/<_a:[\w-]+>' => '<_c>/<_a>',
         '<_c:[\w\-]+>/<id:\d+>/<_a:[\w\-]+>' => '<_c>/<_a>',
     ],
-    'showScriptName' => false,
 ];
