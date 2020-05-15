@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3a84046c29681a05e3b651902a4d6bcd",
+    "content-hash": "0fd92ee62a0a42b6eef0d50ca17a3692",
     "packages": [
         {
             "name": "almasaeed2010/adminlte",
@@ -75,7 +75,7 @@
             "version": "3.3.11",
             "source": {
                 "type": "git",
-                "url": "https://github.com/RobinHerbots/Inputmask.git",
+                "url": "git@github.com:RobinHerbots/Inputmask.git",
                 "reference": "5e670ad62f50c738388d4dcec78d2888505ad77b"
             },
             "dist": {
@@ -1900,6 +1900,102 @@
             "time": "2019-06-22T13:36:08+00:00"
         },
         {
+            "name": "masterexploder/phpthumb",
+            "version": "2.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/masterexploder/PHPThumb.git",
+                "reference": "01f6aa65aa3d136e175f67da2b4ea3e316770d02"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/masterexploder/PHPThumb/zipball/01f6aa65aa3d136e175f67da2b4ea3e316770d02",
+                "reference": "01f6aa65aa3d136e175f67da2b4ea3e316770d02",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "PHPThumb": "src",
+                    "PHPThumb\\Tests": "tests"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jarrod Nettles",
+                    "email": "jarrod.nettles@icloud.com"
+                },
+                {
+                    "name": "Ian Selby",
+                    "email": "ian@gxdlabs.com"
+                }
+            ],
+            "description": "A library for manipulating images in PHP.",
+            "homepage": "https://github.com/masterexploder/PHPThumb",
+            "keywords": [
+                "image",
+                "resize",
+                "rotate"
+            ],
+            "time": "2015-09-08T22:55:44+00:00"
+        },
+        {
+            "name": "paulzi/yii2-nested-sets",
+            "version": "v1.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/paulzi/yii2-nested-sets.git",
+                "reference": "05b51d129295e10becf603777aa25cf555329f46"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/paulzi/yii2-nested-sets/zipball/05b51d129295e10becf603777aa25cf555329f46",
+                "reference": "05b51d129295e10becf603777aa25cf555329f46",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.4.0",
+                "yiisoft/yii2": "~2.0.0"
+            },
+            "require-dev": {
+                "phpunit/dbunit": "~1.0",
+                "phpunit/phpunit": "~4.0"
+            },
+            "type": "yii2-extension",
+            "autoload": {
+                "psr-4": {
+                    "paulzi\\nestedsets\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Alexander Kochetov",
+                    "email": "creocoder@gmail.com"
+                },
+                {
+                    "name": "PaulZi",
+                    "email": "pavel.zimakoff@gmail.com"
+                }
+            ],
+            "description": "Nested Sets Behavior for Yii2",
+            "keywords": [
+                "nested sets",
+                "yii2"
+            ],
+            "time": "2018-07-31T13:38:08+00:00"
+        },
+        {
             "name": "rmrevin/yii2-fontawesome",
             "version": "2.17.1",
             "source": {
@@ -2461,6 +2557,55 @@
                 "validate"
             ],
             "time": "2020-04-18T12:12:48+00:00"
+        },
+        {
+            "name": "yii-dream-team/yii2-upload-behavior",
+            "version": "1.2.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/yii-dream-team/yii2-upload-behavior.git",
+                "reference": "cdb45e68014476765188c387fafcb7fd30d2ad0a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/yii-dream-team/yii2-upload-behavior/zipball/cdb45e68014476765188c387fafcb7fd30d2ad0a",
+                "reference": "cdb45e68014476765188c387fafcb7fd30d2ad0a",
+                "shasum": ""
+            },
+            "require": {
+                "masterexploder/phpthumb": "*",
+                "php": ">=5.4.0",
+                "yiisoft/yii2": "*"
+            },
+            "type": "yii2-extension",
+            "autoload": {
+                "psr-4": {
+                    "yiidreamteam\\upload\\": "./src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Alexey Samoylov",
+                    "email": "alexey.samoylov@gmail.com",
+                    "homepage": "http://yiidreamteam.com/team/alexey",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Yii2 file/image upload behavior for ActiveRecord",
+            "homepage": "http://yiidreamteam.com/yii2/upload-behavior",
+            "keywords": [
+                "Behavior",
+                "file",
+                "image",
+                "resize",
+                "thumb",
+                "upload"
+            ],
+            "time": "2017-10-26T15:44:40+00:00"
         },
         {
             "name": "yiisoft/yii2",
