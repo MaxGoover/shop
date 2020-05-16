@@ -24,6 +24,7 @@
         "la-haute-societe/yii2-save-relations-behavior": "^1.2",
         "paulzi/yii2-nested-sets": "^1.0",
         "php": ">=7.2.0",
+        "phpoffice/phpexcel": "^1.8",
         "yii-cms/yii2-robokassa": "^1.1",
         "yii-dream-team/yii2-upload-behavior": "^1.1",
         "yiisoft/yii2": "~2.0.14",
