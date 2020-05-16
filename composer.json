@@ -15,6 +15,7 @@
     "minimum-stability": "stable",
     "require": {
         "bower-asset/font-awesome": "^4.7",
+        "bower-asset/magnific-popup": "^1.1",
         "bower-asset/owl.carousel": "^2.2",
         "dmstr/yii2-adminlte-asset": "^2.4",
         "kartik-v/yii2-field-range": "*",
