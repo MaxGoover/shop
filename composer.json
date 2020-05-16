@@ -18,6 +18,7 @@
         "bower-asset/magnific-popup": "^1.1",
         "bower-asset/owl.carousel": "^2.2",
         "dmstr/yii2-adminlte-asset": "^2.4",
+        "elasticsearch/elasticsearch": "^5.2",
         "kartik-v/yii2-field-range": "*",
         "kartik-v/yii2-widgets": "*",
         "la-haute-societe/yii2-save-relations-behavior": "^1.2",
