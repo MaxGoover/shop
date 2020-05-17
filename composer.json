@@ -20,6 +20,7 @@
         "dmstr/yii2-adminlte-asset": "^2.4",
         "elasticsearch/elasticsearch": "^5.2",
         "fishvision/yii2-migrate": "^1.0",
+        "guzzlehttp/guzzle": "^6.2",
         "kartik-v/yii2-field-range": "*",
         "kartik-v/yii2-widgets": "*",
         "la-haute-societe/yii2-save-relations-behavior": "^1.2",
