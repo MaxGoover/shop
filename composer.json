@@ -37,7 +37,8 @@
         "yiisoft/yii2-authclient": "^2.1",
         "yiisoft/yii2-bootstrap": "~2.0.0",
         "yiisoft/yii2-swiftmailer": "~2.0.0 || ~2.1.0",
-        "webmozart/assert": "^1.2"
+        "webmozart/assert": "^1.2",
+        "zircote/swagger-php": "^2.0"
     },
     "require-dev": {
         "codeception/codeception": "^4.0",
