@@ -1,11 +1,12 @@
 <?php
 
+use backend\widgets\grid\RoleColumn;
 use kartik\date\DatePicker;
 use shop\entities\User\User;
 use shop\helpers\UserHelper;
 use yii\grid\ActionColumn;
-use yii\grid\GridView;
 use yii\helpers\Html;
+use yii\grid\GridView;
 
 /* @var $this yii\web\View */
 /* @var $searchModel backend\forms\UserSearch */
@@ -33,36 +34,40 @@ $this->params['breadcrumbs'][] = $this->title;
                             'model' => $searchModel,
                             'attribute' => 'date_from',
                             'attribute2' => 'date_to',
-                            'pluginOptions' => [
-                                'autoclose'=>true,
-                                'format' => 'yyyy-mm-dd',
-                                'todayHighlight' => true,
-                            ],
                             'type' => DatePicker::TYPE_RANGE,
                             'separator' => '-',
+                            'pluginOptions' => [
+                                'todayHighlight' => true,
+                                'autoclose'=>true,
+                                'format' => 'yyyy-mm-dd',
+                            ],
                         ]),
                         'format' => 'datetime',
                     ],
                     [
                         'attribute' => 'username',
-                        'format' => 'raw',
                         'value' => function (User $model) {
                             return Html::a(Html::encode($model->username), ['view', 'id' => $model->id]);
                         },
+                        'format' => 'raw',
                     ],
                     'email:email',
                     [
+                        'attribute' => 'role',
+                        'class' => RoleColumn::class,
+                        'filter' => $searchModel->rolesList(),
+                    ],
+                    [
                         'attribute' => 'status',
                         'filter' => UserHelper::statusList(),
-                        'format' => 'raw',
                         'value' => function (User $model) {
                             return UserHelper::statusLabel($model->status);
                         },
+                        'format' => 'raw',
                     ],
                     ['class' => ActionColumn::class],
                 ],
             ]); ?>
         </div>
     </div>
-
 </div>
