@@ -1,9 +1,13 @@
 <?php
 
+/** @var array $params */
+
 return [
     'class' => 'yii\web\UrlManager',
-    'enablePrettyUrl' => true,
     'hostInfo' => $params['backendHostInfo'],
+    'baseUrl' => '',
+    'enablePrettyUrl' => true,
+    'showScriptName' => false,
     'rules' => [
         '' => 'site/index',
         '<_a:login|logout>' => 'auth/<_a>',
@@ -13,5 +17,4 @@ return [
         '<_c:[\w\-]+>/<_a:[\w-]+>' => '<_c>/<_a>',
         '<_c:[\w\-]+>/<id:\d+>/<_a:[\w\-]+>' => '<_c>/<_a>',
     ],
-    'showScriptName' => false,
 ];
