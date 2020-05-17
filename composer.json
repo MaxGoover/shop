@@ -37,6 +37,7 @@
         "yiisoft/yii2": "~2.0.14",
         "yiisoft/yii2-authclient": "^2.1",
         "yiisoft/yii2-bootstrap": "~2.0.0",
+        "yiisoft/yii2-redis": "^2.0",
         "yiisoft/yii2-swiftmailer": "~2.0.0 || ~2.1.0",
         "webmozart/assert": "^1.2",
         "zircote/swagger-php": "^2.0"
