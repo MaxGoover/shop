@@ -5,7 +5,6 @@ namespace shop\entities\Shop;
 use shop\entities\behaviors\MetaBehavior;
 use shop\entities\Meta;
 use yii\db\ActiveRecord;
-use yii\helpers\Json;
 
 /**
  * @property integer $id
@@ -33,6 +32,11 @@ class Brand extends ActiveRecord
         $this->meta = $meta;
     }
 
+    public function getSeoTitle(): string
+    {
+        return $this->meta->title ?: $this->name;
+    }
+
     ##########################
 
     public static function tableName(): string
@@ -43,7 +47,7 @@ class Brand extends ActiveRecord
     public function behaviors(): array
     {
         return [
-            MetaBehavior::class,
+            MetaBehavior::className(),
         ];
     }
 }

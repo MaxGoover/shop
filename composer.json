@@ -15,12 +15,17 @@
     "minimum-stability": "stable",
     "require": {
         "bower-asset/font-awesome": "^4.7",
+        "bower-asset/magnific-popup": "^1.1",
+        "bower-asset/owl.carousel": "^2.2",
         "dmstr/yii2-adminlte-asset": "^2.4",
+        "elasticsearch/elasticsearch": "^5.2",
         "kartik-v/yii2-field-range": "*",
         "kartik-v/yii2-widgets": "*",
         "la-haute-societe/yii2-save-relations-behavior": "^1.2",
         "paulzi/yii2-nested-sets": "^1.0",
         "php": ">=7.2.0",
+        "phpoffice/phpexcel": "^1.8",
+        "yii-cms/yii2-robokassa": "^1.1",
         "yii-dream-team/yii2-upload-behavior": "^1.1",
         "yiisoft/yii2": "~2.0.14",
         "yiisoft/yii2-authclient": "^2.1",
@@ -29,15 +34,15 @@
         "webmozart/assert": "^1.2"
     },
     "require-dev": {
-        "yiisoft/yii2-debug": "~2.1.0",
-        "yiisoft/yii2-gii": "~2.1.0",
-        "yiisoft/yii2-faker": "~2.0.0",
         "codeception/codeception": "^4.0",
         "codeception/module-asserts": "^1.0",
-        "codeception/module-yii2": "^1.0",
         "codeception/module-filesystem": "^1.0",
+        "codeception/module-yii2": "^1.0",
         "codeception/verify": "~0.5.0 || ~1.1.0",
-        "symfony/browser-kit": ">=2.7 <=4.2.4"
+        "symfony/browser-kit": ">=2.7 <=4.2.4",
+        "yiisoft/yii2-debug": "~2.1.0",
+        "yiisoft/yii2-gii": "~2.1.0",
+        "yiisoft/yii2-faker": "~2.0.0"
     },
     "config": {
         "process-timeout": 1800,

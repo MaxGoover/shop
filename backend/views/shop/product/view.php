@@ -4,6 +4,8 @@ use kartik\file\FileInput;
 use shop\entities\Shop\Product\Modification;
 use shop\entities\Shop\Product\Value;
 use shop\helpers\PriceHelper;
+use shop\helpers\ProductHelper;
+use shop\helpers\WeightHelper;
 use yii\bootstrap\ActiveForm;
 use yii\grid\ActionColumn;
 use yii\grid\GridView;
@@ -23,6 +25,11 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="user-view">
 
     <p>
+        <?php if ($product->isActive()): ?>
+            <?= Html::a('Draft', ['draft', 'id' => $product->id], ['class' => 'btn btn-primary', 'data-method' => 'post']) ?>
+        <?php else: ?>
+            <?= Html::a('Activate', ['activate', 'id' => $product->id], ['class' => 'btn btn-success', 'data-method' => 'post']) ?>
+        <?php endif; ?>
         <?= Html::a('Update', ['update', 'id' => $product->id], ['class' => 'btn btn-primary']) ?>
         <?= Html::a('Delete', ['delete', 'id' => $product->id], [
             'class' => 'btn btn-danger',
@@ -43,19 +50,16 @@ $this->params['breadcrumbs'][] = $this->title;
                         'attributes' => [
                             'id',
                             [
+                                'attribute' => 'status',
+                                'value' => ProductHelper::statusLabel($product->status),
+                                'format' => 'raw',
+                            ],
+                            [
                                 'attribute' => 'brand_id',
                                 'value' => ArrayHelper::getValue($product, 'brand.name'),
                             ],
                             'code',
                             'name',
-                            [
-                                'attribute' => 'price_new',
-                                'value' => PriceHelper::format($product->price_new),
-                            ],
-                            [
-                                'attribute' => 'price_old',
-                                'value' => PriceHelper::format($product->price_old),
-                            ],
                             [
                                 'attribute' => 'category_id',
                                 'value' => ArrayHelper::getValue($product, 'category.name'),
@@ -68,11 +72,27 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'label' => 'Tags',
                                 'value' => implode(', ', ArrayHelper::getColumn($product->tags, 'name')),
                             ],
+                            'quantity',
+                            [
+                                'attribute' => 'weight',
+                                'value' => WeightHelper::format($product->weight),
+                            ],
+                            [
+                                'attribute' => 'price_new',
+                                'value' => PriceHelper::format($product->price_new),
+                            ],
+                            [
+                                'attribute' => 'price_old',
+                                'value' => PriceHelper::format($product->price_old),
+                            ],
                         ],
                     ]) ?>
                     <br />
                     <p>
                         <?= Html::a('Change Price', ['price', 'id' => $product->id], ['class' => 'btn btn-primary']) ?>
+                        <?php if ($product->canChangeQuantity()): ?>
+                            <?= Html::a('Change Quantity', ['quantity', 'id' => $product->id], ['class' => 'btn btn-primary']) ?>
+                        <?php endif; ?>
                     </p>
                 </div>
             </div>
@@ -121,6 +141,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             return PriceHelper::format($model->price);
                         },
                     ],
+                    'quantity',
                     [
                         'class' => ActionColumn::class,
                         'controller' => 'shop/modification',

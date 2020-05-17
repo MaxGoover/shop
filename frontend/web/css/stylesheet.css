@@ -15,6 +15,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 /* Override the bootstrap defaults */
 h1 {
+	margin-top: 0;
 	font-size: 33px;
 }
 h2 {
@@ -523,6 +524,7 @@ footer h5 {
 /* product list */
 .product-thumb {
 	border: 1px solid #ddd;
+	padding-top: 20px;
 	margin-bottom: 20px;
 	overflow: auto;
 }
@@ -749,5 +751,76 @@ h2.price {
 }
 
 .auth-clients {
-	padding: 0 0 20px 0;
+	padding: 0;
+}
+
+/* OpenCart Code */
+.owl-carousel {
+	margin: 0 0 20px;
+	background: #fff;
+	direction: ltr !important;
+	z-index: 1;
+	position: relative;
+}
+.owl-carousel .owl-item img {
+	display: block;
+	width: auto !important;
+}
+.owl-stage-outer{
+	border: 4px solid #fff;
+	-webkit-border-radius: 4px;
+	-moz-border-radius: 4px;
+	-o-border-radius: 4px;
+	border-radius: 4px;
+	-webkit-box-shadow: 0 1px 4px rgba(0,0,0,.2);
+	-moz-box-shadow: 0 1px 4px rgba(0,0,0,.2);
+	-o-box-shadow: 0 1px 4px rgba(0,0,0,.2);
+	box-shadow: 0 1px 4px rgba(0,0,0,.2);
+}
+.owl-carousel .owl-nav div {
+	opacity: 0;
+	color: rgba(0,0,0,0.8);
+	text-shadow: 1px 1px 0 rgba(255,255,255,0.3);
+	transition: all .3s ease;
+	top: 50%;
+	position: absolute;
+}
+.owl-carousel:hover .owl-nav div {
+	opacity: 0.7;
+}
+.owl-carousel .owl-nav .owl-prev {
+	left: 10px;
+}
+.owl-carousel .owl-nav .owl-next {
+	right: 10px;
+}
+.owl-carousel .owl-nav div i {
+	font-size: 40px;
+	margin: -20px 0 0;
+}
+.owl-dots {
+	text-align: center;
+	top: 20px;
+	position: relative;
+}
+.owl-dots .owl-dot {
+	display: inline-block;
+	margin: 0px 6px;
+}
+.owl-dots .owl-dot span {
+	display: block;
+	width: 11px;
+	height: 11px;
+	background: rgba(0, 0, 0, 0.5);
+	border-radius: 20px;
+	box-shadow: inset 0 0 3px rgba(0,0,0,0.3);
+}
+.owl-dots .owl-dot.active span {
+	background: rgba(0, 0, 0, 0.9);
+}
+
+.blog-posts-item {
+	margin: 20px 0;
+	padding: 20px 0;
+	border-top: 1px solid #eee;
 }
