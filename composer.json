@@ -22,6 +22,7 @@
         "kartik-v/yii2-field-range": "*",
         "kartik-v/yii2-widgets": "*",
         "la-haute-societe/yii2-save-relations-behavior": "^1.2",
+        "mihaildev/yii2-ckeditor": "^1.0",
         "paulzi/yii2-nested-sets": "^1.0",
         "php": ">=7.2.0",
         "phpoffice/phpexcel": "^1.8",
