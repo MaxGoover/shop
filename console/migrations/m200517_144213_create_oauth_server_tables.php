@@ -32,7 +32,7 @@ class m200517_144213_create_oauth_server_tables extends Migration
         return $sql;
     }
 
-    public function up()
+    public function safeUp()
     {
         $tableOptions = null;
         if ($this->db->driverName === 'mysql') {
@@ -128,7 +128,7 @@ class m200517_144213_create_oauth_server_tables extends Migration
         return true;
     }
 
-    public function down()
+    public function safeDown()
     {
         $transaction = $this->db->beginTransaction();
         try {
