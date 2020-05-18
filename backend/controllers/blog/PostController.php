@@ -2,40 +2,89 @@
 
 namespace backend\controllers\blog;
 
+use backend\forms\Blog\PostSearch;
+use shop\entities\Blog\Post\Post;
 use shop\forms\manage\Blog\Post\PostForm;
 use shop\useCases\manage\Blog\PostManageService;
 use Yii;
-use shop\entities\Blog\Post\Post;
-use backend\forms\Blog\PostSearch;
+use yii\filters\VerbFilter;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
-use yii\filters\VerbFilter;
 
 class PostController extends Controller
 {
-    private $service;
+    private $_manageService;
 
-    public function __construct($id, $module, PostManageService $service, $config = [])
+    public function __construct(
+        $id,
+        $module,
+        PostManageService $manageService,
+        $config = [])
     {
         parent::__construct($id, $module, $config);
-        $this->service = $service;
+        $this->_manageService = $manageService;
     }
 
-    public function behaviors(): array
+    /**
+     * @param integer $id
+     * @return mixed
+     */
+    public function actionActivate($id)
     {
-        return [
-            'verbs' => [
-                'class' => VerbFilter::className(),
-                'actions' => [
-                    'delete' => ['POST'],
-                    'activate' => ['POST'],
-                    'draft' => ['POST'],
-                    'delete-photo' => ['POST'],
-                    'move-photo-up' => ['POST'],
-                    'move-photo-down' => ['POST'],
-                ],
-            ],
-        ];
+        try {
+            $this->_manageService->activate($id);
+        } catch (\DomainException $e) {
+            Yii::$app->session->setFlash('error', $e->getMessage());
+        }
+        return $this->redirect(['view', 'id' => $id]);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function actionCreate()
+    {
+        $form = new PostForm();
+        if ($form->load(Yii::$app->request->post()) && $form->validate()) {
+            try {
+                $post = $this->_manageService->create($form);
+                return $this->redirect(['view', 'id' => $post->id]);
+            } catch (\DomainException $e) {
+                Yii::$app->errorHandler->logException($e);
+                Yii::$app->session->setFlash('error', $e->getMessage());
+            }
+        }
+        return $this->render('create', [
+            'model' => $form,
+        ]);
+    }
+
+    /**
+     * @param integer $id
+     * @return mixed
+     */
+    public function actionDelete($id)
+    {
+        try {
+            $this->_manageService->remove($id);
+        } catch (\DomainException $e) {
+            Yii::$app->session->setFlash('error', $e->getMessage());
+        }
+        return $this->redirect(['index']);
+    }
+
+    /**
+     * @param integer $id
+     * @return mixed
+     */
+    public function actionDraft($id)
+    {
+        try {
+            $this->_manageService->draft($id);
+        } catch (\DomainException $e) {
+            Yii::$app->session->setFlash('error', $e->getMessage());
+        }
+        return $this->redirect(['view', 'id' => $id]);
     }
 
     /**
@@ -56,37 +105,6 @@ class PostController extends Controller
      * @param integer $id
      * @return mixed
      */
-    public function actionView($id)
-    {
-        return $this->render('view', [
-            'post' => $this->findModel($id),
-        ]);
-    }
-
-    /**
-     * @return mixed
-     */
-    public function actionCreate()
-    {
-        $form = new PostForm();
-        if ($form->load(Yii::$app->request->post()) && $form->validate()) {
-            try {
-                $post = $this->service->create($form);
-                return $this->redirect(['view', 'id' => $post->id]);
-            } catch (\DomainException $e) {
-                Yii::$app->errorHandler->logException($e);
-                Yii::$app->session->setFlash('error', $e->getMessage());
-            }
-        }
-        return $this->render('create', [
-            'model' => $form,
-        ]);
-    }
-
-    /**
-     * @param integer $id
-     * @return mixed
-     */
     public function actionUpdate($id)
     {
         $post = $this->findModel($id);
@@ -94,7 +112,7 @@ class PostController extends Controller
         $form = new PostForm($post);
         if ($form->load(Yii::$app->request->post()) && $form->validate()) {
             try {
-                $this->service->edit($post->id, $form);
+                $this->_manageService->edit($post->id, $form);
                 return $this->redirect(['view', 'id' => $post->id]);
             } catch (\DomainException $e) {
                 Yii::$app->errorHandler->logException($e);
@@ -111,42 +129,11 @@ class PostController extends Controller
      * @param integer $id
      * @return mixed
      */
-    public function actionDelete($id)
+    public function actionView($id)
     {
-        try {
-            $this->service->remove($id);
-        } catch (\DomainException $e) {
-            Yii::$app->session->setFlash('error', $e->getMessage());
-        }
-        return $this->redirect(['index']);
-    }
-
-    /**
-     * @param integer $id
-     * @return mixed
-     */
-    public function actionActivate($id)
-    {
-        try {
-            $this->service->activate($id);
-        } catch (\DomainException $e) {
-            Yii::$app->session->setFlash('error', $e->getMessage());
-        }
-        return $this->redirect(['view', 'id' => $id]);
-    }
-
-    /**
-     * @param integer $id
-     * @return mixed
-     */
-    public function actionDraft($id)
-    {
-        try {
-            $this->service->draft($id);
-        } catch (\DomainException $e) {
-            Yii::$app->session->setFlash('error', $e->getMessage());
-        }
-        return $this->redirect(['view', 'id' => $id]);
+        return $this->render('view', [
+            'post' => $this->findModel($id),
+        ]);
     }
 
     /**
@@ -160,5 +147,24 @@ class PostController extends Controller
             return $model;
         }
         throw new NotFoundHttpException('The requested page does not exist.');
+    }
+
+    ##################################################
+
+    public function behaviors(): array
+    {
+        return [
+            'verbs' => [
+                'class' => VerbFilter::class,
+                'actions' => [
+                    'delete' => ['POST'],
+                    'activate' => ['POST'],
+                    'draft' => ['POST'],
+                    'delete-photo' => ['POST'],
+                    'move-photo-up' => ['POST'],
+                    'move-photo-down' => ['POST'],
+                ],
+            ],
+        ];
     }
 }
