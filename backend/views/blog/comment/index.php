@@ -24,7 +24,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     [
                         'attribute' => 'text',
                         'value' => function (Comment $model) {
-                            return StringHelper::truncate(strip_tags($model->text), 100);
+                            return StringHelper::truncate(\strip_tags($model->text), 100);
                         },
                     ],
                     [

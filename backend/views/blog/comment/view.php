@@ -1,15 +1,5 @@
 <?php
 
-use kartik\file\FileInput;
-use shop\entities\Blog\Post\Modification;
-use shop\entities\Blog\Post\Value;
-use shop\helpers\PriceHelper;
-use shop\helpers\PostHelper;
-use shop\helpers\WeightHelper;
-use yii\bootstrap\ActiveForm;
-use yii\grid\ActionColumn;
-use yii\grid\GridView;
-use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\widgets\DetailView;
 
