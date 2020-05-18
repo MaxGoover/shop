@@ -19,10 +19,18 @@ return [
             'class' => 'yii\console\controllers\FixtureController',
             'namespace' => 'common\fixtures',
         ],
+        'migrate-mysql'      => [
+            'class'          => \yii\console\controllers\MigrateController::class,
+            'migrationPath'  => [
+                '@app/migrations/mysql',
+            ],
+            'migrationTable' => 'migration',
+        ],
         'migrate-rbac' => [
             'class' => 'fishvision\migrate\controllers\MigrateController',
             'autoDiscover' => true,
             'migrationPaths' => [
+                '@app/migrations/rbac',
                 '@vendor/yiisoft/yii2/rbac/migrations',
             ],
         ],
