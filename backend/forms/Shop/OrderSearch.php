@@ -11,13 +11,6 @@ class OrderSearch extends Model
 {
     public $id;
 
-    public function rules(): array
-    {
-        return [
-            [['id'], 'integer'],
-        ];
-    }
-
     /**
      * @param array $params
      * @return ActiveDataProvider
@@ -50,5 +43,14 @@ class OrderSearch extends Model
     public function statusList(): array
     {
         return OrderHelper::statusList();
+    }
+
+    ##################################################
+
+    public function rules(): array
+    {
+        return [
+            [['id'], 'integer'],
+        ];
     }
 }

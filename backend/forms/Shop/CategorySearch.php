@@ -2,9 +2,9 @@
 
 namespace backend\forms\Shop;
 
+use shop\entities\Shop\Category;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use shop\entities\Shop\Category;
 
 class CategorySearch extends Model
 {
@@ -12,14 +12,6 @@ class CategorySearch extends Model
     public $name;
     public $slug;
     public $title;
-
-    public function rules(): array
-    {
-        return [
-            [['id'], 'integer'],
-            [['name', 'slug', 'title'], 'safe'],
-        ];
-    }
 
     /**
      * @param array $params
@@ -53,5 +45,15 @@ class CategorySearch extends Model
             ->andFilterWhere(['like', 'title', $this->title]);
 
         return $dataProvider;
+    }
+
+    ##################################################
+
+    public function rules(): array
+    {
+        return [
+            [['id'], 'integer'],
+            [['name', 'slug', 'title'], 'safe'],
+        ];
     }
 }

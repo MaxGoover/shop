@@ -2,22 +2,14 @@
 
 namespace backend\forms\Shop;
 
+use shop\entities\Shop\DeliveryMethod;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use shop\entities\Shop\DeliveryMethod;
 
 class DeliveryMethodSearch extends Model
 {
     public $id;
     public $name;
-
-    public function rules(): array
-    {
-        return [
-            [['id'], 'integer'],
-            [['name'], 'safe'],
-        ];
-    }
 
     /**
      * @param array $params
@@ -49,5 +41,15 @@ class DeliveryMethodSearch extends Model
             ->andFilterWhere(['like', 'name', $this->name]);
 
         return $dataProvider;
+    }
+
+    ##################################################
+
+    public function rules(): array
+    {
+        return [
+            [['id'], 'integer'],
+            [['name'], 'safe'],
+        ];
     }
 }
