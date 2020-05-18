@@ -26,6 +26,24 @@ class ProductReadRepository
         $this->client = $client;
     }
 
+    public function count(): int
+    {
+        return Product::find()->active()->count();
+    }
+
+    public function getAllByRange(int $offset, int $limit): array
+    {
+        return Product::find()->alias('p')->active('p')->orderBy(['id' => SORT_ASC])->limit($limit)->offset($offset)->all();
+    }
+
+    /**
+     * @return iterable|Product[]
+     */
+    public function getAllIterator(): iterable
+    {
+        return Product::find()->alias('p')->active('p')->with('mainPhoto', 'brand')->each();
+    }
+
     public function getAll(): DataProviderInterface
     {
         $query = Product::find()->alias('p')->active('p')->with('mainPhoto');

@@ -1,11 +1,11 @@
 <?php
 
-use yii\bootstrap\ActiveForm;
-use yii\helpers\Html;
-
 /* @var $this yii\web\View */
 /* @var $model shop\forms\manage\User\UserEditForm */
-/* @var $user shop\entities\User\User */
+/* @var $user shop\entities\User */
+
+use yii\bootstrap\ActiveForm;
+use yii\helpers\Html;
 
 $this->title = 'Update User: ' . $user->id;
 $this->params['breadcrumbs'][] = ['label' => 'Users', 'url' => ['index']];
@@ -18,6 +18,8 @@ $this->params['breadcrumbs'][] = 'Update';
 
     <?= $form->field($model, 'username')->textInput(['maxLength' => true]) ?>
     <?= $form->field($model, 'email')->textInput(['maxLength' => true]) ?>
+    <?= $form->field($model, 'phone')->textInput(['maxLength' => true]) ?>
+    <?= $form->field($model, 'role')->dropDownList($model->rolesList()) ?>
 
     <div class="form-group">
         <?= Html::submitButton('Save', ['class' => 'btn btn-primary']) ?>

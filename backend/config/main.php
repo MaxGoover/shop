@@ -1,5 +1,5 @@
 <?php
-$params = array_merge(
+$params = \array_merge(
     require(__DIR__ . '/../../common/config/params.php'),
     require(__DIR__ . '/../../common/config/params-local.php'),
     require(__DIR__ . '/params.php'),
@@ -8,7 +8,7 @@ $params = array_merge(
 
 return [
     'id' => 'app-backend',
-    'basePath' => dirname(__DIR__),
+    'basePath' => \dirname(__DIR__),
     'aliases' => [
         '@staticRoot' => $params['staticPath'],
         '@static'   => $params['staticHostInfo'],
@@ -16,16 +16,38 @@ return [
     'controllerNamespace' => 'backend\controllers',
     'bootstrap' => [
         'log',
-        'common\bootstrap\SetUp'
+        'common\bootstrap\SetUp',
+        'backend\bootstrap\SetUp',
     ],
     'modules' => [],
+    'controllerMap' => [
+        'elfinder' => [
+            'class' => \mihaildev\elfinder\Controller::class,
+            'access' => ['@'],
+            'plugin' => [
+                [
+                    'class' => \mihaildev\elfinder\plugin\Sluggable::class,
+                    'lowercase' => true,
+                    'replacement' => '-'
+                ]
+            ],
+            'roots' => [
+                [
+                    'baseUrl'=>'@static',
+                    'basePath'=>'@staticRoot',
+                    'path' => 'files',
+                    'name' => 'Global'
+                ],
+            ],
+        ],
+    ],
     'components' => [
         'request' => [
             'csrfParam' => '_csrf-backend',
             'cookieValidationKey' => $params['cookieValidationKey'],
         ],
         'user' => [
-            'identityClass' => 'shop\entities\User\User',
+            'identityClass' => \common\auth\Identity::class,
             'enableAutoLogin' => true,
             'identityCookie' => [
                 'name' => '_identity',
@@ -45,7 +67,7 @@ return [
             'traceLevel' => YII_DEBUG ? 3 : 0,
             'targets' => [
                 [
-                    'class' => 'yii\log\FileTarget',
+                    'class' => \yii\log\FileTarget::class,
                     'levels' => ['error', 'warning'],
                 ],
             ],
@@ -60,12 +82,12 @@ return [
         },
     ],
     'as access' => [
-        'class' => 'yii\filters\AccessControl',
+        'class' => \yii\filters\AccessControl::class,
         'except' => ['auth/login', 'site/error'],
         'rules' => [
             [
                 'allow' => true,
-                'roles' => ['@'],
+                'roles' => ['admin'],
             ],
         ],
     ],

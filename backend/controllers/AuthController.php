@@ -1,20 +1,21 @@
 <?php
 namespace backend\controllers;
 
-use shop\forms\auth\LoginForm;
-use shop\services\auth\AuthService;
+use common\auth\Identity;
+use shop\useCases\auth\AuthService;
 use Yii;
-use yii\filters\VerbFilter;
 use yii\web\Controller;
+use yii\filters\VerbFilter;
+use shop\forms\auth\LoginForm;
 
 class AuthController extends Controller
 {
-    private $_authService;
+    private $authService;
 
     public function __construct($id, $module, AuthService $service, $config = [])
     {
         parent::__construct($id, $module, $config);
-        $this->_authService = $service;
+        $this->authService = $service;
     }
 
     /**
@@ -24,7 +25,7 @@ class AuthController extends Controller
     {
         return [
             'verbs' => [
-                'class' => VerbFilter::class,
+                'class' => VerbFilter::className(),
                 'actions' => [
                     'logout' => ['post'],
                 ],
@@ -46,8 +47,8 @@ class AuthController extends Controller
         $form = new LoginForm();
         if ($form->load(Yii::$app->request->post()) && $form->validate()) {
             try {
-                $user = $this->_authService->auth($form);
-                Yii::$app->user->login($user, $form->rememberMe ? 3600 * 24 * 30 : 0);
+                $user = $this->authService->auth($form);
+                Yii::$app->user->login(new Identity($user), $form->rememberMe ? 3600 * 24 * 30 : 0);
                 return $this->goBack();
             } catch (\DomainException $e) {
                 Yii::$app->errorHandler->logException($e);

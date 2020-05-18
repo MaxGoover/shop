@@ -1,13 +1,15 @@
 <?php
 namespace shop\entities\User;
 
+use shop\entities\EventTrait;
 use lhs\Yii2SaveRelationsBehavior\SaveRelationsBehavior;
+use shop\entities\AggregateRoot;
+use shop\entities\User\events\UserSignUpConfirmed;
+use shop\entities\User\events\UserSignUpRequested;
 use Yii;
-use yii\base\NotSupportedException;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
-use yii\web\IdentityInterface;
 
 /**
  * User model
@@ -18,6 +20,7 @@ use yii\web\IdentityInterface;
  * @property string $password_reset_token
  * @property string $email
  * @property string $email_confirm_token
+ * @property string $phone
  * @property string $auth_key
  * @property integer $status
  * @property integer $created_at
@@ -27,16 +30,19 @@ use yii\web\IdentityInterface;
  * @property Network[] $networks
  * @property WishlistItem[] $wishlistItems
  */
-class User extends ActiveRecord implements IdentityInterface
+class User extends ActiveRecord implements AggregateRoot
 {
+    use EventTrait;
+
     const STATUS_WAIT = 0;
     const STATUS_ACTIVE = 10;
 
-    public static function create(string $username, string $email, string $password): self
+    public static function create(string $username, string $email, string $phone, string $password): self
     {
         $user = new User();
         $user->username = $username;
         $user->email = $email;
+        $user->phone = $phone;
         $user->setPassword(!empty($password) ? $password : Yii::$app->security->generateRandomString());
         $user->created_at = time();
         $user->status = self::STATUS_ACTIVE;
@@ -44,23 +50,33 @@ class User extends ActiveRecord implements IdentityInterface
         return $user;
     }
 
-    public function edit(string $username, string $email): void
+    public function edit(string $username, string $email, string $phone): void
     {
         $this->username = $username;
         $this->email = $email;
+        $this->phone = $phone;
         $this->updated_at = time();
     }
 
-    public static function requestSignup(string $username, string $email, string $password): self
+    public function editProfile(string $email, string $phone): void
+    {
+        $this->email = $email;
+        $this->phone = $phone;
+        $this->updated_at = time();
+    }
+
+    public static function requestSignup(string $username, string $email, string $phone, string $password): self
     {
         $user = new User();
         $user->username = $username;
         $user->email = $email;
+        $user->phone = $phone;
         $user->setPassword($password);
         $user->created_at = time();
         $user->status = self::STATUS_WAIT;
         $user->email_confirm_token = Yii::$app->security->generateRandomString();
         $user->generateAuthKey();
+        $user->recordEvent(new UserSignUpRequested($user));
         return $user;
     }
 
@@ -71,6 +87,7 @@ class User extends ActiveRecord implements IdentityInterface
         }
         $this->status = self::STATUS_ACTIVE;
         $this->email_confirm_token = null;
+        $this->recordEvent(new UserSignUpConfirmed($this));
     }
 
     public static function signupByNetwork($network, $identity): self
@@ -187,22 +204,6 @@ class User extends ActiveRecord implements IdentityInterface
     }
 
     /**
-     * @inheritdoc
-     */
-    public static function findIdentity($id)
-    {
-        return static::findOne(['id' => $id, 'status' => self::STATUS_ACTIVE]);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public static function findIdentityByAccessToken($token, $type = null)
-    {
-        throw new NotSupportedException('"findIdentityByAccessToken" is not implemented.');
-    }
-
-    /**
      * Finds user by username
      *
      * @param string $username
@@ -246,30 +247,6 @@ class User extends ActiveRecord implements IdentityInterface
         $timestamp = (int) substr($token, strrpos($token, '_') + 1);
         $expire = Yii::$app->params['user.passwordResetTokenExpire'];
         return $timestamp + $expire >= time();
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getId()
-    {
-        return $this->getPrimaryKey();
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getAuthKey()
-    {
-        return $this->auth_key;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function validateAuthKey($authKey)
-    {
-        return $this->getAuthKey() === $authKey;
     }
 
     /**

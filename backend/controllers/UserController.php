@@ -2,26 +2,27 @@
 
 namespace backend\controllers;
 
-use backend\forms\UserSearch;
-use shop\entities\User\User;
 use shop\forms\manage\User\UserCreateForm;
-use shop\services\manage\UserManageService;
+use shop\forms\manage\User\UserEditForm;
+use shop\useCases\manage\UserManageService;
 use Yii;
-use yii\filters\VerbFilter;
+use shop\entities\User\User;
+use backend\forms\UserSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
+use yii\filters\VerbFilter;
 
 /**
  * UserController implements the CRUD actions for User model.
  */
 class UserController extends Controller
 {
-    private $_userManageService;
+    private $service;
 
-    public function __construct($id, $module, UserManageService $userManageService, $config = [])
+    public function __construct($id, $module, UserManageService $service, $config = [])
     {
         parent::__construct($id, $module, $config);
-        $this->_userManageService = $userManageService;
+        $this->service = $service;
     }
 
     /**
@@ -31,12 +32,39 @@ class UserController extends Controller
     {
         return [
             'verbs' => [
-                'class' => VerbFilter::class,
+                'class' => VerbFilter::className(),
                 'actions' => [
                     'delete' => ['POST'],
                 ],
             ],
         ];
+    }
+
+    /**
+     * Lists all User models.
+     * @return mixed
+     */
+    public function actionIndex()
+    {
+        $searchModel = new UserSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+
+        return $this->render('index', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+        ]);
+    }
+
+    /**
+     * Displays a single User model.
+     * @param integer $id
+     * @return mixed
+     */
+    public function actionView($id)
+    {
+        return $this->render('view', [
+            'model' => $this->findModel($id),
+        ]);
     }
 
     /**
@@ -62,43 +90,10 @@ class UserController extends Controller
     }
 
     /**
-     *      * Deletes an existing User model.
-     * If deletion is successful, the browser will be redirected to the 'index' page.
-     *
-     * @param $id
-     * @return \yii\web\Response
-     * @throws NotFoundHttpException
-     * @throws \Throwable
-     * @throws \yii\db\StaleObjectException
-     */
-    public function actionDelete($id)
-    {
-        $this->_userManageService->remove($id);
-        return $this->redirect(['index']);
-    }
-
-    /**
-     * Lists all User models.
-     * @return mixed
-     */
-    public function actionIndex()
-    {
-        $searchModel = new UserSearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-
-        return $this->render('index', [
-            'searchModel' => $searchModel,
-            'dataProvider' => $dataProvider,
-        ]);
-    }
-
-    /**
      * Updates an existing User model.
      * If update is successful, the browser will be redirected to the 'view' page.
-     *
-     * @param $id
-     * @return string|\yii\web\Response
-     * @throws NotFoundHttpException
+     * @param integer $id
+     * @return mixed
      */
     public function actionUpdate($id)
     {
@@ -121,17 +116,15 @@ class UserController extends Controller
     }
 
     /**
-     * Displays a single User model.
-     *
-     * @param $id
-     * @return string
-     * @throws NotFoundHttpException
+     * Deletes an existing User model.
+     * If deletion is successful, the browser will be redirected to the 'index' page.
+     * @param integer $id
+     * @return mixed
      */
-    public function actionView($id)
+    public function actionDelete($id)
     {
-        return $this->render('view', [
-            'model' => $this->findModel($id),
-        ]);
+        $this->service->remove($id);
+        return $this->redirect(['index']);
     }
 
     /**

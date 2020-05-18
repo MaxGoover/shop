@@ -1,16 +1,17 @@
 <?php
 
 use shop\helpers\UserHelper;
+use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
+use yii\rbac\Item;
 use yii\widgets\DetailView;
 
 /* @var $this yii\web\View */
-/* @var $model shop\entities\User\User */
+/* @var $model shop\entities\User */
 
 $this->title = $model->id;
 $this->params['breadcrumbs'][] = ['label' => 'Users', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
-\yii\web\YiiAsset::register($this);
 ?>
 <div class="user-view">
 
@@ -33,10 +34,16 @@ $this->params['breadcrumbs'][] = $this->title;
                     'id',
                     'username',
                     'email:email',
+                    'phone',
                     [
                         'attribute' => 'status',
-                        'format' => 'raw',
                         'value' => UserHelper::statusLabel($model->status),
+                        'format' => 'raw',
+                    ],
+                    [
+                        'label' => 'Role',
+                        'value' => implode(', ', ArrayHelper::getColumn(Yii::$app->authManager->getRolesByUser($model->id), 'description')),
+                        'format' => 'raw',
                     ],
                     'created_at:datetime',
                     'updated_at:datetime',
@@ -44,5 +51,4 @@ $this->params['breadcrumbs'][] = $this->title;
             ]) ?>
         </div>
     </div>
-
 </div>
