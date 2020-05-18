@@ -2,35 +2,24 @@
 namespace backend\controllers;
 
 use common\auth\Identity;
+use shop\forms\auth\LoginForm;
 use shop\useCases\auth\AuthService;
 use Yii;
-use yii\web\Controller;
 use yii\filters\VerbFilter;
-use shop\forms\auth\LoginForm;
+use yii\web\Controller;
 
 class AuthController extends Controller
 {
-    private $authService;
+    private $_service;
 
-    public function __construct($id, $module, AuthService $service, $config = [])
+    public function __construct(
+        $id,
+        $module,
+        AuthService $service,
+        $config = [])
     {
         parent::__construct($id, $module, $config);
-        $this->authService = $service;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function behaviors()
-    {
-        return [
-            'verbs' => [
-                'class' => VerbFilter::className(),
-                'actions' => [
-                    'logout' => ['post'],
-                ],
-            ],
-        ];
+        $this->_service = $service;
     }
 
     /**
@@ -47,8 +36,8 @@ class AuthController extends Controller
         $form = new LoginForm();
         if ($form->load(Yii::$app->request->post()) && $form->validate()) {
             try {
-                $user = $this->authService->auth($form);
-                Yii::$app->user->login(new Identity($user), $form->rememberMe ? 3600 * 24 * 30 : 0);
+                $user = $this->_service->auth($form);
+                Yii::$app->user->login(new Identity($user), $form->rememberMe ? 2592000 : 0);
                 return $this->goBack();
             } catch (\DomainException $e) {
                 Yii::$app->errorHandler->logException($e);
@@ -69,5 +58,22 @@ class AuthController extends Controller
         Yii::$app->user->logout();
 
         return $this->goHome();
+    }
+
+    ##################################################
+
+    /**
+     * @inheritdoc
+     */
+    public function behaviors()
+    {
+        return [
+            'verbs' => [
+                'class' => VerbFilter::class,
+                'actions' => [
+                    'logout' => ['post'],
+                ],
+            ],
+        ];
     }
 }

@@ -20,7 +20,7 @@ class MapDataProvider extends BaseObject implements DataProviderInterface
     private $_callback;
     private $_next;
 
-    public function __construct(callable $callback, DataProviderInterface $next)
+    public function __construct(DataProviderInterface $next, callable $callback)
     {
         $this->_callback = $callback;
         $this->_next = $next;
