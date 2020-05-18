@@ -1,5 +1,7 @@
 <?php
 
+use Elasticsearch\Client;
+use Elasticsearch\Common\Exceptions\Missing404Exception;
 use yii\db\Migration;
 
 /**
