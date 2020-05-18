@@ -18,7 +18,7 @@ class m200517_144213_create_oauth_server_tables extends Migration
         $now = $this->_mysql('CURRENT_TIMESTAMP', "'now'");
         $on_update_now = $this->_mysql("ON UPDATE $now");
 
-        $transaction = $this->db->beginTransaction();
+//        $transaction = $this->db->beginTransaction();
         try {
             $this->createTable('{{%oauth_clients}}', [
                 'client_id' => Schema::TYPE_STRING . '(32) NOT NULL',
@@ -93,10 +93,10 @@ class m200517_144213_create_oauth_server_tables extends Migration
                 ['testclient', 'testpass', 'http://fake/', 'client_credentials authorization_code password implicit'],
             ]);
 
-            $transaction->commit();
+//            $transaction->commit();
         } catch (Exception $e) {
-            echo 'Exception: ' . $e->getMessage() . '\n';
-            $transaction->rollback();
+            echo "Exception: " . $e->getMessage() . "\n";
+//            $transaction->rollback();
 
             return false;
         }
