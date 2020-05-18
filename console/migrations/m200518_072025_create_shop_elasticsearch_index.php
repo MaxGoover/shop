@@ -9,7 +9,7 @@ class m200518_072025_create_shop_elasticsearch_index extends Migration
 {
     public function safeUp()
     {
-        $client = $this->getClient();
+        $client = $this->_getClient();
 
         try {
             $client->indices()->delete([
@@ -74,13 +74,13 @@ class m200518_072025_create_shop_elasticsearch_index extends Migration
     public function safeDown()
     {
         try {
-            $this->getClient()->indices()->delete([
+            $this->_getClient()->indices()->delete([
                 'index' => 'shop'
             ]);
         } catch (Missing404Exception $e) {}
     }
 
-    private function getClient(): Client
+    private function _getClient(): Client
     {
         return Yii::$container->get(Client::class);
     }

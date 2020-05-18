@@ -7,31 +7,6 @@ use yii\db\Migration;
  */
 class m200517_144213_create_oauth_server_tables extends Migration
 {
-    public function mysql($yes, $no = ''): string
-    {
-        return $this->db->driverName === 'mysql' ? $yes : $no;
-    }
-
-    public function customPrimaryKey($columns): string
-    {
-        return 'PRIMARY KEY (' . $this->db->getQueryBuilder()->buildColumns($columns) . ')';
-    }
-
-    public function foreignKey($columns, $refTable, $refColumns, $onDelete = null, $onUpdate = null): string
-    {
-        $builder = $this->db->getQueryBuilder();
-        $sql = ' FOREIGN KEY (' . $builder->buildColumns($columns) . ')'
-            . ' REFERENCES ' . $this->db->quoteTableName($refTable)
-            . ' (' . $builder->buildColumns($refColumns) . ')';
-        if ($onDelete !== null) {
-            $sql .= ' ON DELETE ' . $onDelete;
-        }
-        if ($onUpdate !== null) {
-            $sql .= ' ON UPDATE ' . $onUpdate;
-        }
-        return $sql;
-    }
-
     public function safeUp()
     {
         $tableOptions = null;
@@ -39,8 +14,8 @@ class m200517_144213_create_oauth_server_tables extends Migration
             $tableOptions = 'CHARACTER SET utf8 COLLATE utf8_general_ci ENGINE=InnoDB';
         }
 
-        $now = $this->mysql('CURRENT_TIMESTAMP', "'now'");
-        $on_update_now = $this->mysql("ON UPDATE $now");
+        $now = $this->_mysql('CURRENT_TIMESTAMP', "'now'");
+        $on_update_now = $this->_mysql("ON UPDATE $now");
 
         $transaction = $this->db->beginTransaction();
         try {
@@ -51,7 +26,7 @@ class m200517_144213_create_oauth_server_tables extends Migration
                 'grant_types' => Schema::TYPE_STRING . '(100) NOT NULL',
                 'scope' => Schema::TYPE_STRING . '(2000) DEFAULT NULL',
                 'user_id' => Schema::TYPE_INTEGER . ' DEFAULT NULL',
-                $this->customPrimaryKey('client_id'),
+                $this->_customPrimaryKey('client_id'),
             ], $tableOptions);
 
             $this->createTable('{{%oauth_access_tokens}}', [
@@ -60,8 +35,8 @@ class m200517_144213_create_oauth_server_tables extends Migration
                 'user_id' => Schema::TYPE_INTEGER . ' DEFAULT NULL',
                 'expires' => Schema::TYPE_TIMESTAMP . " NOT NULL DEFAULT $now $on_update_now",
                 'scope' => Schema::TYPE_STRING . '(2000) DEFAULT NULL',
-                $this->customPrimaryKey('access_token'),
-                $this->foreignKey('client_id', '{{%oauth_clients}}', 'client_id', 'CASCADE', 'CASCADE'),
+                $this->_customPrimaryKey('access_token'),
+                $this->_foreignKey('client_id', '{{%oauth_clients}}', 'client_id', 'CASCADE', 'CASCADE'),
             ], $tableOptions);
 
             $this->createTable('{{%oauth_refresh_tokens}}', [
@@ -70,8 +45,8 @@ class m200517_144213_create_oauth_server_tables extends Migration
                 'user_id' => Schema::TYPE_INTEGER . ' DEFAULT NULL',
                 'expires' => Schema::TYPE_TIMESTAMP . " NOT NULL DEFAULT $now $on_update_now",
                 'scope' => Schema::TYPE_STRING . '(2000) DEFAULT NULL',
-                $this->customPrimaryKey('refresh_token'),
-                $this->foreignKey('client_id', '{{%oauth_clients}}', 'client_id', 'CASCADE', 'CASCADE'),
+                $this->_customPrimaryKey('refresh_token'),
+                $this->_foreignKey('client_id', '{{%oauth_clients}}', 'client_id', 'CASCADE', 'CASCADE'),
             ], $tableOptions);
 
             $this->createTable('{{%oauth_authorization_codes}}', [
@@ -81,8 +56,8 @@ class m200517_144213_create_oauth_server_tables extends Migration
                 'redirect_uri' => Schema::TYPE_STRING . '(1000) NOT NULL',
                 'expires' => Schema::TYPE_TIMESTAMP . " NOT NULL DEFAULT $now $on_update_now",
                 'scope' => Schema::TYPE_STRING . '(2000) DEFAULT NULL',
-                $this->customPrimaryKey('authorization_code'),
-                $this->foreignKey('client_id', '{{%oauth_clients}}', 'client_id', 'CASCADE', 'CASCADE'),
+                $this->_customPrimaryKey('authorization_code'),
+                $this->_foreignKey('client_id', '{{%oauth_clients}}', 'client_id', 'CASCADE', 'CASCADE'),
             ], $tableOptions);
 
             $this->createTable('{{%oauth_scopes}}', [
@@ -94,7 +69,7 @@ class m200517_144213_create_oauth_server_tables extends Migration
                 'client_id' => Schema::TYPE_STRING . '(32) NOT NULL',
                 'subject' => Schema::TYPE_STRING . '(80) DEFAULT NULL',
                 'public_key' => Schema::TYPE_STRING . '(2000) DEFAULT NULL',
-                $this->customPrimaryKey('client_id'),
+                $this->_customPrimaryKey('client_id'),
             ], $tableOptions);
 
             $this->createTable('{{%oauth_users}}', [
@@ -102,7 +77,7 @@ class m200517_144213_create_oauth_server_tables extends Migration
                 'password' => Schema::TYPE_STRING . '(2000) DEFAULT NULL',
                 'first_name' => Schema::TYPE_STRING . '(255) DEFAULT NULL',
                 'last_name' => Schema::TYPE_STRING . '(255) DEFAULT NULL',
-                $this->customPrimaryKey('username'),
+                $this->_customPrimaryKey('username'),
             ], $tableOptions);
 
             $this->createTable('{{%oauth_public_keys}}', [
@@ -153,5 +128,30 @@ class m200517_144213_create_oauth_server_tables extends Migration
         }
 
         return true;
+    }
+
+    private function _customPrimaryKey($columns): string
+    {
+        return 'PRIMARY KEY (' . $this->db->getQueryBuilder()->buildColumns($columns) . ')';
+    }
+
+    private function _foreignKey($columns, $refTable, $refColumns, $onDelete = null, $onUpdate = null): string
+    {
+        $builder = $this->db->getQueryBuilder();
+        $sql = ' FOREIGN KEY (' . $builder->buildColumns($columns) . ')'
+            . ' REFERENCES ' . $this->db->quoteTableName($refTable)
+            . ' (' . $builder->buildColumns($refColumns) . ')';
+        if ($onDelete !== null) {
+            $sql .= ' ON DELETE ' . $onDelete;
+        }
+        if ($onUpdate !== null) {
+            $sql .= ' ON UPDATE ' . $onUpdate;
+        }
+        return $sql;
+    }
+
+    private function _mysql($yes, $no = ''): string
+    {
+        return $this->db->driverName === 'mysql' ? $yes : $no;
     }
 }

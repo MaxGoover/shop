@@ -19,7 +19,7 @@ return [
             'class' => 'yii\console\controllers\FixtureController',
             'namespace' => 'common\fixtures',
         ],
-        'migrate' => [
+        'migrate-rbac' => [
             'class' => 'fishvision\migrate\controllers\MigrateController',
             'autoDiscover' => true,
             'migrationPaths' => [

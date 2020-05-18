@@ -24,19 +24,4 @@ class m200517_115932_change_auth_assignments_table extends Migration
 
         $this->alterColumn('{{%auth_assignments}}', 'user_id', $this->string(64)->notNull());
     }
-
-    /*
-    // Use up()/down() to run migration code without a transaction.
-    public function up()
-    {
-
-    }
-
-    public function down()
-    {
-        echo "m200517_115932_change_auth_assignments_table cannot be reverted.\n";
-
-        return false;
-    }
-    */
 }
