@@ -2,7 +2,7 @@
 
 namespace api\providers;
 
-use yii\base\Object;
+use yii\base\BaseObject;
 use yii\data\DataProviderInterface;
 use yii\data\Pagination;
 use yii\data\Sort;
@@ -15,50 +15,50 @@ use yii\data\Sort;
  * @property Sort|bool $sort
  * @property int $totalCount
  */
-class MapDataProvider extends Object implements DataProviderInterface
+class MapDataProvider extends BaseObject implements DataProviderInterface
 {
-    private $next;
-    private $callback;
+    private $_callback;
+    private $_next;
 
-    public function __construct(DataProviderInterface $next, callable $callback)
+    public function __construct(callable $callback, DataProviderInterface $next)
     {
-        $this->next = $next;
-        $this->callback = $callback;
+        $this->_callback = $callback;
+        $this->_next = $next;
         parent::__construct();
-    }
-
-    public function prepare($forcePrepare = false): void
-    {
-        $this->next->prepare($forcePrepare);
     }
 
     public function getCount(): int
     {
-        return $this->next->getCount();
-    }
-
-    public function getTotalCount(): int
-    {
-        return $this->next->getTotalCount();
-    }
-
-    public function getModels(): array
-    {
-        return array_map($this->callback, $this->next->getModels());
+        return $this->_next->getCount();
     }
 
     public function getKeys(): array
     {
-        return $this->next->getKeys();
+        return $this->_next->getKeys();
+    }
+
+    public function getModels(): array
+    {
+        return \array_map($this->_callback, $this->_next->getModels());
     }
 
     public function getSort()
     {
-        return $this->next->getSort();
+        return $this->_next->getSort();
     }
 
     public function getPagination()
     {
-        return $this->next->getPagination();
+        return $this->_next->getPagination();
+    }
+
+    public function getTotalCount(): int
+    {
+        return $this->_next->getTotalCount();
+    }
+
+    public function prepare($forcePrepare = false): void
+    {
+        $this->_next->prepare($forcePrepare);
     }
 }
