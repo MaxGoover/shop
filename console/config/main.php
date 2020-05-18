@@ -1,5 +1,6 @@
 <?php
-$params = array_merge(
+
+$params = \array_merge(
     require(__DIR__ . '/../../common/config/params.php'),
     require(__DIR__ . '/../../common/config/params-local.php'),
     require(__DIR__ . '/params.php'),
@@ -8,7 +9,7 @@ $params = array_merge(
 
 return [
     'id' => 'app-console',
-    'basePath' => dirname(__DIR__),
+    'basePath' => \dirname(__DIR__),
     'bootstrap' => [
         'log',
         'common\bootstrap\SetUp',
@@ -16,18 +17,16 @@ return [
     'controllerNamespace' => 'console\controllers',
     'controllerMap' => [
         'fixture' => [
-            'class' => 'yii\console\controllers\FixtureController',
+            'class' => \yii\console\controllers\FixtureController::class,
             'namespace' => 'common\fixtures',
         ],
         'migrate-mysql'      => [
             'class'          => \yii\console\controllers\MigrateController::class,
-            'migrationPath'  => [
-                '@app/migrations/mysql',
-            ],
+            'migrationPath'  => ['@app/migrations/mysql'],
             'migrationTable' => 'migration',
         ],
         'migrate-rbac' => [
-            'class' => 'fishvision\migrate\controllers\MigrateController',
+            'class' => \fishvision\migrate\controllers\MigrateController::class,
             'autoDiscover' => true,
             'migrationPaths' => [
                 '@app/migrations/rbac',
@@ -39,7 +38,7 @@ return [
         'log' => [
             'targets' => [
                 [
-                    'class' => 'yii\log\FileTarget',
+                    'class' => \yii\log\FileTarget::class,
                     'levels' => ['error', 'warning'],
                 ],
             ],

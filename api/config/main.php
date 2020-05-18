@@ -27,7 +27,7 @@ return [
     ],
     'modules' => [
         'oauth2' => [
-            'class' => 'filsh\yii2\oauth2server\Module',
+            'class' => \filsh\yii2\oauth2server\Module::class,
             'tokenParamName' => 'accessToken',
             'tokenAccessLifetime' => 3600 * 24,
             'storageMap' => [
@@ -35,10 +35,10 @@ return [
             ],
             'grantTypes' => [
                 'user_credentials' => [
-                    'class' => 'OAuth2\GrantType\UserCredentials',
+                    'class' => \OAuth2\GrantType\UserCredentials::class,
                 ],
                 'refresh_token' => [
-                    'class' => 'OAuth2\GrantType\RefreshToken',
+                    'class' => \OAuth2\GrantType\RefreshToken::class,
                     'always_issue_new_refresh_token' => true
                 ]
             ]
@@ -47,20 +47,20 @@ return [
     'components' => [
         'request' => [
             'parsers' => [
-                'application/json' => 'yii\web\JsonParser',
+                'application/json' => \yii\web\JsonParser::class,
             ],
         ],
         'response' => [
             'formatters' => [
                 'json' => [
-                    'class' => 'yii\web\JsonResponseFormatter',
+                    'class' => \yii\web\JsonResponseFormatter::class,
                     'prettyPrint' => YII_DEBUG,
                     'encodeOptions' => JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE,
                 ],
             ],
         ],
         'user' => [
-            'identityClass' => 'common\auth\Identity',
+            'identityClass' => \common\auth\Identity::class,
             'enableAutoLogin' => false,
             'enableSession' => false,
         ],
@@ -68,7 +68,7 @@ return [
             'traceLevel' => YII_DEBUG ? 3 : 0,
             'targets' => [
                 [
-                    'class' => 'yii\log\FileTarget',
+                    'class' => \yii\log\FileTarget::class,
                     'levels' => ['error', 'warning'],
                 ],
             ],
@@ -102,15 +102,15 @@ return [
         ],
     ],
     'as authenticator' => [
-        'class' => 'filsh\yii2\oauth2server\filters\auth\CompositeAuth',
+        'class' => \filsh\yii2\oauth2server\filters\auth\CompositeAuth::class,
         'except' => ['site/index', 'oauth2/rest/token'],
         'authMethods' => [
-            ['class' => 'yii\filters\auth\HttpBearerAuth'],
-            ['class' => 'yii\filters\auth\QueryParamAuth', 'tokenParam' => 'accessToken'],
+            ['class' => \yii\filters\auth\HttpBearerAuth::class],
+            ['class' => \yii\filters\auth\QueryParamAuth::class, 'tokenParam' => 'accessToken'],
         ]
     ],
     'as access' => [
-        'class' => yii\filters\AccessControl::class,
+        'class' => \yii\filters\AccessControl::class,
         'except' => ['site/index', 'oauth2/rest/token'],
         'rules' => [
             [
@@ -120,7 +120,7 @@ return [
         ],
     ],
     'as exceptionFilter' => [
-        'class' => filsh\yii2\oauth2server\filters\ErrorToExceptionFilter::class,
+        'class' => \filsh\yii2\oauth2server\filters\ErrorToExceptionFilter::class,
     ],
     'params' => $params,
 ];
