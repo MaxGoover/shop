@@ -7,7 +7,7 @@ use yii\rest\Controller;
 /**
  * @SWG\Swagger(
  *     basePath="/",
- *     host="api.shop.dev",
+ *     host="api.shop.test",
  *     schemes={"http"},
  *     produces={"application/json","application/xml"},
  *     consumes={"application/json","application/xml","application/x-www-form-urlencoded"},
@@ -20,7 +20,7 @@ use yii\rest\Controller;
  *         securityDefinition="OAuth2",
  *         type="oauth2",
  *         flow="password",
- *         tokenUrl="http://api.shop.dev/oauth2/token"
+ *         tokenUrl="http://api.shop.test/oauth2/token"
  *     ),
  *     @SWG\SecurityScheme(
  *         securityDefinition="Bearer",

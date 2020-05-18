@@ -5,7 +5,7 @@
         "description": "HTTP JSON API",
         "version": "1.0.0"
     },
-    "host": "api.shop.dev",
+    "host": "api.shop.test",
     "basePath": "/",
     "schemes": [
         "http"
@@ -824,7 +824,7 @@
         "OAuth2": {
             "type": "oauth2",
             "flow": "password",
-            "tokenUrl": "http://api.shop.dev/oauth2/token"
+            "tokenUrl": "http://api.shop.test/oauth2/token"
         },
         "Bearer": {
             "type": "apiKey",

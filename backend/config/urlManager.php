@@ -3,7 +3,7 @@
 /** @var array $params */
 
 return [
-    'class' => 'yii\web\UrlManager',
+    'class' => yii\web\UrlManager::class,
     'hostInfo' => $params['backendHostInfo'],
     'baseUrl' => '',
     'enablePrettyUrl' => true,

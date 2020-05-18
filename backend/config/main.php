@@ -1,5 +1,5 @@
 <?php
-$params = array_merge(
+$params = \array_merge(
     require(__DIR__ . '/../../common/config/params.php'),
     require(__DIR__ . '/../../common/config/params-local.php'),
     require(__DIR__ . '/params.php'),
@@ -8,7 +8,7 @@ $params = array_merge(
 
 return [
     'id' => 'app-backend',
-    'basePath' => dirname(__DIR__),
+    'basePath' => \dirname(__DIR__),
     'aliases' => [
         '@staticRoot' => $params['staticPath'],
         '@static'   => $params['staticHostInfo'],
@@ -22,11 +22,11 @@ return [
     'modules' => [],
     'controllerMap' => [
         'elfinder' => [
-            'class' => 'mihaildev\elfinder\Controller',
+            'class' => \mihaildev\elfinder\Controller::class,
             'access' => ['@'],
             'plugin' => [
                 [
-                    'class'=>'\mihaildev\elfinder\plugin\Sluggable',
+                    'class' => \mihaildev\elfinder\plugin\Sluggable::class,
                     'lowercase' => true,
                     'replacement' => '-'
                 ]
@@ -47,7 +47,7 @@ return [
             'cookieValidationKey' => $params['cookieValidationKey'],
         ],
         'user' => [
-            'identityClass' => 'common\auth\Identity',
+            'identityClass' => \common\auth\Identity::class,
             'enableAutoLogin' => true,
             'identityCookie' => [
                 'name' => '_identity',
@@ -67,7 +67,7 @@ return [
             'traceLevel' => YII_DEBUG ? 3 : 0,
             'targets' => [
                 [
-                    'class' => 'yii\log\FileTarget',
+                    'class' => \yii\log\FileTarget::class,
                     'levels' => ['error', 'warning'],
                 ],
             ],
@@ -82,7 +82,7 @@ return [
         },
     ],
     'as access' => [
-        'class' => 'yii\filters\AccessControl',
+        'class' => \yii\filters\AccessControl::class,
         'except' => ['auth/login', 'site/error'],
         'rules' => [
             [

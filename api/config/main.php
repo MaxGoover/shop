@@ -1,5 +1,5 @@
 <?php
-$params = array_merge(
+$params = \array_merge(
     require(__DIR__ . '/../../common/config/params.php'),
     require(__DIR__ . '/../../common/config/params-local.php'),
     require(__DIR__ . '/params.php'),
@@ -8,7 +8,7 @@ $params = array_merge(
 
 return [
     'id' => 'app-api',
-    'basePath' => dirname(__DIR__),
+    'basePath' => \dirname(__DIR__),
     'aliases' => [
         '@staticRoot' => $params['staticPath'],
         '@static'   => $params['staticHostInfo'],
@@ -18,7 +18,7 @@ return [
         'log',
         'common\bootstrap\SetUp',
         [
-            'class' => 'yii\filters\ContentNegotiator',
+            'class' => \yii\filters\ContentNegotiator::class,
             'formats' => [
                 'application/json' => 'json',
                 'application/xml' => 'xml',
@@ -110,7 +110,7 @@ return [
         ]
     ],
     'as access' => [
-        'class' => 'yii\filters\AccessControl',
+        'class' => yii\filters\AccessControl::class,
         'except' => ['site/index', 'oauth2/rest/token'],
         'rules' => [
             [
@@ -120,7 +120,7 @@ return [
         ],
     ],
     'as exceptionFilter' => [
-        'class' => 'filsh\yii2\oauth2server\filters\ErrorToExceptionFilter',
+        'class' => filsh\yii2\oauth2server\filters\ErrorToExceptionFilter::class,
     ],
     'params' => $params,
 ];
