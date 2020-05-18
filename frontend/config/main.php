@@ -1,5 +1,6 @@
 <?php
-$params = array_merge(
+
+$params = \array_merge(
     require(__DIR__ . '/../../common/config/params.php'),
     require(__DIR__ . '/../../common/config/params-local.php'),
     require(__DIR__ . '/params.php'),
@@ -8,7 +9,7 @@ $params = array_merge(
 
 return [
     'id' => 'app-frontend',
-    'basePath' => dirname(__DIR__),
+    'basePath' => \dirname(__DIR__),
     'bootstrap' => [
         'log',
         'common\bootstrap\SetUp',
@@ -26,9 +27,13 @@ return [
             'cookieValidationKey' => $params['cookieValidationKey'],
         ],
         'user' => [
-            'identityClass' => 'common\auth\Identity',
+            'identityClass' => \common\auth\Identity::class,
             'enableAutoLogin' => true,
-            'identityCookie' => ['name' => '_identity', 'httpOnly' => true, 'domain' => $params['cookieDomain']],
+            'identityCookie' => [
+                'domain' => $params['cookieDomain'],
+                'httpOnly' => true,
+                'name' => '_identity',
+            ],
             'loginUrl' => ['auth/auth/login'],
         ],
         'session' => [
@@ -42,7 +47,7 @@ return [
             'traceLevel' => YII_DEBUG ? 3 : 0,
             'targets' => [
                 [
-                    'class' => 'yii\log\FileTarget',
+                    'class' => \yii\log\FileTarget::class,
                     'levels' => ['error', 'warning'],
                 ],
             ],
