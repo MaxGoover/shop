@@ -2,51 +2,43 @@
 
 namespace backend\controllers\shop;
 
+use backend\forms\Shop\OrderSearch;
+use shop\entities\Shop\Order\Order;
 use shop\forms\manage\Shop\Order\OrderEditForm;
 use shop\forms\manage\Shop\OrderForm;
 use shop\useCases\manage\Shop\OrderManageService;
 use Yii;
-use shop\entities\Shop\Order\Order;
-use backend\forms\Shop\OrderSearch;
+use yii\filters\VerbFilter;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
-use yii\filters\VerbFilter;
 
 class OrderController extends Controller
 {
-    private $service;
+    private $_manageService;
 
-    public function __construct($id, $module, OrderManageService $service, $config = [])
+    public function __construct(
+        $id,
+        $module,
+        OrderManageService $manageService,
+        $config = [])
     {
         parent::__construct($id, $module, $config);
-        $this->service = $service;
-    }
-
-    public function behaviors(): array
-    {
-        return [
-            'verbs' => [
-                'class' => VerbFilter::className(),
-                'actions' => [
-                    'export' => ['POST'],
-                    'delete' => ['POST'],
-                ],
-            ],
-        ];
+        $this->_manageService = $manageService;
     }
 
     /**
+     * @param integer $id
      * @return mixed
      */
-    public function actionIndex()
+    public function actionDelete($id)
     {
-        $searchModel = new OrderSearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-
-        return $this->render('index', [
-            'searchModel' => $searchModel,
-            'dataProvider' => $dataProvider,
-        ]);
+        try {
+            $this->_manageService->remove($id);
+        } catch (\DomainException $e) {
+            Yii::$app->errorHandler->logException($e);
+            Yii::$app->session->setFlash('error', $e->getMessage());
+        }
+        return $this->redirect(['index']);
     }
 
     /**
@@ -64,24 +56,27 @@ class OrderController extends Controller
             /** @var Order $order */
 
             $worksheet->setCellValueByColumnAndRow(0, $row + 1, $order->id);
-            $worksheet->setCellValueByColumnAndRow(1, $row + 1, date('Y-m-d H:i:s', $order->created_at));
+            $worksheet->setCellValueByColumnAndRow(1, $row + 1, \date('Y-m-d H:i:s', $order->created_at));
         }
 
         $objWriter = \PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
-        $file = tempnam(sys_get_temp_dir(), 'export');
+        $file = \tempnam(\sys_get_temp_dir(), 'export');
         $objWriter->save($file);
 
         return Yii::$app->response->sendFile($file, 'report.xlsx');
     }
 
     /**
-     * @param integer $id
      * @return mixed
      */
-    public function actionView($id)
+    public function actionIndex()
     {
-        return $this->render('view', [
-            'order' => $this->findModel($id),
+        $searchModel = new OrderSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+
+        return $this->render('index', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
         ]);
     }
 
@@ -96,7 +91,7 @@ class OrderController extends Controller
         $form = new OrderEditForm($order);
         if ($form->load(Yii::$app->request->post()) && $form->validate()) {
             try {
-                $this->service->edit($order->id, $form);
+                $this->_manageService->edit($order->id, $form);
                 return $this->redirect(['view', 'id' => $order->id]);
             } catch (\DomainException $e) {
                 Yii::$app->errorHandler->logException($e);
@@ -113,15 +108,11 @@ class OrderController extends Controller
      * @param integer $id
      * @return mixed
      */
-    public function actionDelete($id)
+    public function actionView($id)
     {
-        try {
-            $this->service->remove($id);
-        } catch (\DomainException $e) {
-            Yii::$app->errorHandler->logException($e);
-            Yii::$app->session->setFlash('error', $e->getMessage());
-        }
-        return $this->redirect(['index']);
+        return $this->render('view', [
+            'order' => $this->findModel($id),
+        ]);
     }
 
     /**
@@ -135,5 +126,20 @@ class OrderController extends Controller
             return $model;
         }
         throw new NotFoundHttpException('The requested page does not exist.');
+    }
+
+    ##################################################
+
+    public function behaviors(): array
+    {
+        return [
+            'verbs' => [
+                'class' => VerbFilter::class,
+                'actions' => [
+                    'export' => ['POST'],
+                    'delete' => ['POST'],
+                ],
+            ],
+        ];
     }
 }

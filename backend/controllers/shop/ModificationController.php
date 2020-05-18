@@ -2,42 +2,26 @@
 
 namespace backend\controllers\shop;
 
+use shop\entities\Shop\Product\Product;
 use shop\forms\manage\Shop\Product\ModificationForm;
 use shop\useCases\manage\Shop\ProductManageService;
 use Yii;
-use shop\entities\Shop\Product\Product;
+use yii\filters\VerbFilter;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
-use yii\filters\VerbFilter;
 
 class ModificationController extends Controller
 {
-    private $service;
+    private $_manageService;
 
-    public function __construct($id, $module, ProductManageService $service, $config = [])
+    public function __construct(
+        $id,
+        $module,
+        ProductManageService $manageService,
+        $config = [])
     {
         parent::__construct($id, $module, $config);
-        $this->service = $service;
-    }
-
-    public function behaviors(): array
-    {
-        return [
-            'verbs' => [
-                'class' => VerbFilter::className(),
-                'actions' => [
-                    'delete' => ['POST'],
-                ],
-            ],
-        ];
-    }
-
-    /**
-     * @return mixed
-     */
-    public function actionIndex()
-    {
-        return $this->redirect('shop/product');
+        $this->_manageService = $manageService;
     }
 
     /**
@@ -51,7 +35,7 @@ class ModificationController extends Controller
         $form = new ModificationForm();
         if ($form->load(Yii::$app->request->post()) && $form->validate()) {
             try {
-                $this->service->addModification($product->id, $form);
+                $this->_manageService->addModification($product->id, $form);
                 return $this->redirect(['shop/product/view', 'id' => $product->id, '#' => 'modifications']);
             } catch (\DomainException $e) {
                 Yii::$app->errorHandler->logException($e);
@@ -62,6 +46,30 @@ class ModificationController extends Controller
             'product' => $product,
             'model' => $form,
         ]);
+    }
+
+    /**
+     * @param $product_id
+     * @param integer $id
+     * @return mixed
+     */
+    public function actionDelete($product_id, $id)
+    {
+        $product = $this->findModel($product_id);
+        try {
+            $this->_manageService->removeModification($product->id, $id);
+        } catch (\DomainException $e) {
+            Yii::$app->session->setFlash('error', $e->getMessage());
+        }
+        return $this->redirect(['shop/product/view', 'id' => $product->id, '#' => 'modifications']);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function actionIndex()
+    {
+        return $this->redirect('shop/product');
     }
 
     /**
@@ -77,7 +85,7 @@ class ModificationController extends Controller
         $form = new ModificationForm($modification);
         if ($form->load(Yii::$app->request->post()) && $form->validate()) {
             try {
-                $this->service->editModification($product->id, $modification->id, $form);
+                $this->_manageService->editModification($product->id, $modification->id, $form);
                 return $this->redirect(['shop/product/view', 'id' => $product->id, '#' => 'modifications']);
             } catch (\DomainException $e) {
                 Yii::$app->errorHandler->logException($e);
@@ -92,22 +100,6 @@ class ModificationController extends Controller
     }
 
     /**
-     * @param $product_id
-     * @param integer $id
-     * @return mixed
-     */
-    public function actionDelete($product_id, $id)
-    {
-        $product = $this->findModel($product_id);
-        try {
-            $this->service->removeModification($product->id, $id);
-        } catch (\DomainException $e) {
-            Yii::$app->session->setFlash('error', $e->getMessage());
-        }
-        return $this->redirect(['shop/product/view', 'id' => $product->id, '#' => 'modifications']);
-    }
-
-    /**
      * @param integer $id
      * @return Product the loaded model
      * @throws NotFoundHttpException if the model cannot be found
@@ -118,5 +110,19 @@ class ModificationController extends Controller
             return $model;
         }
         throw new NotFoundHttpException('The requested page does not exist.');
+    }
+
+    ##################################################
+
+    public function behaviors(): array
+    {
+        return [
+            'verbs' => [
+                'class' => VerbFilter::class,
+                'actions' => [
+                    'delete' => ['POST'],
+                ],
+            ],
+        ];
     }
 }
