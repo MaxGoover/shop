@@ -1,8 +1,8 @@
 <?php
 
-/* @var $this yii\web\View */
-
 use mihaildev\elfinder\ElFinder;
+
+/* @var $this yii\web\View */
 
 $this->title = 'Files';
 $this->params['breadcrumbs'][] = $this->title;

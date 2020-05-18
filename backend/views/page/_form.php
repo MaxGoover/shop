@@ -8,7 +8,6 @@ use yii\widgets\ActiveForm;
 /* @var $model shop\forms\manage\PageForm */
 /* @var $form yii\widgets\ActiveForm */
 ?>
-
 <div class="page-form">
 
     <?php $form = ActiveForm::begin(); ?>
@@ -19,7 +18,7 @@ use yii\widgets\ActiveForm;
             <?= $form->field($model, 'parentId')->dropDownList($model->parentsList()) ?>
             <?= $form->field($model, 'title')->textInput(['maxlength' => true]) ?>
             <?= $form->field($model, 'slug')->textInput(['maxlength' => true]) ?>
-            <?= $form->field($model, 'content')->widget(CKEditor::className()) ?>
+            <?= $form->field($model, 'content')->widget(CKEditor::class) ?>
 
         </div>
     </div>

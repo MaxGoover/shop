@@ -2,8 +2,8 @@
 
 use shop\entities\Page;
 use yii\grid\ActionColumn;
-use yii\helpers\Html;
 use yii\grid\GridView;
+use yii\helpers\Html;
 
 /* @var $this yii\web\View */
 /* @var $searchModel backend\forms\PageSearch */
@@ -27,7 +27,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     [
                         'attribute' => 'title',
                         'value' => function (Page $model) {
-                            $indent = ($model->depth > 1 ? str_repeat('&nbsp;&nbsp;', $model->depth - 1) . ' ' : '');
+                            $indent = ($model->depth > 1 ? \str_repeat('&nbsp;&nbsp;', $model->depth - 1) . ' ' : '');
                             return $indent . Html::a(Html::encode($model->title), ['view', 'id' => $model->id]);
                         },
                         'format' => 'raw',
