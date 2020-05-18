@@ -2,14 +2,10 @@
 
 namespace backend\forms\Blog;
 
-use shop\entities\Blog\Category;
 use shop\entities\Blog\Post\Comment;
-use shop\helpers\PostHelper;
 use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use shop\entities\Blog\Post\Post;
-use yii\helpers\ArrayHelper;
 
 class CommentSearch extends Model
 {
@@ -18,12 +14,11 @@ class CommentSearch extends Model
     public $active;
     public $post_id;
 
-    public function rules(): array
+    public function activeList(): array
     {
         return [
-            [['id', 'post_id'], 'integer'],
-            [['text'], 'safe'],
-            [['active'], 'boolean'],
+            1 => Yii::$app->formatter->asBoolean(true),
+            0 => Yii::$app->formatter->asBoolean(false),
         ];
     }
 
@@ -67,11 +62,14 @@ class CommentSearch extends Model
         return $dataProvider;
     }
 
-    public function activeList(): array
+    ##################################################
+
+    public function rules(): array
     {
         return [
-            1 => Yii::$app->formatter->asBoolean(true),
-            0 => Yii::$app->formatter->asBoolean(false),
+            [['id', 'post_id'], 'integer'],
+            [['text'], 'safe'],
+            [['active'], 'boolean'],
         ];
     }
 }

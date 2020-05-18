@@ -2,23 +2,15 @@
 
 namespace backend\forms\Blog;
 
+use shop\entities\Blog\Tag;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use shop\entities\Blog\Tag;
 
 class TagSearch extends Model
 {
     public $id;
     public $name;
     public $slug;
-
-    public function rules(): array
-    {
-        return [
-            [['id'], 'integer'],
-            [['name', 'slug'], 'safe'],
-        ];
-    }
 
     /**
      * @param array $params
@@ -51,5 +43,15 @@ class TagSearch extends Model
             ->andFilterWhere(['like', 'slug', $this->slug]);
 
         return $dataProvider;
+    }
+
+    ##################################################
+
+    public function rules(): array
+    {
+        return [
+            [['id'], 'integer'],
+            [['name', 'slug'], 'safe'],
+        ];
     }
 }
