@@ -12,32 +12,31 @@ use yii\web\BadRequestHttpException;
 
 class CheckoutController extends Controller
 {
-    private $cart;
-    private $service;
+    private $_cart;
+    private $_service;
 
-    public function __construct($id, $module, OrderService $service, Cart $cart, $config = [])
+    public function __construct(
+        $id,
+        $module,
+        Cart $cart,
+        OrderService $service,
+        $config = []
+    )
     {
         parent::__construct($id, $module, $config);
-        $this->cart = $cart;
-        $this->service = $service;
-    }
-
-    public function verbs(): array
-    {
-        return [
-            'index' => ['POST'],
-        ];
+        $this->_cart = $cart;
+        $this->_service = $service;
     }
 
     public function actionIndex()
     {
-        $form = new OrderForm($this->cart->getWeight());
+        $form = new OrderForm($this->_cart->getWeight());
 
         $form->load(Yii::$app->request->getBodyParams(), '');
 
         if ($form->validate()) {
             try {
-                $order = $this->service->checkout(Yii::$app->user->id, $form);
+                $order = $this->_service->checkout(Yii::$app->user->id, $form);
                 $response = Yii::$app->getResponse();
                 $response->setStatusCode(204);
                 $response->getHeaders()->set('Location', Url::to(['shop/order/view', 'id' => $order->id], true));
@@ -48,5 +47,12 @@ class CheckoutController extends Controller
         }
 
         return $form;
+    }
+
+    protected function verbs(): array
+    {
+        return [
+            'index' => ['POST'],
+        ];
     }
 }

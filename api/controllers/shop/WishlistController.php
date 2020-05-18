@@ -14,44 +14,19 @@ use yii\rest\Controller;
 
 class WishlistController extends Controller
 {
-    private $service;
-    private $products;
+    private $_products;
+    private $_service;
 
-    public function __construct($id, $module, WishlistService $service, ProductReadRepository $products, $config = [])
+    public function __construct(
+        $id,
+        $module,
+        ProductReadRepository $products,
+        WishlistService $service,
+        $config = [])
     {
         parent::__construct($id, $module, $config);
-        $this->service = $service;
-        $this->products = $products;
-    }
-
-    public function verbs(): array
-    {
-        return  [
-            'index' => ['GET'],
-            'add' => ['POST'],
-            'delete' => ['DELETE'],
-        ];
-    }
-
-    /**
-     * @SWG\Get(
-     *     path="/shop/wishlist",
-     *     tags={"WishList"},
-     *     @SWG\Response(
-     *         response=200,
-     *         description="Success response",
-     *         @SWG\Schema(
-     *             type="array",
-     *             @SWG\Items(ref="#/definitions/WishlistItem")
-     *         ),
-     *     ),
-     *     security={{"Bearer": {}, "OAuth2": {}}}
-     * )
-     */
-    public function actionIndex(): DataProviderInterface
-    {
-        $dataProvider = $this->products->getWishList(\Yii::$app->user->id);
-        return new MapDataProvider($dataProvider, [$this, 'serializeListItem']);
+        $this->_products = $products;
+        $this->_service = $service;
     }
 
     /**
@@ -71,7 +46,7 @@ class WishlistController extends Controller
     public function actionAdd($id): void
     {
         try {
-            $this->service->add(Yii::$app->user->id, $id);
+            $this->_service->add(Yii::$app->user->id, $id);
             Yii::$app->getResponse()->setStatusCode(201);
         } catch (\DomainException $e) {
             throw new BadRequestHttpException($e->getMessage(), null, $e);
@@ -95,11 +70,32 @@ class WishlistController extends Controller
     public function actionDelete($id): void
     {
         try {
-            $this->service->remove(Yii::$app->user->id, $id);
+            $this->_service->remove(Yii::$app->user->id, $id);
             Yii::$app->getResponse()->setStatusCode(204);
         } catch (\DomainException $e) {
             throw new BadRequestHttpException($e->getMessage(), null, $e);
         }
+    }
+
+    /**
+     * @SWG\Get(
+     *     path="/shop/wishlist",
+     *     tags={"WishList"},
+     *     @SWG\Response(
+     *         response=200,
+     *         description="Success response",
+     *         @SWG\Schema(
+     *             type="array",
+     *             @SWG\Items(ref="#/definitions/WishlistItem")
+     *         ),
+     *     ),
+     *     security={{"Bearer": {}, "OAuth2": {}}}
+     * )
+     */
+    public function actionIndex(): DataProviderInterface
+    {
+        $dataProvider = $this->_products->getWishList(Yii::$app->user->id);
+        return new MapDataProvider($dataProvider, [$this, 'serializeListItem']);
     }
 
     public function serializeListItem(Product $product): array
@@ -117,6 +113,15 @@ class WishlistController extends Controller
                 'self' => ['href' => Url::to(['/shop/product/view', 'id' => $product->id], true)],
                 'cart' => ['href' => Url::to(['/shop/cart/add', 'id' => $product->id], true)],
             ],
+        ];
+    }
+
+    protected function verbs(): array
+    {
+        return  [
+            'add' => ['POST'],
+            'delete' => ['DELETE'],
+            'index' => ['GET'],
         ];
     }
 }
