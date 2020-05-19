@@ -8,16 +8,16 @@ use shop\repositories\UserRepository;
 
 class AuthService
 {
-    private $users;
+    private $_users;
 
     public function __construct(UserRepository $users)
     {
-        $this->users = $users;
+        $this->_users = $users;
     }
 
     public function auth(LoginForm $form): User
     {
-        $user = $this->users->findByUsernameOrEmail($form->username);
+        $user = $this->_users->findByUsernameOrEmail($form->username);
         if (!$user || !$user->isActive() || !$user->validatePassword($form->password)) {
             throw new \DomainException('Undefined user or password.');
         }

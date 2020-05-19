@@ -53,7 +53,7 @@ class PasswordResetService
 
     public function validateToken(string $token): void
     {
-        if (empty($token) || !is_string($token)) {
+        if (empty($token) || !\is_string($token)) {
             throw new \DomainException('Password reset token cannot be blank.');
         }
         if (!$this->_users->existsByPasswordResetToken($token)) {
