@@ -10,19 +10,19 @@ use yii\web\Cookie;
 
 class CookieStorage implements StorageInterface
 {
-    private $key;
-    private $timeout;
+    private $_key;
+    private $_timeout;
 
     public function __construct($key, $timeout)
     {
-        $this->key = $key;
-        $this->timeout = $timeout;
+        $this->_key = $key;
+        $this->_timeout = $timeout;
     }
 
     public function load(): array
     {
-        if ($cookie = Yii::$app->request->cookies->get($this->key)) {
-            return array_filter(array_map(function (array $row) {
+        if ($cookie = Yii::$app->request->cookies->get($this->_key)) {
+            return \array_filter(\array_map(function (array $row) {
                 if (isset($row['p'], $row['q']) && $product = Product::find()->active()->andWhere(['id' => $row['p']])->one()) {
                     /** @var Product $product */
                     return new CartItem($product, $row['m'] ?? null, $row['q']);
@@ -36,15 +36,15 @@ class CookieStorage implements StorageInterface
     public function save(array $items): void
     {
         Yii::$app->response->cookies->add(new Cookie([
-            'name' => $this->key,
-            'value' => Json::encode(array_map(function (CartItem $item) {
+            'name' => $this->_key,
+            'value' => Json::encode(\array_map(function (CartItem $item) {
                 return [
                     'p' => $item->getProductId(),
                     'm' => $item->getModificationId(),
                     'q' => $item->getQuantity(),
                 ];
             }, $items)),
-            'expire' => time() + $this->timeout,
+            'expire' => \time() + $this->_timeout,
         ]));
     }
 } 
