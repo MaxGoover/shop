@@ -16,21 +16,26 @@ class PostReadRepository
         return Post::find()->active()->count();
     }
 
-    public function getAllByRange($offset, $limit): array
+    public function find($id): ?Post
     {
-        return Post::find()->active()->orderBy(['id' => SORT_ASC])->limit($limit)->offset($offset)->all();
+        return Post::find()->active()->andWhere(['id' => $id])->one();
     }
 
     public function getAll(): DataProviderInterface
     {
         $query = Post::find()->active()->with('category');
-        return $this->getProvider($query);
+        return $this->_getProvider($query);
     }
 
     public function getAllByCategory(Category $category): DataProviderInterface
     {
         $query = Post::find()->active()->andWhere(['category_id' => $category->id])->with('category');
-        return $this->getProvider($query);
+        return $this->_getProvider($query);
+    }
+
+    public function getAllByRange($offset, $limit): array
+    {
+        return Post::find()->active()->orderBy(['id' => SORT_ASC])->limit($limit)->offset($offset)->all();
     }
 
     public function getAllByTag(Tag $tag): DataProviderInterface
@@ -39,7 +44,7 @@ class PostReadRepository
         $query->joinWith(['tagAssignments ta'], false);
         $query->andWhere(['ta.tag_id' => $tag->id]);
         $query->groupBy('p.id');
-        return $this->getProvider($query);
+        return $this->_getProvider($query);
     }
 
     public function getLast($limit): array
@@ -52,12 +57,7 @@ class PostReadRepository
         return Post::find()->with('category')->orderBy(['comments_count' => SORT_DESC])->limit($limit)->all();
     }
 
-    public function find($id): ?Post
-    {
-        return Post::find()->active()->andWhere(['id' => $id])->one();
-    }
-
-    private function getProvider(ActiveQuery $query): ActiveDataProvider
+    private function _getProvider(ActiveQuery $query): ActiveDataProvider
     {
         return new ActiveDataProvider([
             'query' => $query,
