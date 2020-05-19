@@ -9,11 +9,11 @@ use yii\helpers\ArrayHelper;
 
 class CategoryReadRepository
 {
-    private $client;
+    private $_client;
 
     public function __construct(Client $client)
     {
-        $this->client = $client;
+        $this->_client = $client;
     }
 
     public function find($id): ?Category
@@ -48,7 +48,7 @@ class CategoryReadRepository
             $query->andWhere(['depth' => 1]);
         }
 
-        $aggs = $this->client->search([
+        $aggs = $this->_client->search([
             'index' => 'shop',
             'type' => 'products',
             'body' => [

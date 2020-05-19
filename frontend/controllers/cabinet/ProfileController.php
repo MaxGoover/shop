@@ -11,16 +11,21 @@ use yii\web\NotFoundHttpException;
 
 class ProfileController extends Controller
 {
-    private $service;
+    private $_service;
 
-    public function __construct($id, $module, ProfileService $service, $config = [])
+    public function __construct(
+        $id,
+        $module,
+        ProfileService $service,
+        $config = [])
     {
         parent::__construct($id, $module, $config);
-        $this->service = $service;
+        $this->_service = $service;
     }
 
     /**
-     * @return mixed
+     * @return string|\yii\web\Response
+     * @throws NotFoundHttpException
      */
     public function actionEdit()
     {
@@ -29,7 +34,7 @@ class ProfileController extends Controller
         $form = new ProfileEditForm($user);
         if ($form->load(Yii::$app->request->post()) && $form->validate()) {
             try {
-                $this->service->edit($user->id, $form);
+                $this->_service->edit($user->id, $form);
                 return $this->redirect(['/cabinet/default/index', 'id' => $user->id]);
             } catch (\DomainException $e) {
                 Yii::$app->errorHandler->logException($e);

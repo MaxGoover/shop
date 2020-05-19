@@ -12,12 +12,16 @@ use yii\authclient\AuthAction;
 
 class NetworkController extends Controller
 {
-    private $service;
+    private $_service;
 
-    public function __construct($id, $module, NetworkService $service, $config = [])
+    public function __construct(
+        $id,
+        $module,
+        NetworkService $service,
+        $config = [])
     {
         parent::__construct($id, $module, $config);
-        $this->service = $service;
+        $this->_service = $service;
     }
 
     public function actions()
@@ -37,7 +41,7 @@ class NetworkController extends Controller
         $identity = ArrayHelper::getValue($attributes, 'id');
 
         try {
-            $user = $this->service->auth($network, $identity);
+            $user = $this->_service->auth($network, $identity);
             Yii::$app->user->login(new Identity($user), Yii::$app->params['user.rememberMeDuration']);
         } catch (\DomainException $e) {
             Yii::$app->errorHandler->logException($e);

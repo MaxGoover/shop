@@ -2,21 +2,25 @@
 namespace frontend\controllers\auth;
 
 use common\auth\Identity;
+use shop\forms\auth\LoginForm;
 use shop\useCases\auth\AuthService;
 use Yii;
 use yii\web\Controller;
-use shop\forms\auth\LoginForm;
 
 class AuthController extends Controller
 {
     public $layout = 'cabinet';
 
-    private $service;
+    private $_service;
 
-    public function __construct($id, $module, AuthService $service, $config = [])
+    public function __construct(
+        $id,
+        $module,
+        AuthService $service,
+        $config = [])
     {
         parent::__construct($id, $module, $config);
-        $this->service = $service;
+        $this->_service = $service;
     }
 
     /**
@@ -31,7 +35,7 @@ class AuthController extends Controller
         $form = new LoginForm();
         if ($form->load(Yii::$app->request->post()) && $form->validate()) {
             try {
-                $user = $this->service->auth($form);
+                $user = $this->_service->auth($form);
                 Yii::$app->user->login(new Identity($user), $form->rememberMe ? Yii::$app->params['user.rememberMeDuration'] : 0);
                 return $this->goBack();
             } catch (\DomainException $e) {
