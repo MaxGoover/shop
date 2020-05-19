@@ -41,6 +41,8 @@ class OrderItem extends ActiveRecord
         return $this->price * $this->quantity;
     }
 
+    ##################################################
+
     public static function tableName(): string
     {
         return '{{%shop_order_items}}';
