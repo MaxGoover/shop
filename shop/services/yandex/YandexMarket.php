@@ -10,10 +10,10 @@ use yii\helpers\Html;
 
 class YandexMarket
 {
-    private $shop;
-    private $categories;
-    private $products;
-    private $deliveryMethods;
+    private $_shop;
+    private $_categories;
+    private $_products;
+    private $_deliveryMethods;
 
     public function __construct(
         ShopInfo $shop,
@@ -22,15 +22,15 @@ class YandexMarket
         DeliveryMethodReadRepository $deliveryMethods
     )
     {
-        $this->shop = $shop;
-        $this->categories = $categories;
-        $this->products = $products;
-        $this->deliveryMethods = $deliveryMethods;
+        $this->_shop = $shop;
+        $this->_categories = $categories;
+        $this->_products = $products;
+        $this->_deliveryMethods = $deliveryMethods;
     }
 
     public function generate(callable $productUrlGenerator): string
     {
-        ob_start();
+        \ob_start();
 
         $writer = new \XMLWriter();
         $writer->openURI('php://output');
@@ -43,9 +43,9 @@ class YandexMarket
         $writer->writeAttribute('date', date('Y-m-d H:i'));
 
         $writer->startElement('shop');
-        $writer->writeElement('name', Html::encode($this->shop->name));
-        $writer->writeElement('company', Html::encode($this->shop->company));
-        $writer->writeElement('url', Html::encode($this->shop->url));
+        $writer->writeElement('name', Html::encode($this->_shop->name));
+        $writer->writeElement('company', Html::encode($this->_shop->company));
+        $writer->writeElement('url', Html::encode($this->_shop->url));
 
         $writer->startElement('currencies');
 
@@ -58,7 +58,7 @@ class YandexMarket
 
         $writer->startElement('categories');
 
-        foreach ($this->categories->getAll() as $category) {
+        foreach ($this->_categories->getAll() as $category) {
             $writer->startElement('category');
             $writer->writeAttribute('id', $category->id);
             if (($parent = $category->parent) && !$parent->isRoot()) {
@@ -72,9 +72,9 @@ class YandexMarket
 
         $writer->startElement('offers');
 
-        $deliveries = $this->deliveryMethods->getAll();
+        $deliveries = $this->_deliveryMethods->getAll();
 
-        foreach ($this->products->getAllIterator() as $product) {
+        foreach ($this->_products->getAllIterator() as $product) {
             $writer->startElement('offer');
 
             $writer->writeAttribute('id', $product->id);
@@ -86,13 +86,13 @@ class YandexMarket
             $writer->writeElement('currencyId', 'RUR');
             $writer->writeElement('categoryId', $product->category_id);
 
-            $available = array_filter($deliveries, function (DeliveryMethod $method) use ($product) {
+            $available = \array_filter($deliveries, function (DeliveryMethod $method) use ($product) {
                 return $method->isAvailableForWeight($product->weight);
             });
 
             if ($available) {
                 $writer->writeElement('delivery', 'true');
-                $writer->writeElement('local_delivery_cost', max(array_map(function (DeliveryMethod $method) {
+                $writer->writeElement('local_delivery_cost', \max(\array_map(function (DeliveryMethod $method) {
                     return $method->cost;
                 }, $available)));
             } else {
@@ -101,7 +101,7 @@ class YandexMarket
 
             $writer->writeElement('vendor', Html::encode($product->brand->name));
             $writer->writeElement('model', Html::encode($product->code));
-            $writer->writeElement('description', Html::encode(strip_tags($product->description)));
+            $writer->writeElement('description', Html::encode(\strip_tags($product->description)));
 
             foreach ($product->values as $value) {
                 if (!empty($value->value)) {
@@ -122,6 +122,6 @@ class YandexMarket
 
         $writer->endDocument();
 
-        return ob_get_clean();
+        return \ob_get_clean();
     }
 }
