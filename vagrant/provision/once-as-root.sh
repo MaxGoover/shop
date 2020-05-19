@@ -23,8 +23,9 @@ echo "Done!"
 info "Add php 7.2 repository"
 add-apt-repository ppa:ondrej/php -y
 
-info "Add Oracle JDK repository"
-add-apt-repository ppa:webupd8team/java -y
+#info "Add Oracle JDK repository"
+#apt-get -y install software-properties-common
+#add-apt-repository ppa:webupd8team/java -y
 
 info "Add ElasticSearch sources"
 wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | apt-key add -
@@ -37,16 +38,14 @@ apt-get upgrade -y
 info "Install additional software"
 apt-get install -y php7.2-curl php7.2-cli php7.2-intl php7.2-mysqlnd php7.2-gd php7.2-fpm php7.2-mbstring php7.2-xml php7.2-zip unzip nginx mysql-server-5.7 php.xdebug php7.2-memcached memcached
 
-info "Install Oracle JDK"
-debconf-set-selections <<< "oracle-java8-installer shared/accepted-oracle-license-v1-1 select true"
-debconf-set-selections <<< "oracle-java8-installer shared/accepted-oracle-license-v1-1 seen true"
-apt-get install -y oracle-java8-installer
+#info "Install Oracle JDK"
+#apt-get install -y install openjdk-8-jdk
 
-info "Install ElasticSearch"
-apt-get install -y elasticsearch
-sed -i 's/-Xms2g/-Xms64m/' /etc/elasticsearch/jvm.options
-sed -i 's/-Xmx2g/-Xmx64m/' /etc/elasticsearch/jvm.options
-service elasticsearch restart
+#info "Install ElasticSearch"
+#apt-get install -y elasticsearch
+#sed -i 's/-Xms2g/-Xms64m/' /etc/elasticsearch/jvm.options
+#sed -i 's/-Xmx2g/-Xmx64m/' /etc/elasticsearch/jvm.options
+#service elasticsearch restart
 
 info "Install Redis"
 apt-get install -y redis-server
