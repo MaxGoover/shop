@@ -28,7 +28,7 @@ class CartController extends Controller
     {
         return [
             'verbs' => [
-                'class' => VerbFilter::className(),
+                'class' => VerbFilter::class,
                 'actions' => [
                     'quantity' => ['POST'],
                     'remove' => ['POST'],

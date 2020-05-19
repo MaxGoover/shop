@@ -42,7 +42,7 @@ class Photo extends ActiveRecord
     {
         return [
             [
-                'class' => ImageUploadBehavior::className(),
+                'class' => ImageUploadBehavior::class,
                 'attribute' => 'file',
                 'createThumbsOnRequest' => true,
                 'filePath' => '@staticRoot/origin/products/[[attribute_product_id]]/[[id]].[[extension]]',
