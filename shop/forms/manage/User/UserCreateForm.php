@@ -14,6 +14,13 @@ class UserCreateForm extends Model
     public $password;
     public $role;
 
+    public function rolesList(): array
+    {
+        return ArrayHelper::map(\Yii::$app->authManager->getRoles(), 'name', 'description');
+    }
+
+    ##################################################
+
     public function rules(): array
     {
         return [
@@ -24,10 +31,5 @@ class UserCreateForm extends Model
             ['password', 'string', 'min' => 6],
             ['phone', 'integer'],
         ];
-    }
-
-    public function rolesList(): array
-    {
-        return ArrayHelper::map(\Yii::$app->authManager->getRoles(), 'name', 'description');
     }
 }
