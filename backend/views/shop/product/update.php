@@ -1,8 +1,8 @@
 <?php
 
 use mihaildev\ckeditor\CKEditor;
-use yii\helpers\Html;
 use yii\bootstrap\ActiveForm;
+use yii\helpers\Html;
 
 /* @var $this yii\web\View */
 /* @var $product shop\entities\Shop\Product\Product */
@@ -31,7 +31,7 @@ $this->params['breadcrumbs'][] = 'Update';
                     <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
                 </div>
             </div>
-            <?= $form->field($model, 'description')->widget(CKEditor::className()) ?>
+            <?= $form->field($model, 'description')->widget(CKEditor::class) ?>
         </div>
     </div>
 

@@ -40,7 +40,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     'default',
                     [
                         'attribute' => 'variants',
-                        'value' => implode(PHP_EOL, $characteristic->variants),
+                        'value' => \implode(PHP_EOL, $characteristic->variants),
                         'format' => 'ntext',
                     ],
                 ],

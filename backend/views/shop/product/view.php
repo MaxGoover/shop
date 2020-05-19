@@ -66,7 +66,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             ],
                             [
                                 'label' => 'Other categories',
-                                'value' => implode(', ', ArrayHelper::getColumn($product->categories, 'name')),
+                                'value' => \implode(', ', ArrayHelper::getColumn($product->categories, 'name')),
                             ],
                             [
                                 'label' => 'Tags',
@@ -105,7 +105,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
                     <?= DetailView::widget([
                         'model' => $product,
-                        'attributes' => array_map(function (Value $value) {
+                        'attributes' => \array_map(function (Value $value) {
                             return [
                                 'label' => $value->characteristic->name,
                                 'value' => $value->value,

@@ -3,8 +3,8 @@
 use shop\entities\Shop\Order\Order;
 use shop\helpers\OrderHelper;
 use yii\grid\ActionColumn;
-use yii\helpers\Html;
 use yii\grid\GridView;
+use yii\helpers\Html;
 
 /* @var $this yii\web\View */
 /* @var $searchModel backend\forms\Shop\OrderSearch */
