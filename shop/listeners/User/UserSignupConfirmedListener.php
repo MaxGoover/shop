@@ -2,8 +2,8 @@
 
 namespace shop\listeners\User;
 
-use shop\services\newsletter\Newsletter;
 use shop\entities\User\events\UserSignUpConfirmed;
+use shop\services\newsletter\Newsletter;
 
 class UserSignupConfirmedListener
 {
