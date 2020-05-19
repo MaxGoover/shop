@@ -40,6 +40,8 @@ class DeliveryMethod extends ActiveRecord
         return (!$this->min_weight || $this->min_weight <= $weight) && (!$this->max_weight || $weight <= $this->max_weight);
     }
 
+    ##################################################
+
     public static function tableName(): string
     {
         return '{{%shop_delivery_methods}}';

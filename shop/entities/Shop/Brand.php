@@ -37,7 +37,7 @@ class Brand extends ActiveRecord
         return $this->meta->title ?: $this->name;
     }
 
-    ##########################
+    ##################################################
 
     public static function tableName(): string
     {

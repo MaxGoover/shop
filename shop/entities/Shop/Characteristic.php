@@ -16,9 +16,9 @@ use yii\helpers\Json;
  */
 class Characteristic extends ActiveRecord
 {
-    const TYPE_STRING = 'string';
     const TYPE_INTEGER = 'integer';
     const TYPE_FLOAT = 'float';
+    const TYPE_STRING = 'string';
 
     public $variants;
 
@@ -44,9 +44,9 @@ class Characteristic extends ActiveRecord
         $this->sort = $sort;
     }
 
-    public function isString(): bool
+    public function isFloat(): bool
     {
-        return $this->type === self::TYPE_STRING;
+        return $this->type === self::TYPE_FLOAT;
     }
 
     public function isInteger(): bool
@@ -54,15 +54,17 @@ class Characteristic extends ActiveRecord
         return $this->type === self::TYPE_INTEGER;
     }
 
-    public function isFloat(): bool
-    {
-        return $this->type === self::TYPE_FLOAT;
-    }
-
     public function isSelect(): bool
     {
-        return count($this->variants) > 0;
+        return \count($this->variants) > 0;
     }
+
+    public function isString(): bool
+    {
+        return $this->type === self::TYPE_STRING;
+    }
+
+    ##################################################
 
     public static function tableName(): string
     {
@@ -71,13 +73,13 @@ class Characteristic extends ActiveRecord
 
     public function afterFind(): void
     {
-        $this->variants = array_filter(Json::decode($this->getAttribute('variants_json')));
+        $this->variants = \array_filter(Json::decode($this->getAttribute('variants_json')));
         parent::afterFind();
     }
 
     public function beforeSave($insert): bool
     {
-        $this->setAttribute('variants_json', Json::encode(array_filter($this->variants)));
+        $this->setAttribute('variants_json', Json::encode(\array_filter($this->variants)));
         return parent::beforeSave($insert);
     }
 }

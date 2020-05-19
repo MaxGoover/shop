@@ -27,15 +27,6 @@ class Discount extends ActiveRecord
         return $discount;
     }
 
-    public function edit($percent, $name, $fromDate, $toDate, $sort): void
-    {
-        $this->percent = $percent;
-        $this->name = $name;
-        $this->from_date = $fromDate;
-        $this->to_date = $toDate;
-        $this->sort = $sort;
-    }
-
     public function activate(): void
     {
         $this->active = true;
@@ -46,10 +37,21 @@ class Discount extends ActiveRecord
         $this->active = false;
     }
 
+    public function edit($percent, $name, $fromDate, $toDate, $sort): void
+    {
+        $this->percent = $percent;
+        $this->name = $name;
+        $this->from_date = $fromDate;
+        $this->to_date = $toDate;
+        $this->sort = $sort;
+    }
+
     public function isEnabled(): bool
     {
         return true;
     }
+
+    ##################################################
 
     public static function tableName(): string
     {
