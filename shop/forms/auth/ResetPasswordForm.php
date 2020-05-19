@@ -11,7 +11,7 @@ class ResetPasswordForm extends Model
 {
     public $password;
 
-    public function rules()
+    public function rules(): array
     {
         return [
             ['password', 'required'],

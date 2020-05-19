@@ -15,7 +15,7 @@ class SignupForm extends Model
     public $phone;
     public $password;
 
-    public function rules()
+    public function rules(): array
     {
         return [
             ['username', 'trim'],

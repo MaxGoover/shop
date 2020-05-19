@@ -34,6 +34,20 @@ class PageForm extends CompositeForm
         parent::__construct($config);
     }
 
+    public function internalForms(): array
+    {
+        return ['meta'];
+    }
+
+    public function parentsList(): array
+    {
+        return ArrayHelper::map(Page::find()->orderBy('lft')->asArray()->all(), 'id', function (array $page) {
+            return ($page['depth'] > 1 ? \str_repeat('-- ', $page['depth'] - 1) . ' ' : '') . $page['title'];
+        });
+    }
+
+    ##################################################
+
     public function rules(): array
     {
         return [
@@ -44,17 +58,5 @@ class PageForm extends CompositeForm
             ['slug', SlugValidator::class],
             [['slug'], 'unique', 'targetClass' => Page::class, 'filter' => $this->_page ? ['<>', 'id', $this->_page->id] : null]
         ];
-    }
-
-    public function parentsList(): array
-    {
-        return ArrayHelper::map(Page::find()->orderBy('lft')->asArray()->all(), 'id', function (array $page) {
-            return ($page['depth'] > 1 ? str_repeat('-- ', $page['depth'] - 1) . ' ' : '') . $page['title'];
-        });
-    }
-
-    public function internalForms(): array
-    {
-        return ['meta'];
     }
 }

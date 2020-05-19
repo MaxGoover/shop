@@ -22,7 +22,7 @@ class ContactForm extends Model
         ];
     }
 
-    public function rules()
+    public function rules(): array
     {
         return [
             [['name', 'email', 'subject', 'body'], 'required'],
