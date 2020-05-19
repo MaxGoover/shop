@@ -7,6 +7,11 @@ use shop\repositories\NotFoundException;
 
 class PostRepository
 {
+    public function existsByCategory($id): bool
+    {
+        return Post::find()->andWhere(['category_id' => $id])->exists();
+    }
+
     public function get($id): Post
     {
         if (!$brand = Post::findOne($id)) {
@@ -15,22 +20,17 @@ class PostRepository
         return $brand;
     }
 
-    public function existsByCategory($id): bool
+    public function remove(Post $brand): void
     {
-        return Post::find()->andWhere(['category_id' => $id])->exists();
+        if (!$brand->delete()) {
+            throw new \RuntimeException('Removing error.');
+        }
     }
 
     public function save(Post $brand): void
     {
         if (!$brand->save()) {
             throw new \RuntimeException('Saving error.');
-        }
-    }
-
-    public function remove(Post $brand): void
-    {
-        if (!$brand->delete()) {
-            throw new \RuntimeException('Removing error.');
         }
     }
 }
