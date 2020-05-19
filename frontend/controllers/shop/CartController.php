@@ -17,7 +17,12 @@ class CartController extends Controller
     private $_products;
     private $_service;
 
-    public function __construct($id, $module, CartService $service, ProductReadRepository $products, $config = [])
+    public function __construct(
+        $id,
+        $module,
+        CartService $service,
+        ProductReadRepository $products,
+        $config = [])
     {
         parent::__construct($id, $module, $config);
         $this->_products = $products;

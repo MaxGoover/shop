@@ -16,7 +16,12 @@ class CheckoutController extends Controller
     private $_service;
     private $_cart;
 
-    public function __construct($id, $module, OrderService $service, Cart $cart, $config = [])
+    public function __construct(
+        $id,
+        $module,
+        OrderService $service,
+        Cart $cart,
+        $config = [])
     {
         parent::__construct($id, $module, $config);
         $this->_service = $service;

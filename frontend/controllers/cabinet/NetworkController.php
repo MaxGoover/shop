@@ -16,7 +16,11 @@ class NetworkController extends Controller
 
     private $_service;
 
-    public function __construct($id, $module, NetworkService $service, $config = [])
+    public function __construct(
+        $id,
+        $module,
+        NetworkService $service,
+        $config = [])
     {
         parent::__construct($id, $module, $config);
         $this->_service = $service;

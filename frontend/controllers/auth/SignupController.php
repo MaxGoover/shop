@@ -13,7 +13,11 @@ class SignupController extends Controller
 
     private $_service;
 
-    public function __construct($id, $module, SignupService $service, $config = [])
+    public function __construct(
+        $id,
+        $module,
+        SignupService $service,
+        $config = [])
     {
         parent::__construct($id, $module, $config);
         $this->_service = $service;

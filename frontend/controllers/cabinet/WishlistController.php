@@ -16,7 +16,12 @@ class WishlistController extends Controller
     private $_service;
     private $_products;
 
-    public function __construct($id, $module, WishlistService $service, ProductReadRepository $products, $config = [])
+    public function __construct(
+        $id,
+        $module,
+        WishlistService $service,
+        ProductReadRepository $products,
+        $config = [])
     {
         parent::__construct($id, $module, $config);
         $this->_service = $service;

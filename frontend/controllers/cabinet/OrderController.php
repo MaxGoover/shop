@@ -13,7 +13,11 @@ class OrderController extends Controller
 
     private $_orders;
 
-    public function __construct($id, $module, OrderReadRepository $orders, $config = [])
+    public function __construct(
+        $id,
+        $module,
+        OrderReadRepository $orders,
+        $config = [])
     {
         parent::__construct($id, $module, $config);
         $this->_orders = $orders;
