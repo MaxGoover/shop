@@ -19,8 +19,10 @@ class WishlistItem extends ActiveRecord
 
     public function isForProduct($productId): bool
     {
-        return $this->product_id == $productId;
+        return $this->product_id === $productId;
     }
+
+    ##################################################
 
     public static function tableName(): string
     {
