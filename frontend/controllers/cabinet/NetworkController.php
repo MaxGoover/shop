@@ -14,12 +14,12 @@ class NetworkController extends Controller
 {
     public $layout = 'cabinet';
 
-    private $service;
+    private $_service;
 
     public function __construct($id, $module, NetworkService $service, $config = [])
     {
         parent::__construct($id, $module, $config);
-        $this->service = $service;
+        $this->_service = $service;
     }
 
     public function actions()
@@ -40,7 +40,7 @@ class NetworkController extends Controller
         $identity = ArrayHelper::getValue($attributes, 'id');
 
         try {
-            $this->service->attach(Yii::$app->user->id, $network, $identity);
+            $this->_service->attach(Yii::$app->user->id, $network, $identity);
             Yii::$app->session->setFlash('success', 'Network is successfully attached.');
         } catch (\DomainException $e) {
             Yii::$app->errorHandler->logException($e);

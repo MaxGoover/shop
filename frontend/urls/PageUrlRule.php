@@ -13,22 +13,22 @@ use yii\web\UrlRuleInterface;
 
 class PageUrlRule extends BaseObject implements UrlRuleInterface
 {
-    private $repository;
-    private $cache;
+    private $_repository;
+    private $_cache;
 
     public function __construct(PageReadRepository $repository, Cache $cache, $config = [])
     {
         parent::__construct($config);
-        $this->repository = $repository;
-        $this->cache = $cache;
+        $this->_repository = $repository;
+        $this->_cache = $cache;
     }
 
     public function parseRequest($manager, $request)
     {
         $path = $request->pathInfo;
 
-        $result = $this->cache->getOrSet(['page_route', 'path' => $path], function () use ($path) {
-            if (!$page = $this->repository->findBySlug($this->getPathSlug($path))) {
+        $result = $this->_cache->getOrSet(['page_route', 'path' => $path], function () use ($path) {
+            if (!$page = $this->_repository->findBySlug($this->getPathSlug($path))) {
                 return ['id' => null, 'path' => null];
             }
             return ['id' => $page->id, 'path' => $this->getPagePath($page)];
@@ -53,8 +53,8 @@ class PageUrlRule extends BaseObject implements UrlRuleInterface
             }
             $id = $params['id'];
 
-            $url = $this->cache->getOrSet(['page_route', 'id' => $id], function () use ($id) {
-                if (!$page = $this->repository->find($id)) {
+            $url = $this->_cache->getOrSet(['page_route', 'id' => $id], function () use ($id) {
+                if (!$page = $this->_repository->find($id)) {
                     return null;
                 }
                 return $this->getPagePath($page);
@@ -65,7 +65,7 @@ class PageUrlRule extends BaseObject implements UrlRuleInterface
             }
 
             unset($params['id']);
-            if (!empty($params) && ($query = http_build_query($params)) !== '') {
+            if (!empty($params) && ($query = \http_build_query($params)) !== '') {
                 $url .= '?' . $query;
             }
 
@@ -76,14 +76,14 @@ class PageUrlRule extends BaseObject implements UrlRuleInterface
 
     private function getPathSlug($path): string
     {
-        $chunks = explode('/', $path);
-        return end($chunks);
+        $chunks = \explode('/', $path);
+        return \end($chunks);
     }
 
     private function getPagePath(Page $page): string
     {
         $chunks = ArrayHelper::getColumn($page->getParents()->andWhere(['>', 'depth', 0])->all(), 'slug');
         $chunks[] = $page->slug;
-        return implode('/', $chunks);
+        return \implode('/', $chunks);
     }
 }
