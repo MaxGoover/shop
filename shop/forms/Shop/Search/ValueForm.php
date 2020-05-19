@@ -3,7 +3,6 @@
 namespace shop\forms\Shop\Search;
 
 use shop\entities\Shop\Characteristic;
-use shop\entities\Shop\Product\Value;
 use yii\base\Model;
 
 /**
@@ -23,22 +22,9 @@ class ValueForm extends Model
         parent::__construct($config);
     }
 
-    public function rules(): array
+    public function formName(): string
     {
-        return array_filter([
-            $this->_characteristic->isString() ? ['equal', 'string'] : false,
-            $this->_characteristic->isInteger() || $this->_characteristic->isFloat()? [['from', 'to'], 'integer'] : false
-        ]);
-    }
-
-    public function isFilled(): bool
-    {
-        return !empty($this->from) || !empty($this->to) || !empty($this->equal);
-    }
-
-    public function variantsList(): array
-    {
-        return $this->_characteristic->variants ? array_combine($this->_characteristic->variants, $this->_characteristic->variants) : [];
+        return 'v';
     }
 
     public function getCharacteristicName(): string
@@ -51,8 +37,23 @@ class ValueForm extends Model
         return $this->_characteristic->id;
     }
 
-    public function formName(): string
+    public function isFilled(): bool
     {
-        return 'v';
+        return !empty($this->from) || !empty($this->to) || !empty($this->equal);
+    }
+
+    public function variantsList(): array
+    {
+        return $this->_characteristic->variants ? \array_combine($this->_characteristic->variants, $this->_characteristic->variants) : [];
+    }
+
+    ##################################################
+
+    public function rules(): array
+    {
+        return \array_filter([
+            $this->_characteristic->isString() ? ['equal', 'string'] : false,
+            $this->_characteristic->isInteger() || $this->_characteristic->isFloat()? [['from', 'to'], 'integer'] : false
+        ]);
     }
 }
