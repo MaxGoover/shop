@@ -7,24 +7,24 @@ use Yii;
 
 class WaterMarker
 {
-    private $width;
-    private $height;
-    private $watermark;
+    private $_width;
+    private $_height;
+    private $_watermark;
 
     public function __construct($width, $height, $watermark)
     {
-        $this->width = $width;
-        $this->height = $height;
-        $this->watermark = $watermark;
+        $this->_width = $width;
+        $this->_height = $height;
+        $this->_watermark = $watermark;
     }
 
     public function process(GD $thumb): void
     {
-        $watermark = new GD(Yii::getAlias($this->watermark));
+        $watermark = new GD(Yii::getAlias($this->_watermark));
         $source = $watermark->getOldImage();
 
-        if (!empty($this->width) || !empty($this->height)) {
-            $thumb->adaptiveResize($this->width, $this->height);
+        if (!empty($this->_width) || !empty($this->_height)) {
+            $thumb->adaptiveResize($this->_width, $this->_height);
         }
 
         $originalSize = $thumb->getCurrentDimensions();
@@ -35,10 +35,10 @@ class WaterMarker
 
         $destination = $thumb->getOldImage();
 
-        imagealphablending($source, true);
-        imagealphablending($destination, true);
+        \imagealphablending($source, true);
+        \imagealphablending($destination, true);
 
-        imagecopy(
+        \imagecopy(
             $destination,
             $source,
             $destinationX, $destinationY,
