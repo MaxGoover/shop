@@ -36,7 +36,7 @@ class BrandForm extends CompositeForm
         return ['meta'];
     }
 
-    ##########################
+    ##################################################
 
     public function rules(): array
     {
