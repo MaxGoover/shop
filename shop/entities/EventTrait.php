@@ -4,17 +4,17 @@ namespace shop\entities;
 
 trait EventTrait
 {
-    private $events = [];
-
-    protected function recordEvent($event): void
-    {
-        $this->events[] = $event;
-    }
+    private $_events = [];
 
     public function releaseEvents(): array
     {
-        $events = $this->events;
-        $this->events = [];
+        $events = $this->_events;
+        $this->_events = [];
         return $events;
+    }
+
+    protected function recordEvent($event): void
+    {
+        $this->_events[] = $event;
     }
 }
