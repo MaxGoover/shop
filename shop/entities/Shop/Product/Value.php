@@ -34,15 +34,17 @@ class Value extends ActiveRecord
         $this->value = $value;
     }
 
-    public function isForCharacteristic($id): bool
-    {
-        return $this->characteristic_id == $id;
-    }
-
     public function getCharacteristic(): ActiveQuery
     {
         return $this->hasOne(Characteristic::class, ['id' => 'characteristic_id']);
     }
+
+    public function isForCharacteristic($id): bool
+    {
+        return $this->characteristic_id === $id;
+    }
+
+    ##################################################
 
     public static function tableName(): string
     {

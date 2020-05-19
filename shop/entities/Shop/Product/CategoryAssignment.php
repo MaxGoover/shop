@@ -22,6 +22,8 @@ class CategoryAssignment extends ActiveRecord
         return $this->category_id == $id;
     }
 
+    ##################################################
+
     public static function tableName(): string
     {
         return '{{%shop_category_assignments}}';

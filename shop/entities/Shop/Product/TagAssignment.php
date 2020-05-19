@@ -19,8 +19,10 @@ class TagAssignment extends ActiveRecord
 
     public function isForTag($id): bool
     {
-        return $this->tag_id == $id;
+        return $this->tag_id === $id;
     }
+
+    ##################################################
 
     public static function tableName(): string
     {

@@ -25,12 +25,6 @@ class Review extends ActiveRecord
         return $review;
     }
 
-    public function edit($vote, $text): void
-    {
-        $this->vote = $vote;
-        $this->text = $text;
-    }
-
     public function activate(): void
     {
         $this->active = true;
@@ -41,9 +35,10 @@ class Review extends ActiveRecord
         $this->active = false;
     }
 
-    public function isActive(): bool
+    public function edit($vote, $text): void
     {
-        return $this->active === true;
+        $this->vote = $vote;
+        $this->text = $text;
     }
 
     public function getRating(): bool
@@ -51,10 +46,17 @@ class Review extends ActiveRecord
         return $this->vote;
     }
 
+    public function isActive(): bool
+    {
+        return $this->active === true;
+    }
+
     public function isIdEqualTo($id): bool
     {
-        return $this->id == $id;
+        return $this->id === $id;
     }
+
+    ##################################################
 
     public static function tableName(): string
     {
