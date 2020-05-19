@@ -10,18 +10,18 @@ use shop\repositories\Shop\ProductRepository;
 
 class CategoryManageService
 {
-    private $categories;
-    private $products;
+    private $_categories;
+    private $_products;
 
     public function __construct(CategoryRepository $categories, ProductRepository $products)
     {
-        $this->categories = $categories;
-        $this->products = $products;
+        $this->_categories = $categories;
+        $this->_products = $products;
     }
 
     public function create(CategoryForm $form): Category
     {
-        $parent = $this->categories->get($form->parentId);
+        $parent = $this->_categories->get($form->parentId);
         $category = Category::create(
             $form->name,
             $form->slug,
@@ -34,14 +34,14 @@ class CategoryManageService
             )
         );
         $category->appendTo($parent);
-        $this->categories->save($category);
+        $this->_categories->save($category);
         return $category;
     }
 
     public function edit($id, CategoryForm $form): void
     {
-        $category = $this->categories->get($id);
-        $this->assertIsNotRoot($category);
+        $category = $this->_categories->get($id);
+        $this->_assertIsNotRoot($category);
         $category->edit(
             $form->name,
             $form->slug,
@@ -54,43 +54,43 @@ class CategoryManageService
             )
         );
         if ($form->parentId !== $category->parent->id) {
-            $parent = $this->categories->get($form->parentId);
+            $parent = $this->_categories->get($form->parentId);
             $category->appendTo($parent);
         }
-        $this->categories->save($category);
+        $this->_categories->save($category);
     }
 
     public function moveUp($id): void
     {
-        $category = $this->categories->get($id);
-        $this->assertIsNotRoot($category);
+        $category = $this->_categories->get($id);
+        $this->_assertIsNotRoot($category);
         if ($prev = $category->prev) {
             $category->insertBefore($prev);
         }
-        $this->categories->save($category);
+        $this->_categories->save($category);
     }
 
     public function moveDown($id): void
     {
-        $category = $this->categories->get($id);
-        $this->assertIsNotRoot($category);
+        $category = $this->_categories->get($id);
+        $this->_assertIsNotRoot($category);
         if ($next = $category->next) {
             $category->insertAfter($next);
         }
-        $this->categories->save($category);
+        $this->_categories->save($category);
     }
 
     public function remove($id): void
     {
-        $category = $this->categories->get($id);
-        $this->assertIsNotRoot($category);
-        if ($this->products->existsByMainCategory($category->id)) {
+        $category = $this->_categories->get($id);
+        $this->_assertIsNotRoot($category);
+        if ($this->_products->existsByMainCategory($category->id)) {
             throw new \DomainException('Unable to remove category with products.');
         }
-        $this->categories->remove($category);
+        $this->_categories->remove($category);
     }
 
-    private function assertIsNotRoot(Category $category): void
+    private function _assertIsNotRoot(Category $category): void
     {
         if ($category->isRoot()) {
             throw new \DomainException('Unable to manage the root category.');

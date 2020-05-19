@@ -8,11 +8,11 @@ use shop\repositories\Shop\CharacteristicRepository;
 
 class CharacteristicManageService
 {
-    private $characteristics;
+    private $_characteristics;
 
     public function __construct(CharacteristicRepository $characteristics)
     {
-        $this->characteristics = $characteristics;
+        $this->_characteristics = $characteristics;
     }
 
     public function create(CharacteristicForm $form): Characteristic
@@ -25,13 +25,13 @@ class CharacteristicManageService
             $form->variants,
             $form->sort
         );
-        $this->characteristics->save($characteristic);
+        $this->_characteristics->save($characteristic);
         return $characteristic;
     }
 
     public function edit($id, CharacteristicForm $form): void
     {
-        $characteristic = $this->characteristics->get($id);
+        $characteristic = $this->_characteristics->get($id);
         $characteristic->edit(
             $form->name,
             $form->type,
@@ -40,12 +40,12 @@ class CharacteristicManageService
             $form->variants,
             $form->sort
         );
-        $this->characteristics->save($characteristic);
+        $this->_characteristics->save($characteristic);
     }
 
     public function remove($id): void
     {
-        $characteristic = $this->characteristics->get($id);
-        $this->characteristics->remove($characteristic);
+        $characteristic = $this->_characteristics->get($id);
+        $this->_characteristics->remove($characteristic);
     }
 }

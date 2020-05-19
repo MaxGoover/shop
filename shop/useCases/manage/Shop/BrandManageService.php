@@ -10,13 +10,13 @@ use shop\repositories\Shop\ProductRepository;
 
 class BrandManageService
 {
-    private $brands;
-    private $products;
+    private $_brands;
+    private $_products;
 
     public function __construct(BrandRepository $brands, ProductRepository $products)
     {
-        $this->brands = $brands;
-        $this->products = $products;
+        $this->_brands = $brands;
+        $this->_products = $products;
     }
 
     public function create(BrandForm $form): Brand
@@ -30,13 +30,13 @@ class BrandManageService
                 $form->meta->keywords
             )
         );
-        $this->brands->save($brand);
+        $this->_brands->save($brand);
         return $brand;
     }
 
     public function edit($id, BrandForm $form): void
     {
-        $brand = $this->brands->get($id);
+        $brand = $this->_brands->get($id);
         $brand->edit(
             $form->name,
             $form->slug,
@@ -46,15 +46,15 @@ class BrandManageService
                 $form->meta->keywords
             )
         );
-        $this->brands->save($brand);
+        $this->_brands->save($brand);
     }
 
     public function remove($id): void
     {
-        $brand = $this->brands->get($id);
-        if ($this->products->existsByBrand($brand->id)) {
+        $brand = $this->_brands->get($id);
+        if ($this->_products->existsByBrand($brand->id)) {
             throw new \DomainException('Unable to remove brand with products.');
         }
-        $this->brands->remove($brand);
+        $this->_brands->remove($brand);
     }
 }
