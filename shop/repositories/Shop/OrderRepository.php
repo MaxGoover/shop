@@ -15,17 +15,17 @@ class OrderRepository
         return $order;
     }
 
-    public function save(Order $order): void
-    {
-        if (!$order->save()) {
-            throw new \RuntimeException('Saving error.');
-        }
-    }
-
     public function remove(Order $order): void
     {
         if (!$order->delete()) {
             throw new \RuntimeException('Removing error.');
+        }
+    }
+
+    public function save(Order $order): void
+    {
+        if (!$order->save()) {
+            throw new \RuntimeException('Saving error.');
         }
     }
 }

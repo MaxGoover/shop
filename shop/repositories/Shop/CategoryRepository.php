@@ -10,11 +10,11 @@ use shop\repositories\NotFoundException;
 
 class CategoryRepository
 {
-    private $dispatcher;
+    private $_eventDispatcher;
 
-    public function __construct(EventDispatcher $dispatcher)
+    public function __construct(EventDispatcher $eventDispatcher)
     {
-        $this->dispatcher = $dispatcher;
+        $this->_eventDispatcher = $eventDispatcher;
     }
 
     public function get($id): Category
@@ -25,19 +25,19 @@ class CategoryRepository
         return $category;
     }
 
-    public function save(Category $category): void
-    {
-        if (!$category->save()) {
-            throw new \RuntimeException('Saving error.');
-        }
-        $this->dispatcher->dispatch(new EntityPersisted($category));
-    }
-
     public function remove(Category $category): void
     {
         if (!$category->delete()) {
             throw new \RuntimeException('Removing error.');
         }
-        $this->dispatcher->dispatch(new EntityRemoved($category));
+        $this->_eventDispatcher->dispatch(new EntityRemoved($category));
+    }
+
+    public function save(Category $category): void
+    {
+        if (!$category->save()) {
+            throw new \RuntimeException('Saving error.');
+        }
+        $this->_eventDispatcher->dispatch(new EntityPersisted($category));
     }
 }
