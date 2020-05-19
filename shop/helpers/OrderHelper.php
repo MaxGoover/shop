@@ -9,23 +9,6 @@ use yii\helpers\Html;
 
 class OrderHelper
 {
-    public static function statusList(): array
-    {
-        return [
-            Status::NEW => 'New',
-            Status::PAID => 'Paid',
-            Status::SENT => 'Sent',
-            Status::COMPLETED => 'Completed',
-            Status::CANCELLED => 'Cancelled',
-            Status::CANCELLED_BY_CUSTOMER => 'Cancelled by customer',
-        ];
-    }
-
-    public static function statusName($status): string
-    {
-        return ArrayHelper::getValue(self::statusList(), $status);
-    }
-
     public static function statusLabel($status): string
     {
         switch ($status) {
@@ -42,5 +25,22 @@ class OrderHelper
         return Html::tag('span', ArrayHelper::getValue(self::statusList(), $status), [
             'class' => $class,
         ]);
+    }
+
+    public static function statusList(): array
+    {
+        return [
+            Status::NEW => 'New',
+            Status::PAID => 'Paid',
+            Status::SENT => 'Sent',
+            Status::COMPLETED => 'Completed',
+            Status::CANCELLED => 'Cancelled',
+            Status::CANCELLED_BY_CUSTOMER => 'Cancelled by customer',
+        ];
+    }
+
+    public static function statusName($status): string
+    {
+        return ArrayHelper::getValue(self::statusList(), $status);
     }
 }
