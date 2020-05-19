@@ -14,12 +14,16 @@ use yii\helpers\ArrayHelper;
  */
 class RoleController extends Controller
 {
-    private $service;
+    private $_userManageService;
 
-    public function __construct($id, $module, UserManageService $service, $config = [])
+    public function __construct(
+        $id,
+        $module,
+        UserManageService $userManageService,
+        $config = [])
     {
         parent::__construct($id, $module, $config);
-        $this->service = $service;
+        $this->_userManageService = $userManageService;
     }
 
     /**
@@ -28,13 +32,13 @@ class RoleController extends Controller
     public function actionAssign(): void
     {
         $username = $this->prompt('Username:', ['required' => true]);
-        $user = $this->findModel($username);
+        $user = $this->_findModel($username);
         $role = $this->select('Role:', ArrayHelper::map(Yii::$app->authManager->getRoles(), 'name', 'description'));
-        $this->service->assignRole($user->id, $role);
+        $this->_userManageService->assignRole($user->id, $role);
         $this->stdout('Done!' . PHP_EOL);
     }
 
-    private function findModel($username): User
+    private function _findModel(string $username): User
     {
         if (!$model = User::findOne(['username' => $username])) {
             throw new Exception('User is not found');

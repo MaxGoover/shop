@@ -13,6 +13,6 @@ class DocController extends Controller
         $source = Yii::getAlias('@api/controllers');
         $target = Yii::getAlias('@api/web/docs/swagger.json');
 
-        passthru('"' . PHP_BINARY . '"' . " \"{$swagger}\" \"{$source}\" --output \"{$target}\"");
+        \passthru('"' . PHP_BINARY . '"' . " \"{$swagger}\" \"{$source}\" --output \"{$target}\"");
     }
 }

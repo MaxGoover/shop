@@ -8,12 +8,16 @@ use yii\console\Controller;
 
 class SearchController extends Controller
 {
-    private $indexer;
+    private $_productIndexer;
 
-    public function __construct($id, $module, ProductIndexer $indexer, $config = [])
+    public function __construct(
+        $id,
+        $module,
+        ProductIndexer $productIndexer,
+        $config = [])
     {
         parent::__construct($id, $module, $config);
-        $this->indexer = $indexer;
+        $this->_productIndexer = $productIndexer;
     }
 
     public function actionReindex(): void
@@ -25,14 +29,14 @@ class SearchController extends Controller
 
         $this->stdout('Clearing' . PHP_EOL);
 
-        $this->indexer->clear();
+        $this->_productIndexer->clear();
 
         $this->stdout('Indexing of products' . PHP_EOL);
 
         foreach ($query->each() as $product) {
             /** @var Product $product */
             $this->stdout('Product #' . $product->id . PHP_EOL);
-            $this->indexer->index($product);
+            $this->_productIndexer->index($product);
         }
 
         $this->stdout('Done!' . PHP_EOL);
