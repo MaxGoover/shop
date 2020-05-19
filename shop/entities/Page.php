@@ -32,7 +32,6 @@ class Page extends ActiveRecord
         $category = new static();
         $category->title = $title;
         $category->slug = $slug;
-        $category->title = $title;
         $category->content = $content;
         $category->meta = $meta;
         return $category;
@@ -51,6 +50,8 @@ class Page extends ActiveRecord
         return $this->meta->title ?: $this->title;
     }
 
+    ##################################################
+
     public static function tableName(): string
     {
         return '{{%pages}}';
@@ -59,8 +60,8 @@ class Page extends ActiveRecord
     public function behaviors(): array
     {
         return [
-            MetaBehavior::className(),
-            NestedSetsBehavior::className(),
+            MetaBehavior::class,
+            NestedSetsBehavior::class
         ];
     }
 
