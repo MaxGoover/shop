@@ -14,39 +14,14 @@ class CartController extends Controller
 {
     public $layout = 'blank';
 
-    private $products;
-    private $service;
+    private $_products;
+    private $_service;
 
     public function __construct($id, $module, CartService $service, ProductReadRepository $products, $config = [])
     {
         parent::__construct($id, $module, $config);
-        $this->products = $products;
-        $this->service = $service;
-    }
-
-    public function behaviors(): array
-    {
-        return [
-            'verbs' => [
-                'class' => VerbFilter::class,
-                'actions' => [
-                    'quantity' => ['POST'],
-                    'remove' => ['POST'],
-                ],
-            ],
-        ];
-    }
-
-    /**
-     * @return mixed
-     */
-    public function actionIndex()
-    {
-        $cart = $this->service->getCart();
-
-        return $this->render('index', [
-            'cart' => $cart,
-        ]);
+        $this->_products = $products;
+        $this->_service = $service;
     }
 
     /**
@@ -56,13 +31,13 @@ class CartController extends Controller
      */
     public function actionAdd($id)
     {
-        if (!$product = $this->products->find($id)) {
+        if (!$product = $this->_products->find($id)) {
             throw new NotFoundHttpException('The requested page does not exist.');
         }
 
         if (!$product->modifications) {
             try {
-                $this->service->add($product->id, null, 1);
+                $this->_service->add($product->id, null, 1);
                 Yii::$app->session->setFlash('success', 'Success!');
                 return $this->redirect(Yii::$app->request->referrer);
             } catch (\DomainException $e) {
@@ -77,7 +52,7 @@ class CartController extends Controller
 
         if ($form->load(Yii::$app->request->post()) && $form->validate()) {
             try {
-                $this->service->add($product->id, $form->modification, $form->quantity);
+                $this->_service->add($product->id, $form->modification, $form->quantity);
                 return $this->redirect(['index']);
             } catch (\DomainException $e) {
                 Yii::$app->errorHandler->logException($e);
@@ -92,13 +67,25 @@ class CartController extends Controller
     }
 
     /**
+     * @return mixed
+     */
+    public function actionIndex()
+    {
+        $cart = $this->_service->getCart();
+
+        return $this->render('index', [
+            'cart' => $cart,
+        ]);
+    }
+
+    /**
      * @param $id
      * @return mixed
      */
     public function actionQuantity($id)
     {
         try {
-            $this->service->set($id, (int)Yii::$app->request->post('quantity'));
+            $this->_service->set($id, (int)Yii::$app->request->post('quantity'));
         } catch (\DomainException $e) {
             Yii::$app->errorHandler->logException($e);
             Yii::$app->session->setFlash('error', $e->getMessage());
@@ -113,11 +100,26 @@ class CartController extends Controller
     public function actionRemove($id)
     {
         try {
-            $this->service->remove($id);
+            $this->_service->remove($id);
         } catch (\DomainException $e) {
             Yii::$app->errorHandler->logException($e);
             Yii::$app->session->setFlash('error', $e->getMessage());
         }
         return $this->redirect(['index']);
+    }
+
+    ##################################################
+
+    public function behaviors(): array
+    {
+        return [
+            'verbs' => [
+                'class' => VerbFilter::class,
+                'actions' => [
+                    'quantity' => ['POST'],
+                    'remove' => ['POST'],
+                ],
+            ],
+        ];
     }
 }

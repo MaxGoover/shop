@@ -12,34 +12,12 @@ class ResetController extends Controller
 {
     public $layout = 'cabinet';
 
-    private $service;
+    private $_service;
 
     public function __construct($id, $module, PasswordResetService $service, $config = [])
     {
         parent::__construct($id, $module, $config);
-        $this->service = $service;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function actionRequest()
-    {
-        $form = new PasswordResetRequestForm();
-        if ($form->load(Yii::$app->request->post()) && $form->validate()) {
-            try {
-                $this->service->request($form);
-                Yii::$app->session->setFlash('success', 'Check your email for further instructions.');
-                return $this->goHome();
-            } catch (\DomainException $e) {
-                Yii::$app->errorHandler->logException($e);
-                Yii::$app->session->setFlash('error', $e->getMessage());
-            }
-        }
-
-        return $this->render('request', [
-            'model' => $form,
-        ]);
+        $this->_service = $service;
     }
 
     /**
@@ -50,7 +28,7 @@ class ResetController extends Controller
     public function actionConfirm($token)
     {
         try {
-            $this->service->validateToken($token);
+            $this->_service->validateToken($token);
         } catch (\DomainException $e) {
             throw new BadRequestHttpException($e->getMessage());
         }
@@ -58,7 +36,7 @@ class ResetController extends Controller
         $form = new ResetPasswordForm();
         if ($form->load(Yii::$app->request->post()) && $form->validate()) {
             try {
-                $this->service->reset($token, $form);
+                $this->_service->reset($token, $form);
                 Yii::$app->session->setFlash('success', 'New password saved.');
             } catch (\DomainException $e) {
                 Yii::$app->errorHandler->logException($e);
@@ -68,6 +46,28 @@ class ResetController extends Controller
         }
 
         return $this->render('confirm', [
+            'model' => $form,
+        ]);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function actionRequest()
+    {
+        $form = new PasswordResetRequestForm();
+        if ($form->load(Yii::$app->request->post()) && $form->validate()) {
+            try {
+                $this->_service->request($form);
+                Yii::$app->session->setFlash('success', 'Check your email for further instructions.');
+                return $this->goHome();
+            } catch (\DomainException $e) {
+                Yii::$app->errorHandler->logException($e);
+                Yii::$app->session->setFlash('error', $e->getMessage());
+            }
+        }
+
+        return $this->render('request', [
             'model' => $form,
         ]);
     }

@@ -9,17 +9,17 @@ use yii\caching\TagDependency;
 
 class CategoryPersistenceListener
 {
-    private $cache;
+    private $_cache;
 
     public function __construct(Cache $cache)
     {
-        $this->cache = $cache;
+        $this->_cache = $cache;
     }
 
     public function handle(EntityPersisted $event): void
     {
         if ($event->entity instanceof Category) {
-            TagDependency::invalidate($this->cache, ['categories']);
+            TagDependency::invalidate($this->_cache, ['categories']);
         }
     }
 }
