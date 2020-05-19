@@ -1,4 +1,5 @@
 <?php
+
 namespace shop\forms\auth;
 
 use shop\entities\User\User;
@@ -11,9 +12,6 @@ class PasswordResetRequestForm extends Model
 {
     public $email;
 
-    /**
-     * {@inheritdoc}
-     */
     public function rules()
     {
         return [
