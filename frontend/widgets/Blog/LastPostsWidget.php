@@ -9,18 +9,18 @@ class LastPostsWidget extends Widget
 {
     public $limit;
 
-    private $repository;
+    private $_repository;
 
     public function __construct(PostReadRepository $repository, $config = [])
     {
         parent::__construct($config);
-        $this->repository = $repository;
+        $this->_repository = $repository;
     }
 
     public function run(): string
     {
         return $this->render('last-posts', [
-            'posts' => $this->repository->getLast($this->limit)
+            'posts' => $this->_repository->getLast($this->limit)
         ]);
     }
 }
