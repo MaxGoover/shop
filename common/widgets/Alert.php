@@ -1,4 +1,5 @@
 <?php
+
 namespace common\widgets;
 
 use Yii;
@@ -31,10 +32,10 @@ class Alert extends \yii\bootstrap\Widget
      * - value: the bootstrap alert type (i.e. danger, success, info, warning)
      */
     public $alertTypes = [
-        'error'   => 'alert-danger',
         'danger'  => 'alert-danger',
-        'success' => 'alert-success',
+        'error'   => 'alert-danger',
         'info'    => 'alert-info',
+        'success' => 'alert-success',
         'warning' => 'alert-warning'
     ];
     /**
