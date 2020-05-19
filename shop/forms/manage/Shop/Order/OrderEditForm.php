@@ -21,15 +21,17 @@ class OrderEditForm extends CompositeForm
         parent::__construct($config);
     }
 
+    protected function internalForms(): array
+    {
+        return ['delivery', 'customer'];
+    }
+
+    ##################################################
+
     public function rules(): array
     {
         return [
             [['note'], 'string'],
         ];
-    }
-
-    protected function internalForms(): array
-    {
-        return ['delivery', 'customer'];
     }
 }
