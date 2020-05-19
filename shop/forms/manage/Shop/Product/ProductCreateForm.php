@@ -34,11 +34,23 @@ class ProductCreateForm extends CompositeForm
         $this->categories = new CategoriesForm();
         $this->photos = new PhotosForm();
         $this->tags = new TagsForm();
-        $this->values = array_map(function (Characteristic $characteristic) {
+        $this->values = \array_map(function (Characteristic $characteristic) {
             return new ValueForm($characteristic);
         }, Characteristic::find()->orderBy('sort')->all());
         parent::__construct($config);
     }
+
+    public function brandsList(): array
+    {
+        return ArrayHelper::map(Brand::find()->orderBy('name')->asArray()->all(), 'id', 'name');
+    }
+
+    protected function internalForms(): array
+    {
+        return ['price', 'quantity', 'meta', 'photos', 'categories', 'tags', 'values'];
+    }
+
+    ##################################################
 
     public function rules(): array
     {
@@ -51,15 +63,5 @@ class ProductCreateForm extends CompositeForm
             ['description', 'string'],
             ['weight', 'integer', 'min' => 0],
         ];
-    }
-
-    public function brandsList(): array
-    {
-        return ArrayHelper::map(Brand::find()->orderBy('name')->asArray()->all(), 'id', 'name');
-    }
-
-    protected function internalForms(): array
-    {
-        return ['price', 'quantity', 'meta', 'photos', 'categories', 'tags', 'values'];
     }
 }

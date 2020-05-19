@@ -23,13 +23,9 @@ class TagsForm extends Model
         parent::__construct($config);
     }
 
-    public function rules(): array
+    public function getNewNames(): array
     {
-        return [
-            ['existing', 'each', 'rule' => ['integer']],
-            ['existing', 'default', 'value' => []],
-            ['textNew', 'string'],
-        ];
+        return \array_filter(\array_map('trim', \preg_split('#\s*,\s*#i', $this->textNew)));
     }
 
     public function tagsList(): array
@@ -37,8 +33,14 @@ class TagsForm extends Model
         return ArrayHelper::map(Tag::find()->orderBy('name')->asArray()->all(), 'id', 'name');
     }
 
-    public function getNewNames(): array
+    ##################################################
+
+    public function rules(): array
     {
-        return array_filter(array_map('trim', preg_split('#\s*,\s*#i', $this->textNew)));
+        return [
+            ['existing', 'each', 'rule' => ['integer']],
+            ['existing', 'default', 'value' => []],
+            ['textNew', 'string'],
+        ];
     }
 }

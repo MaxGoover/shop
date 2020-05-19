@@ -12,8 +12,6 @@ class PhotosForm extends Model
      */
     public $files;
 
-    ##########################
-
     public function beforeValidate(): bool
     {
         if (parent::beforeValidate()) {
