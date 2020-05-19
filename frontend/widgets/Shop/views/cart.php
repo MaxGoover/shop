@@ -1,10 +1,10 @@
 <?php
 
-/* @var $cart \shop\cart\Cart */
-
 use shop\helpers\PriceHelper;
 use yii\helpers\Html;
 use yii\helpers\Url;
+
+/* @var $cart \shop\cart\Cart */
 ?>
 
 <div id="cart" class="btn-group btn-block">

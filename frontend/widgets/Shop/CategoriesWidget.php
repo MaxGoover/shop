@@ -31,7 +31,7 @@ class CategoriesWidget extends Widget
                 ['/shop/catalog/category', 'id' => $view->category->id],
                 ['class' => $active ? 'list-group-item active' : 'list-group-item']
             );
-        }, $this->categories->getTreeWithSubsOf($this->active))), [
+        }, $this->_categories->getTreeWithSubsOf($this->active))), [
             'class' => 'list-group',
         ]);
     }
