@@ -6,7 +6,6 @@ use shop\entities\Blog\Category;
 use shop\entities\Blog\Post\Post;
 use shop\forms\CompositeForm;
 use shop\forms\manage\MetaForm;
-use shop\validators\SlugValidator;
 use yii\helpers\ArrayHelper;
 use yii\web\UploadedFile;
 
@@ -38,6 +37,18 @@ class PostForm extends CompositeForm
         parent::__construct($config);
     }
 
+    public function categoriesList(): array
+    {
+        return ArrayHelper::map(Category::find()->orderBy('sort')->asArray()->all(), 'id', 'name');
+    }
+
+    protected function internalForms(): array
+    {
+        return ['meta', 'tags'];
+    }
+
+    ##################################################
+
     public function rules(): array
     {
         return [
@@ -47,16 +58,6 @@ class PostForm extends CompositeForm
             [['description', 'content'], 'string'],
             [['photo'], 'image'],
         ];
-    }
-
-    public function categoriesList(): array
-    {
-        return ArrayHelper::map(Category::find()->orderBy('sort')->asArray()->all(), 'id', 'name');
-    }
-
-    protected function internalForms(): array
-    {
-        return ['meta', 'tags'];
     }
 
     public function beforeValidate(): bool
