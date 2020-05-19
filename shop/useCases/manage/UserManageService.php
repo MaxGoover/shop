@@ -12,13 +12,13 @@ use shop\services\TransactionManager;
 
 class UserManageService
 {
-    private $repository;
-    private $roles;
-    private $transaction;
+    private $_repository;
+    private $_roles;
+    private $_transaction;
     /**
      * @var Newsletter
      */
-    private $newsletter;
+    private $_newsletter;
 
     public function __construct(
         UserRepository $repository,
@@ -27,10 +27,16 @@ class UserManageService
         Newsletter $newsletter
     )
     {
-        $this->repository = $repository;
-        $this->roles = $roles;
-        $this->transaction = $transaction;
-        $this->newsletter = $newsletter;
+        $this->_repository = $repository;
+        $this->_roles = $roles;
+        $this->_transaction = $transaction;
+        $this->_newsletter = $newsletter;
+    }
+
+    public function assignRole($id, $role): void
+    {
+        $user = $this->_repository->get($id);
+        $this->_roles->assign($user->id, $role);
     }
 
     public function create(UserCreateForm $form): User
@@ -41,38 +47,32 @@ class UserManageService
             $form->phone,
             $form->password
         );
-        $this->transaction->wrap(function () use ($user, $form) {
-            $this->repository->save($user);
-            $this->roles->assign($user->id, $form->role);
-            $this->newsletter->subscribe($user->email);
+        $this->_transaction->wrap(function () use ($user, $form) {
+            $this->_repository->save($user);
+            $this->_roles->assign($user->id, $form->role);
+            $this->_newsletter->subscribe($user->email);
         });
         return $user;
     }
 
     public function edit($id, UserEditForm $form): void
     {
-        $user = $this->repository->get($id);
+        $user = $this->_repository->get($id);
         $user->edit(
             $form->username,
             $form->email,
             $form->phone
         );
-        $this->transaction->wrap(function () use ($user, $form) {
-            $this->repository->save($user);
-            $this->roles->assign($user->id, $form->role);
+        $this->_transaction->wrap(function () use ($user, $form) {
+            $this->_repository->save($user);
+            $this->_roles->assign($user->id, $form->role);
         });
-    }
-
-    public function assignRole($id, $role): void
-    {
-        $user = $this->repository->get($id);
-        $this->roles->assign($user->id, $role);
     }
 
     public function remove($id): void
     {
-        $user = $this->repository->get($id);
-        $this->repository->remove($user);
-        $this->newsletter->unsubscribe($user->email);
+        $user = $this->_repository->get($id);
+        $this->_repository->remove($user);
+        $this->_newsletter->unsubscribe($user->email);
     }
 }
