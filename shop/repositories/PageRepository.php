@@ -14,17 +14,17 @@ class PageRepository
         return $page;
     }
 
-    public function save(Page $page): void
-    {
-        if (!$page->save()) {
-            throw new \RuntimeException('Saving error.');
-        }
-    }
-
     public function remove(Page $page): void
     {
         if (!$page->delete()) {
             throw new \RuntimeException('Removing error.');
+        }
+    }
+
+    public function save(Page $page): void
+    {
+        if (!$page->save()) {
+            throw new \RuntimeException('Saving error.');
         }
     }
 }
