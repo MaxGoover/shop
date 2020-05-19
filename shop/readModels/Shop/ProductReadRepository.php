@@ -19,11 +19,11 @@ use yii\helpers\ArrayHelper;
 
 class ProductReadRepository
 {
-    private $client;
+    private $_client;
 
     public function __construct(Client $client)
     {
-        $this->client = $client;
+        $this->_client = $client;
     }
 
     public function count(): int
@@ -31,9 +31,46 @@ class ProductReadRepository
         return Product::find()->active()->count();
     }
 
+    public function find($id): ?Product
+    {
+        return Product::find()->active()->andWhere(['id' => $id])->one();
+    }
+
+    public function getAll(): DataProviderInterface
+    {
+        $query = Product::find()->alias('p')->active('p')->with('mainPhoto');
+        return $this->_getProvider($query);
+    }
+
+    public function getAllByBrand(Brand $brand): DataProviderInterface
+    {
+        $query = Product::find()->alias('p')->active('p')->with('mainPhoto');
+        $query->andWhere(['p.brand_id' => $brand->id]);
+        return $this->_getProvider($query);
+    }
+
+    public function getAllByCategory(Category $category): DataProviderInterface
+    {
+        $query = Product::find()->alias('p')->active('p')->with('mainPhoto', 'category');
+        $ids = ArrayHelper::merge([$category->id], $category->getDescendants()->select('id')->column());
+        $query->joinWith(['categoryAssignments ca'], false);
+        $query->andWhere(['or', ['p.category_id' => $ids], ['ca.category_id' => $ids]]);
+        $query->groupBy('p.id');
+        return $this->_getProvider($query);
+    }
+
     public function getAllByRange(int $offset, int $limit): array
     {
         return Product::find()->alias('p')->active('p')->orderBy(['id' => SORT_ASC])->limit($limit)->offset($offset)->all();
+    }
+
+    public function getAllByTag(Tag $tag): DataProviderInterface
+    {
+        $query = Product::find()->alias('p')->active('p')->with('mainPhoto');
+        $query->joinWith(['tagAssignments ta'], false);
+        $query->andWhere(['ta.tag_id' => $tag->id]);
+        $query->groupBy('p.id');
+        return $this->_getProvider($query);
     }
 
     /**
@@ -44,49 +81,102 @@ class ProductReadRepository
         return Product::find()->alias('p')->active('p')->with('mainPhoto', 'brand')->each();
     }
 
-    public function getAll(): DataProviderInterface
-    {
-        $query = Product::find()->alias('p')->active('p')->with('mainPhoto');
-        return $this->getProvider($query);
-    }
-
-    public function getAllByCategory(Category $category): DataProviderInterface
-    {
-        $query = Product::find()->alias('p')->active('p')->with('mainPhoto', 'category');
-        $ids = ArrayHelper::merge([$category->id], $category->getDescendants()->select('id')->column());
-        $query->joinWith(['categoryAssignments ca'], false);
-        $query->andWhere(['or', ['p.category_id' => $ids], ['ca.category_id' => $ids]]);
-        $query->groupBy('p.id');
-        return $this->getProvider($query);
-    }
-
-    public function getAllByBrand(Brand $brand): DataProviderInterface
-    {
-        $query = Product::find()->alias('p')->active('p')->with('mainPhoto');
-        $query->andWhere(['p.brand_id' => $brand->id]);
-        return $this->getProvider($query);
-    }
-
-    public function getAllByTag(Tag $tag): DataProviderInterface
-    {
-        $query = Product::find()->alias('p')->active('p')->with('mainPhoto');
-        $query->joinWith(['tagAssignments ta'], false);
-        $query->andWhere(['ta.tag_id' => $tag->id]);
-        $query->groupBy('p.id');
-        return $this->getProvider($query);
-    }
-
     public function getFeatured($limit): array
     {
         return Product::find()->active()->with('mainPhoto')->orderBy(['id' => SORT_DESC])->limit($limit)->all();
     }
 
-    public function find($id): ?Product
+    public function getWishList($userId): ActiveDataProvider
     {
-        return Product::find()->active()->andWhere(['id' => $id])->one();
+        return new ActiveDataProvider([
+            'query' => Product::find()
+                ->alias('p')->active('p')
+                ->joinWith('wishlistItems w', false, 'INNER JOIN')
+                ->andWhere(['w.user_id' => $userId]),
+            'sort' => false,
+        ]);
     }
 
-    private function getProvider(ActiveQuery $query): ActiveDataProvider
+    public function search(SearchForm $form): DataProviderInterface
+    {
+        $pagination = new Pagination([
+            'pageSizeLimit' => [15, 100],
+            'validatePage' => false,
+        ]);
+
+        $sort = new Sort([
+            'defaultOrder' => ['id' => SORT_DESC],
+            'attributes' => [
+                'id',
+                'name',
+                'price',
+                'rating',
+            ],
+        ]);
+
+        $response = $this->_client->search([
+            'index' => 'shop',
+            'type' => 'products',
+            'body' => [
+                '_source' => ['id'],
+                'from' => $pagination->getOffset(),
+                'size' => $pagination->getLimit(),
+                'sort' => \array_map(function ($attribute, $direction) {
+                    return [$attribute => ['order' => $direction === SORT_ASC ? 'asc' : 'desc']];
+                }, \array_keys($sort->getOrders()), $sort->getOrders()),
+                'query' => [
+                    'bool' => [
+                        'must' => \array_merge(
+                            \array_filter([
+                                !empty($form->category) ? ['term' => ['categories' => $form->category]] : false,
+                                !empty($form->brand) ? ['term' => ['brand' => $form->brand]] : false,
+                                !empty($form->text) ? ['multi_match' => [
+                                    'query' => $form->text,
+                                    'fields' => [ 'name^3', 'description' ]
+                                ]] : false,
+                            ]),
+                            \array_map(function (ValueForm $value) {
+                                return ['nested' => [
+                                    'path' => 'values',
+                                    'query' => [
+                                        'bool' => [
+                                            'must' => \array_filter([
+                                                ['match' => ['values.characteristic' => $value->getId()]],
+                                                !empty($value->equal) ? ['match' => ['values.value_string' => $value->equal]] : false,
+                                                !empty($value->from) ? ['range' => ['values.value_int' => ['gte' => $value->from]]] : false,
+                                                !empty($value->to) ? ['range' => ['values.value_int' => ['lte' => $value->to]]] : false,
+                                            ]),
+                                        ],
+                                    ],
+                                ]];
+                            }, \array_filter($form->values, function (ValueForm $value) { return $value->isFilled(); }))
+                        )
+                    ],
+                ],
+            ],
+        ]);
+
+        $ids = ArrayHelper::getColumn($response['hits']['hits'], '_source.id');
+
+        if ($ids) {
+            $query = Product::find()
+                ->active()
+                ->with('mainPhoto')
+                ->andWhere(['id' => $ids])
+                ->orderBy(new Expression('FIELD(id,' . \implode(',', $ids) . ')'));
+        } else {
+            $query = Product::find()->andWhere(['id' => 0]);
+        }
+
+        return new SimpleActiveDataProvider([
+            'query' => $query,
+            'totalCount' => $response['hits']['total'],
+            'pagination' => $pagination,
+            'sort' => $sort,
+        ]);
+    }
+
+    private function _getProvider(ActiveQuery $query): ActiveDataProvider
     {
         return new ActiveDataProvider([
             'query' => $query,
@@ -114,96 +204,6 @@ class ProductReadRepository
             'pagination' => [
                 'pageSizeLimit' => [15, 100],
             ]
-        ]);
-    }
-
-    public function search(SearchForm $form): DataProviderInterface
-    {
-        $pagination = new Pagination([
-            'pageSizeLimit' => [15, 100],
-            'validatePage' => false,
-        ]);
-
-        $sort = new Sort([
-            'defaultOrder' => ['id' => SORT_DESC],
-            'attributes' => [
-                'id',
-                'name',
-                'price',
-                'rating',
-            ],
-        ]);
-
-        $response = $this->client->search([
-            'index' => 'shop',
-            'type' => 'products',
-            'body' => [
-                '_source' => ['id'],
-                'from' => $pagination->getOffset(),
-                'size' => $pagination->getLimit(),
-                'sort' => array_map(function ($attribute, $direction) {
-                    return [$attribute => ['order' => $direction === SORT_ASC ? 'asc' : 'desc']];
-                }, array_keys($sort->getOrders()), $sort->getOrders()),
-                'query' => [
-                    'bool' => [
-                        'must' => array_merge(
-                            array_filter([
-                                !empty($form->category) ? ['term' => ['categories' => $form->category]] : false,
-                                !empty($form->brand) ? ['term' => ['brand' => $form->brand]] : false,
-                                !empty($form->text) ? ['multi_match' => [
-                                    'query' => $form->text,
-                                    'fields' => [ 'name^3', 'description' ]
-                                ]] : false,
-                            ]),
-                            array_map(function (ValueForm $value) {
-                                return ['nested' => [
-                                    'path' => 'values',
-                                    'query' => [
-                                        'bool' => [
-                                            'must' => array_filter([
-                                                ['match' => ['values.characteristic' => $value->getId()]],
-                                                !empty($value->equal) ? ['match' => ['values.value_string' => $value->equal]] : false,
-                                                !empty($value->from) ? ['range' => ['values.value_int' => ['gte' => $value->from]]] : false,
-                                                !empty($value->to) ? ['range' => ['values.value_int' => ['lte' => $value->to]]] : false,
-                                            ]),
-                                        ],
-                                    ],
-                                ]];
-                            }, array_filter($form->values, function (ValueForm $value) { return $value->isFilled(); }))
-                        )
-                    ],
-                ],
-            ],
-        ]);
-
-        $ids = ArrayHelper::getColumn($response['hits']['hits'], '_source.id');
-
-        if ($ids) {
-            $query = Product::find()
-                ->active()
-                ->with('mainPhoto')
-                ->andWhere(['id' => $ids])
-                ->orderBy(new Expression('FIELD(id,' . implode(',', $ids) . ')'));
-        } else {
-            $query = Product::find()->andWhere(['id' => 0]);
-        }
-
-        return new SimpleActiveDataProvider([
-            'query' => $query,
-            'totalCount' => $response['hits']['total'],
-            'pagination' => $pagination,
-            'sort' => $sort,
-        ]);
-    }
-
-    public function getWishList($userId): ActiveDataProvider
-    {
-        return new ActiveDataProvider([
-            'query' => Product::find()
-                ->alias('p')->active('p')
-                ->joinWith('wishlistItems w', false, 'INNER JOIN')
-                ->andWhere(['w.user_id' => $userId]),
-            'sort' => false,
         ]);
     }
 }
