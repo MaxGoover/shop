@@ -7,11 +7,16 @@ use yii\queue\Queue;
 
 class AsyncEventDispatcher implements EventDispatcher
 {
-    private $queue;
+    private $_queue;
 
     public function __construct(Queue $queue)
     {
-        $this->queue = $queue;
+        $this->_queue = $queue;
+    }
+
+    public function dispatch($event): void
+    {
+        $this->_queue->push(new AsyncEventJob($event));
     }
 
     public function dispatchAll(array $events): void
@@ -19,10 +24,5 @@ class AsyncEventDispatcher implements EventDispatcher
         foreach ($events as $event) {
             $this->dispatch($event);
         }
-    }
-
-    public function dispatch($event): void
-    {
-        $this->queue->push(new AsyncEventJob($event));
     }
 }
