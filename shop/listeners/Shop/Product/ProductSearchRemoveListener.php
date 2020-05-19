@@ -10,20 +10,20 @@ use yii\caching\TagDependency;
 
 class ProductSearchRemoveListener
 {
-    private $indexer;
-    private $cache;
+    private $_productIndexer;
+    private $_cache;
 
-    public function __construct(ProductIndexer $indexer, Cache $cache)
+    public function __construct(ProductIndexer $productIndexer, Cache $cache)
     {
-        $this->indexer = $indexer;
-        $this->cache = $cache;
+        $this->_productIndexer = $productIndexer;
+        $this->_cache = $cache;
     }
 
     public function handle(EntityRemoved $event): void
     {
         if ($event->entity instanceof Product) {
-            $this->indexer->remove($event->entity);
-            TagDependency::invalidate($this->cache, ['products']);
+            $this->_productIndexer->remove($event->entity);
+            TagDependency::invalidate($this->_cache, ['products']);
         }
     }
 }
