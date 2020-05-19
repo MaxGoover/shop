@@ -10,13 +10,13 @@ use shop\repositories\Blog\PostRepository;
 
 class CategoryManageService
 {
-    private $categories;
-    private $posts;
+    private $_categories;
+    private $_posts;
 
     public function __construct(CategoryRepository $categories, PostRepository $posts)
     {
-        $this->categories = $categories;
-        $this->posts = $posts;
+        $this->_categories = $categories;
+        $this->_posts = $posts;
     }
 
     public function create(CategoryForm $form): Category
@@ -33,13 +33,13 @@ class CategoryManageService
                 $form->meta->keywords
             )
         );
-        $this->categories->save($category);
+        $this->_categories->save($category);
         return $category;
     }
 
     public function edit($id, CategoryForm $form): void
     {
-        $category = $this->categories->get($id);
+        $category = $this->_categories->get($id);
         $category->edit(
             $form->name,
             $form->slug,
@@ -52,15 +52,15 @@ class CategoryManageService
                 $form->meta->keywords
             )
         );
-        $this->categories->save($category);
+        $this->_categories->save($category);
     }
 
     public function remove($id): void
     {
-        $category = $this->categories->get($id);
-        if ($this->posts->existsByCategory($category->id)) {
+        $category = $this->_categories->get($id);
+        if ($this->_posts->existsByCategory($category->id)) {
             throw new \DomainException('Unable to remove category with posts.');
         }
-        $this->categories->remove($category);
+        $this->_categories->remove($category);
     }
 }

@@ -2,9 +2,9 @@
 
 namespace shop\useCases\manage\Blog;
 
-use shop\entities\Meta;
 use shop\entities\Blog\Post\Post;
 use shop\entities\Blog\Tag;
+use shop\entities\Meta;
 use shop\forms\manage\Blog\Post\PostForm;
 use shop\repositories\Blog\CategoryRepository;
 use shop\repositories\Blog\PostRepository;
@@ -13,10 +13,10 @@ use shop\services\TransactionManager;
 
 class PostManageService
 {
-    private $posts;
-    private $categories;
-    private $tags;
-    private $transaction;
+    private $_posts;
+    private $_categories;
+    private $_tags;
+    private $_transaction;
 
     public function __construct(
         PostRepository $posts,
@@ -25,15 +25,22 @@ class PostManageService
         TransactionManager $transaction
     )
     {
-        $this->posts = $posts;
-        $this->categories = $categories;
-        $this->tags = $tags;
-        $this->transaction = $transaction;
+        $this->_posts = $posts;
+        $this->_categories = $categories;
+        $this->_tags = $tags;
+        $this->_transaction = $transaction;
+    }
+
+    public function activate($id): void
+    {
+        $post = $this->_posts->get($id);
+        $post->activate();
+        $this->_posts->save($post);
     }
 
     public function create(PostForm $form): Post
     {
-        $category = $this->categories->get($form->categoryId);
+        $category = $this->_categories->get($form->categoryId);
 
         $post = Post::create(
             $category->id,
@@ -52,28 +59,35 @@ class PostManageService
         }
 
         foreach ($form->tags->existing as $tagId) {
-            $tag = $this->tags->get($tagId);
+            $tag = $this->_tags->get($tagId);
             $post->assignTag($tag->id);
         }
 
-        $this->transaction->wrap(function () use ($post, $form) {
+        $this->_transaction->wrap(function () use ($post, $form) {
             foreach ($form->tags->newNames as $tagName) {
-                if (!$tag = $this->tags->findByName($tagName)) {
+                if (!$tag = $this->_tags->findByName($tagName)) {
                     $tag = Tag::create($tagName, $tagName);
-                    $this->tags->save($tag);
+                    $this->_tags->save($tag);
                 }
                 $post->assignTag($tag->id);
             }
-            $this->posts->save($post);
+            $this->_posts->save($post);
         });
 
         return $post;
     }
 
+    public function draft($id): void
+    {
+        $post = $this->_posts->get($id);
+        $post->draft();
+        $this->_posts->save($post);
+    }
+
     public function edit($id, PostForm $form): void
     {
-        $post = $this->posts->get($id);
-        $category = $this->categories->get($form->categoryId);
+        $post = $this->_posts->get($id);
+        $category = $this->_categories->get($form->categoryId);
 
         $post->edit(
             $category->id,
@@ -91,43 +105,29 @@ class PostManageService
             $post->setPhoto($form->photo);
         }
 
-        $this->transaction->wrap(function () use ($post, $form) {
+        $this->_transaction->wrap(function () use ($post, $form) {
 
             $post->revokeTags();
-            $this->posts->save($post);
+            $this->_posts->save($post);
 
             foreach ($form->tags->existing as $tagId) {
-                $tag = $this->tags->get($tagId);
+                $tag = $this->_tags->get($tagId);
                 $post->assignTag($tag->id);
             }
             foreach ($form->tags->newNames as $tagName) {
-                if (!$tag = $this->tags->findByName($tagName)) {
+                if (!$tag = $this->_tags->findByName($tagName)) {
                     $tag = Tag::create($tagName, $tagName);
-                    $this->tags->save($tag);
+                    $this->_tags->save($tag);
                 }
                 $post->assignTag($tag->id);
             }
-            $this->posts->save($post);
+            $this->_posts->save($post);
         });
-    }
-
-    public function activate($id): void
-    {
-        $post = $this->posts->get($id);
-        $post->activate();
-        $this->posts->save($post);
-    }
-
-    public function draft($id): void
-    {
-        $post = $this->posts->get($id);
-        $post->draft();
-        $this->posts->save($post);
     }
 
     public function remove($id): void
     {
-        $post = $this->posts->get($id);
-        $this->posts->remove($post);
+        $post = $this->_posts->get($id);
+        $this->_posts->remove($post);
     }
 }

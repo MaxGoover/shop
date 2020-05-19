@@ -8,11 +8,11 @@ use shop\repositories\Blog\TagRepository;
 
 class TagManageService
 {
-    private $tags;
+    private $_tags;
 
     public function __construct(TagRepository $tags)
     {
-        $this->tags = $tags;
+        $this->_tags = $tags;
     }
 
     public function create(TagForm $form): Tag
@@ -21,23 +21,23 @@ class TagManageService
             $form->name,
             $form->slug
         );
-        $this->tags->save($tag);
+        $this->_tags->save($tag);
         return $tag;
     }
 
     public function edit($id, TagForm $form): void
     {
-        $tag = $this->tags->get($id);
+        $tag = $this->_tags->get($id);
         $tag->edit(
             $form->name,
             $form->slug
         );
-        $this->tags->save($tag);
+        $this->_tags->save($tag);
     }
 
     public function remove($id): void
     {
-        $tag = $this->tags->get($id);
-        $this->tags->remove($tag);
+        $tag = $this->_tags->get($id);
+        $this->_tags->remove($tag);
     }
 }
