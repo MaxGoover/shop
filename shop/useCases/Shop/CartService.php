@@ -8,39 +8,39 @@ use shop\repositories\Shop\ProductRepository;
 
 class CartService
 {
-    private $cart;
-    private $products;
+    private $_cart;
+    private $_products;
 
     public function __construct(Cart $cart, ProductRepository $products)
     {
-        $this->cart = $cart;
-        $this->products = $products;
-    }
-
-    public function getCart(): Cart
-    {
-        return $this->cart;
+        $this->_cart = $cart;
+        $this->_products = $products;
     }
 
     public function add($productId, $modificationId, $quantity): void
     {
-        $product = $this->products->get($productId);
+        $product = $this->_products->get($productId);
         $modId = $modificationId ? $product->getModification($modificationId)->id : null;
-        $this->cart->add(new CartItem($product, $modId, $quantity));
-    }
-
-    public function set($id, $quantity): void
-    {
-        $this->cart->set($id, $quantity);
-    }
-
-    public function remove($id): void
-    {
-        $this->cart->remove($id);
+        $this->_cart->add(new CartItem($product, $modId, $quantity));
     }
 
     public function clear(): void
     {
-        $this->cart->clear();
+        $this->_cart->clear();
+    }
+
+    public function getCart(): Cart
+    {
+        return $this->_cart;
+    }
+
+    public function remove($id): void
+    {
+        $this->_cart->remove($id);
+    }
+
+    public function set($id, $quantity): void
+    {
+        $this->_cart->set($id, $quantity);
     }
 }
