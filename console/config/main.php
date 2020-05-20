@@ -30,8 +30,8 @@ return [
         'migrate-rbac'       => [
             'class'          => \yii\console\controllers\MigrateController::class,
             'migrationPath'  => [
-                '@yii/rbac/migrations',
                 '@app/migrations/rbac',
+                '@yii/rbac/migrations',
             ],
             'migrationTable' => 'migration_rbac',
         ],
