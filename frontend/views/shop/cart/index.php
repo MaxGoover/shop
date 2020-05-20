@@ -1,13 +1,13 @@
 <?php
 
-/* @var $this yii\web\View */
-/* @var $cart \shop\cart\Cart */
-
 use shop\helpers\PriceHelper;
 use shop\helpers\WeightHelper;
 use yii\helpers\Html;
 use yii\helpers\Url;
 
+
+/* @var $this yii\web\View */
+/* @var $cart \shop\cart\Cart */
 $this->title = 'Shopping Cart';
 $this->params['breadcrumbs'][] = ['label' => 'Catalog', 'url' => ['/shop/catalog/index']];
 $this->params['breadcrumbs'][] = $this->title;

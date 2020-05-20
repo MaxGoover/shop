@@ -1,10 +1,10 @@
 <?php
 
+use yii\helpers\Html;
+
 /* @var $this yii\web\View */
 /* @var $dataProvider yii\data\DataProviderInterface */
 /* @var $category shop\entities\Shop\Category */
-
-use yii\helpers\Html;
 
 $this->title = $category->getSeoTitle();
 

@@ -1,11 +1,10 @@
 <?php
 
-/* @var $this \yii\web\View */
-/* @var $content string */
-
 use yii\helpers\Html;
 use yii\helpers\Url;
 
+/* @var $this \yii\web\View */
+/* @var $content string */
 ?>
 <?php $this->beginContent('@frontend/views/layouts/main.php') ?>
 

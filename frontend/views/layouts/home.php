@@ -1,10 +1,10 @@
 <?php
 
-/* @var $this \yii\web\View */
-/* @var $content string */
-
 use frontend\widgets\Blog\LastPostsWidget;
 use frontend\widgets\Shop\FeaturedProductsWidget;
+
+/* @var $this \yii\web\View */
+/* @var $content string */
 
 \frontend\assets\OwlCarouselAsset::register($this);
 

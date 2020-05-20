@@ -1,9 +1,9 @@
 <?php
 
-/* @var $category shop\entities\Shop\Category */
-
 use yii\helpers\Html;
 use yii\helpers\Url;
+
+/* @var $category shop\entities\Shop\Category */
 ?>
 
 <?php if ($category->children): ?>

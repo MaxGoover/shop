@@ -1,11 +1,10 @@
 <?php
 
-/* @var $this yii\web\View */
-/* @var $dataProvider yii\data\DataProviderInterface */
-/* @var $searchForm \shop\forms\Shop\Search\SearchForm */
-
 use yii\bootstrap\ActiveForm;
 use yii\helpers\Html;
+    /* @var $this yii\web\View */
+/* @var $dataProvider yii\data\DataProviderInterface */
+/* @var $searchForm \shop\forms\Shop\Search\SearchForm */
 
 $this->title = 'Search';
 

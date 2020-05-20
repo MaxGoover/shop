@@ -1,14 +1,14 @@
 <?php
 
-/* @var $this yii\web\View */
-/* @var $cart \shop\cart\Cart */
-/* @var $model \shop\forms\Shop\Order\OrderForm */
-
 use shop\helpers\PriceHelper;
 use shop\helpers\WeightHelper;
 use yii\bootstrap\ActiveForm;
 use yii\helpers\Html;
 use yii\helpers\Url;
+
+/* @var $this yii\web\View */
+/* @var $cart \shop\cart\Cart */
+/* @var $model \shop\forms\Shop\Order\OrderForm */
 
 $this->title = 'Checkout';
 $this->params['breadcrumbs'][] = ['label' => 'Catalog', 'url' => ['/shop/catalog/index']];

@@ -1,15 +1,15 @@
 <?php
 
-/* @var $this yii\web\View */
-/* @var $product shop\entities\Shop\Product\Product */
-/* @var $cartForm shop\forms\Shop\AddToCartForm */
-/* @var $reviewForm shop\forms\Shop\ReviewForm */
-
 use frontend\assets\MagnificPopupAsset;
 use shop\helpers\PriceHelper;
 use yii\bootstrap\ActiveForm;
 use yii\helpers\Html;
 use yii\helpers\Url;
+
+/* @var $this yii\web\View */
+/* @var $product shop\entities\Shop\Product\Product */
+/* @var $cartForm shop\forms\Shop\AddToCartForm */
+/* @var $reviewForm shop\forms\Shop\ReviewForm */
 
 $this->title = $product->name;
 

@@ -1,12 +1,12 @@
 <?php
 
-/* @var $this yii\web\View */
-/* @var $product shop\entities\Shop\Product\Product */
-
 use shop\helpers\PriceHelper;
 use yii\helpers\Html;
 use yii\helpers\StringHelper;
 use yii\helpers\Url;
+
+/* @var $this yii\web\View */
+/* @var $product shop\entities\Shop\Product\Product */
 
 $url = Url::to(['product', 'id' =>$product->id]);
 

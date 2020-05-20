@@ -1,10 +1,9 @@
 <?php
 
-/* @var $this \yii\web\View */
-/* @var $content string */
-
 use frontend\widgets\Shop\CategoriesWidget;
 
+/* @var $this \yii\web\View */
+/* @var $content string */
 ?>
 <?php $this->beginContent('@frontend/views/layouts/main.php') ?>
 

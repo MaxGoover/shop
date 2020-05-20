@@ -1,10 +1,11 @@
 <?php
 
+
+use yii\helpers\Html;
+
 /* @var $this yii\web\View */
 /* @var $dataProvider yii\data\DataProviderInterface */
 /* @var $brand shop\entities\Shop\Brand */
-
-use yii\helpers\Html;
 
 $this->title = $brand->getSeoTitle();
 

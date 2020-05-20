@@ -1,12 +1,11 @@
 <?php
 
-/* @var $this yii\web\View */
-/* @var $dataProvider yii\data\DataProviderInterface */
-
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\widgets\LinkPager;
 
+/* @var $this yii\web\View */
+/* @var $dataProvider yii\data\DataProviderInterface */
 ?>
 <div class="row">
     <div class="col-md-2 col-sm-6 hidden-xs">
