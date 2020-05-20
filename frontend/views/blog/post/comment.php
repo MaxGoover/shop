@@ -1,11 +1,11 @@
 <?php
 
+use yii\bootstrap\ActiveForm;
+use yii\helpers\Html;
+
 /* @var $this yii\web\View */
 /* @var $post shop\entities\Blog\Post\Post */
 /* @var $model \shop\forms\Blog\CommentForm */
-
-use yii\bootstrap\ActiveForm;
-use yii\helpers\Html;
 
 $this->title = 'Comment';
 

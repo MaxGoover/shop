@@ -1,10 +1,10 @@
 <?php
 
+use yii\helpers\Html;
+
 /* @var $this yii\web\View */
 /* @var $dataProvider yii\data\DataProviderInterface */
 /* @var $category shop\entities\Blog\Category */
-
-use yii\helpers\Html;
 
 $this->title = $category->getSeoTitle();
 
@@ -17,7 +17,7 @@ $this->params['breadcrumbs'][] = $category->name;
 $this->params['active_category'] = $category;
 ?>
 
-<h1><?= Html::encode($category->getHeadingTile()) ?></h1>
+<h1><?= Html::encode($category->getHeadingTitle()) ?></h1>
 
 <?php if (trim($category->description)): ?>
     <div class="panel panel-default">

@@ -1,10 +1,10 @@
 <?php
 
-/* @var $this yii\web\View */
-/* @var $model shop\entities\Blog\Post\Post */
-
 use yii\helpers\Html;
 use yii\helpers\Url;
+
+/* @var $this yii\web\View */
+/* @var $model shop\entities\Blog\Post\Post */
 
 $url = Url::to(['post', 'id' =>$model->id]);
 ?>

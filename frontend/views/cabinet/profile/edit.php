@@ -1,11 +1,11 @@
 <?php
 
+use kartik\form\ActiveForm;
+use yii\helpers\Html;
+
 /* @var $this yii\web\View */
 /* @var $model shop\forms\manage\User\UserEditForm */
 /* @var $user shop\entities\User\User */
-
-use kartik\form\ActiveForm;
-use yii\helpers\Html;
 
 $this->title = 'Edit Profile';
 $this->params['breadcrumbs'][] = ['label' => 'Cabinet', 'url' => ['cabinet/default/index']];

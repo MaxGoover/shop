@@ -1,12 +1,12 @@
 <?php
 
-/* @var $this yii\web\View */
-
 use shop\entities\Shop\Product\Product;
 use shop\helpers\PriceHelper;
 use yii\grid\ActionColumn;
 use yii\grid\GridView;
 use yii\helpers\Html;
+
+/* @var $this yii\web\View */
 
 $this->title = 'Wish List';
 $this->params['breadcrumbs'][] = ['label' => 'Cabinet', 'url' => ['cabinet/default/index']];

@@ -2,7 +2,6 @@
 
 /* @var $this yii\web\View */
 /* @var $dataProvider yii\data\DataProviderInterface */
-
 ?>
 
 <?= \yii\widgets\ListView::widget([

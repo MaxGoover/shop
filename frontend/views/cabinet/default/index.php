@@ -1,8 +1,8 @@
 <?php
 
-/* @var $this yii\web\View */
-
 use yii\helpers\Html;
+
+/* @var $this yii\web\View */
 
 $this->title = 'Cabinet';
 $this->params['breadcrumbs'][] = $this->title;
@@ -17,7 +17,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <p>Hello!</p>
 
     <h2>Attach profile</h2>
-    <?= yii\authclient\widgets\AuthChoice::widget([
+    <?= \yii\authclient\widgets\AuthChoice::widget([
         'baseAuthUrl' => ['cabinet/network/attach'],
     ]); ?>
 </div>

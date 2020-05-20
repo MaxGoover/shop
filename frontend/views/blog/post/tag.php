@@ -1,10 +1,10 @@
 <?php
 
+use yii\helpers\Html;
+
 /* @var $this yii\web\View */
 /* @var $dataProvider yii\data\DataProviderInterface */
 /* @var $tag shop\entities\Shop\Tag */
-
-use yii\helpers\Html;
 
 $this->title = 'Posts with tag ' . $tag->name;
 

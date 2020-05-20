@@ -1,11 +1,11 @@
 <?php
 
+use kartik\form\ActiveForm;
+use yii\helpers\Html;
+
 /* @var $this yii\web\View */
 /* @var $form yii\bootstrap\ActiveForm */
 /* @var $model \shop\forms\auth\SignupForm */
-
-use yii\helpers\Html;
-use kartik\form\ActiveForm;
 
 $this->title = 'Signup';
 $this->params['breadcrumbs'][] = $this->title;

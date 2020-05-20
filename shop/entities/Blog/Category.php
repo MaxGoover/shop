@@ -41,14 +41,14 @@ class Category extends ActiveRecord
         $this->meta = $meta;
     }
 
-    public function getSeoTitle(): string
-    {
-        return $this->meta->title ?: $this->_getHeadingTitle();
-    }
-
-    private function _getHeadingTitle(): string
+    public function getHeadingTitle(): string
     {
         return $this->title ?: $this->name;
+    }
+
+    public function getSeoTitle(): string
+    {
+        return $this->meta->title ?: $this->getHeadingTitle();
     }
 
     ##################################################
