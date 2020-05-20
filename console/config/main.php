@@ -22,17 +22,28 @@ return [
         ],
         'migrate-mysql'      => [
             'class'          => \yii\console\controllers\MigrateController::class,
-            'migrationPath'  => ['@app/migrations/mysql'],
+            'migrationPath'  => [
+                '@app/migrations/mysql',
+            ],
             'migrationTable' => 'migration',
         ],
-        'migrate-rbac' => [
-            'class' => \fishvision\migrate\controllers\MigrateController::class,
-            'autoDiscover' => true,
-            'migrationPaths' => [
+        'migrate-rbac'       => [
+            'class'          => \yii\console\controllers\MigrateController::class,
+            'migrationPath'  => [
+                '@yii/rbac/migrations',
                 '@app/migrations/rbac',
-                '@vendor/yiisoft/yii2/rbac/migrations',
             ],
+            'migrationTable' => 'migration_rbac',
         ],
+// todo Разобраться почему пакет fishvision не находит миграции RBAC
+//        'migrate-rbac' => [
+//            'class' => \fishvision\migrate\controllers\MigrateController::class,
+//            'autoDiscover' => true,
+//            'migrationPaths' => [
+//                '@app/migrations/rbac',
+//                '@vendor/yiisoft/yii2/rbac/migrations',
+//            ],
+//        ],
     ],
     'components' => [
         'log' => [
