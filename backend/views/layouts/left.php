@@ -26,11 +26,7 @@
         </form>
         <!-- /.search form -->
 
-        <?=
-//            \var_dump($this->context);
-//            die;
-
-            dmstr\widgets\Menu::widget(
+        <?= dmstr\widgets\Menu::widget(
             [
                 'options' => ['class' => 'sidebar-menu'],
                 'items' => [
