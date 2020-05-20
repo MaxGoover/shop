@@ -8,10 +8,10 @@ use shop\entities\Shop\Product\Modification;
 use shop\entities\Shop\Product\Photo;
 use shop\entities\Shop\Product\Product;
 use shop\entities\Shop\Tag;
-use shop\readModels\Shop\CategoryReadRepository;
-use shop\readModels\Shop\TagReadRepository;
 use shop\readModels\Shop\BrandReadRepository;
+use shop\readModels\Shop\CategoryReadRepository;
 use shop\readModels\Shop\ProductReadRepository;
+use shop\readModels\Shop\TagReadRepository;
 use yii\data\DataProviderInterface;
 use yii\helpers\Url;
 use yii\rest\Controller;
@@ -19,57 +19,50 @@ use yii\web\NotFoundHttpException;
 
 class ProductController extends Controller
 {
-    private $products;
-    private $categories;
-    private $brands;
-    private $tags;
+    private $_brands;
+    private $_categories;
+    private $_products;
+    private $_tags;
 
     public function __construct(
         $id,
         $module,
-        ProductReadRepository $products,
-        CategoryReadRepository $categories,
         BrandReadRepository $brands,
+        CategoryReadRepository $categories,
+        ProductReadRepository $products,
         TagReadRepository $tags,
         $config = []
     )
     {
         parent::__construct($id, $module, $config);
-        $this->products = $products;
-        $this->categories = $categories;
-        $this->brands = $brands;
-        $this->tags = $tags;
-    }
-
-    protected function verbs(): array
-    {
-        return [
-            'index' => ['GET'],
-            'category' => ['GET'],
-            'brand' => ['GET'],
-            'tag' => ['GET'],
-            'view' => ['GET'],
-        ];
+        $this->_products = $products;
+        $this->_categories = $categories;
+        $this->_brands = $brands;
+        $this->_tags = $tags;
     }
 
     /**
      * @SWG\Get(
-     *     path="/shop/products",
+     *     path="/shop/products/brand/{brandId}",
      *     tags={"Catalog"},
+     *     @SWG\Parameter(name="brandId", in="path", required=true, type="integer"),
      *     @SWG\Response(
      *         response=200,
      *         description="Success response",
-     *         @SWG\Schema(
-     *             type="array",
-     *             @SWG\Items(ref="#/definitions/ProductItem")
-     *         ),
+     *         @SWG\Schema(ref="#/definitions/ProductItem")
      *     ),
      *     security={{"Bearer": {}, "OAuth2": {}}}
      * )
+     * @param $id
+     * @return DataProviderInterface
+     * @throws NotFoundHttpException
      */
-    public function actionIndex(): DataProviderInterface
+    public function actionBrand($id): DataProviderInterface
     {
-        $dataProvider = $this->products->getAll();
+        if (!$brand = $this->_brands->find($id)) {
+            throw new NotFoundHttpException('The requested page does not exist.');
+        }
+        $dataProvider = $this->_products->getAllByBrand($brand);
         return new MapDataProvider($dataProvider, [$this, 'serializeListItem']);
     }
 
@@ -91,35 +84,31 @@ class ProductController extends Controller
      */
     public function actionCategory($id): DataProviderInterface
     {
-        if (!$category = $this->categories->find($id)) {
+        if (!$category = $this->_categories->find($id)) {
             throw new NotFoundHttpException('The requested page does not exist.');
         }
-        $dataProvider = $this->products->getAllByCategory($category);
+        $dataProvider = $this->_products->getAllByCategory($category);
         return new MapDataProvider($dataProvider, [$this, 'serializeListItem']);
     }
 
     /**
      * @SWG\Get(
-     *     path="/shop/products/brand/{brandId}",
+     *     path="/shop/products",
      *     tags={"Catalog"},
-     *     @SWG\Parameter(name="brandId", in="path", required=true, type="integer"),
      *     @SWG\Response(
      *         response=200,
      *         description="Success response",
-     *         @SWG\Schema(ref="#/definitions/ProductItem")
+     *         @SWG\Schema(
+     *             type="array",
+     *             @SWG\Items(ref="#/definitions/ProductItem")
+     *         ),
      *     ),
      *     security={{"Bearer": {}, "OAuth2": {}}}
      * )
-     * @param $id
-     * @return DataProviderInterface
-     * @throws NotFoundHttpException
      */
-    public function actionBrand($id): DataProviderInterface
+    public function actionIndex(): DataProviderInterface
     {
-        if (!$brand = $this->brands->find($id)) {
-            throw new NotFoundHttpException('The requested page does not exist.');
-        }
-        $dataProvider = $this->products->getAllByBrand($brand);
+        $dataProvider = $this->_products->getAll();
         return new MapDataProvider($dataProvider, [$this, 'serializeListItem']);
     }
 
@@ -141,10 +130,10 @@ class ProductController extends Controller
      */
     public function actionTag($id): DataProviderInterface
     {
-        if (!$tag = $this->tags->find($id)) {
+        if (!$tag = $this->_tags->find($id)) {
             throw new NotFoundHttpException('The requested page does not exist.');
         }
-        $dataProvider = $this->products->getAllByTag($tag);
+        $dataProvider = $this->_products->getAllByTag($tag);
         return new MapDataProvider($dataProvider, [$this, 'serializeListItem']);
     }
 
@@ -166,14 +155,14 @@ class ProductController extends Controller
      *     ),
      *     security={{"Bearer": {}, "OAuth2": {}}}
      * )
-     * 
+     *
      * @param $id
      * @return array
      * @throws NotFoundHttpException
      */
     public function actionView($id): array
     {
-        if (!$product = $this->products->find($id)) {
+        if (!$product = $this->_products->find($id)) {
             throw new NotFoundHttpException('The requested page does not exist.');
         }
         return $this->serializeView($product);
@@ -212,6 +201,17 @@ class ProductController extends Controller
         ];
     }
 
+    protected function verbs(): array
+    {
+        return [
+            'brand' => ['GET'],
+            'category' => ['GET'],
+            'index' => ['GET'],
+            'tag' => ['GET'],
+            'view' => ['GET'],
+        ];
+    }
+
     private function serializeView(Product $product): array
     {
         return [
@@ -227,7 +227,7 @@ class ProductController extends Controller
                         'self' => ['href' => Url::to(['category', 'id' => $product->category->id], true)],
                     ],
                 ],
-                'other' => array_map(function (Category $category) {
+                'other' => \array_map(function (Category $category) {
                     return [
                         'id' => $category->id,
                         'name' => $category->name,
@@ -244,7 +244,7 @@ class ProductController extends Controller
                     'self' => ['href' => Url::to(['brand', 'id' => $product->brand->id], true)],
                 ],
             ],
-            'tags' => array_map(function (Tag $tag) {
+            'tags' => \array_map(function (Tag $tag) {
                 return [
                     'id' => $tag->id,
                     'name' => $tag->name,
@@ -257,13 +257,13 @@ class ProductController extends Controller
                 'new' => $product->price_new,
                 'old' => $product->price_old,
             ],
-            'photos' => array_map(function (Photo $photo) {
+            'photos' => \array_map(function (Photo $photo) {
                 return [
                     'thumbnail' => $photo->getThumbFileUrl('file', 'catalog_list'),
                     'origin' => $photo->getThumbFileUrl('file', 'catalog_origin'),
                 ];
             }, $product->photos),
-            'modifications' => array_map(function (Modification $modification) use ($product) {
+            'modifications' => \array_map(function (Modification $modification) use ($product) {
                 return [
                     'id' => $modification->id,
                     'code' => $modification->code,

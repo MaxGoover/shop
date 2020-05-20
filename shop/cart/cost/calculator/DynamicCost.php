@@ -4,23 +4,23 @@ namespace shop\cart\cost\calculator;
 
 use shop\cart\cost\Cost;
 use shop\cart\cost\Discount as CartDiscount;
-use shop\entities\Shop\Discount as DiscountEntity;
+use shop\entities\Shop\Discount as EntityDiscount;
 
 class DynamicCost implements CalculatorInterface
 {
-    private $next;
+    private $_calculator;
 
-    public function __construct(CalculatorInterface $next)
+    public function __construct(CalculatorInterface $calculator)
     {
-        $this->next = $next;
+        $this->_calculator = $calculator;
     }
 
     public function getCost(array $items): Cost
     {
-        /** @var DiscountEntity[] $discounts */
-        $discounts = DiscountEntity::find()->active()->orderBy('sort')->all();
+        /** @var EntityDiscount[] $discounts */
+        $discounts = EntityDiscount::find()->active()->orderBy('sort')->all();
 
-        $cost = $this->next->getCost($items);
+        $cost = $this->_calculator->getCost($items);
 
         foreach ($discounts as $discount) {
             if ($discount->isEnabled()) {

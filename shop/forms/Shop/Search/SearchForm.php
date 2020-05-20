@@ -19,30 +19,22 @@ class SearchForm extends CompositeForm
 
     public function __construct(array $config = [])
     {
-        $this->values = array_map(function (Characteristic $characteristic) {
+        $this->values = \array_map(function (Characteristic $characteristic) {
             return new ValueForm($characteristic);
         }, Characteristic::find()->orderBy('sort')->all());
         parent::__construct($config);
     }
 
-    public function rules(): array
+    public function brandsList(): array
     {
-        return [
-            [['text'], 'string'],
-            [['category', 'brand'], 'integer'],
-        ];
+        return ArrayHelper::map(Brand::find()->orderBy('name')->asArray()->all(), 'id', 'name');
     }
 
     public function categoriesList(): array
     {
         return ArrayHelper::map(Category::find()->andWhere(['>', 'depth', 0])->orderBy('lft')->asArray()->all(), 'id', function (array $category) {
-            return ($category['depth'] > 1 ? str_repeat('-- ', $category['depth'] - 1) . ' ' : '') . $category['name'];
+            return ($category['depth'] > 1 ? \str_repeat('-- ', $category['depth'] - 1) . ' ' : '') . $category['name'];
         });
-    }
-
-    public function brandsList(): array
-    {
-        return ArrayHelper::map(Brand::find()->orderBy('name')->asArray()->all(), 'id', 'name');
     }
 
     public function formName(): string
@@ -53,5 +45,15 @@ class SearchForm extends CompositeForm
     protected function internalForms(): array
     {
         return ['values'];
+    }
+
+    ##################################################
+
+    public function rules(): array
+    {
+        return [
+            [['text'], 'string'],
+            [['category', 'brand'], 'integer'],
+        ];
     }
 }

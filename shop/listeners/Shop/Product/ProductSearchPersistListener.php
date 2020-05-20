@@ -10,24 +10,24 @@ use yii\caching\TagDependency;
 
 class ProductSearchPersistListener
 {
-    private $indexer;
-    private $cache;
+    private $_productIndexer;
+    private $_cache;
 
-    public function __construct(ProductIndexer $indexer, Cache $cache)
+    public function __construct(ProductIndexer $productIndexer, Cache $cache)
     {
-        $this->indexer = $indexer;
-        $this->cache = $cache;
+        $this->_productIndexer = $productIndexer;
+        $this->_cache = $cache;
     }
 
     public function handle(EntityPersisted $event): void
     {
         if ($event->entity instanceof Product) {
             if ($event->entity->isActive()) {
-                $this->indexer->index($event->entity);
+                $this->_productIndexer->index($event->entity);
             } else {
-                $this->indexer->remove($event->entity);
+                $this->_productIndexer->remove($event->entity);
             }
-            TagDependency::invalidate($this->cache, ['products']);
+            TagDependency::invalidate($this->_cache, ['products']);
         }
     }
 }

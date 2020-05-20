@@ -11,12 +11,16 @@ use yii\web\NotFoundHttpException;
  */
 class PageController extends Controller
 {
-    private $pages;
+    private $_pages;
 
-    public function __construct($id, $module, PageReadRepository $pages, $config = [])
+    public function __construct(
+        $id,
+        $module,
+        PageReadRepository $pages,
+        $config = [])
     {
         parent::__construct($id, $module, $config);
-        $this->pages = $pages;
+        $this->_pages = $pages;
     }
 
     /**
@@ -27,7 +31,7 @@ class PageController extends Controller
      */
     public function actionView($id)
     {
-        if (!$page = $this->pages->find($id)) {
+        if (!$page = $this->_pages->find($id)) {
             throw new NotFoundHttpException('The requested page does not exist.');
         }
 

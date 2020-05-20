@@ -12,6 +12,7 @@ class SimpleCost implements CalculatorInterface
         foreach ($items as $item) {
             $cost += $item->getCost();
         }
+
         return new Cost($cost);
     }
 }

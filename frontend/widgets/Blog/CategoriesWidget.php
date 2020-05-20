@@ -12,24 +12,24 @@ class CategoriesWidget extends Widget
     /** @var Category|null */
     public $active;
 
-    private $categories;
+    private $_categories;
 
     public function __construct(CategoryReadRepository $categories, $config = [])
     {
         parent::__construct($config);
-        $this->categories = $categories;
+        $this->_categories = $categories;
     }
 
     public function run(): string
     {
-        return Html::tag('div', implode(PHP_EOL, array_map(function (Category $category) {
+        return Html::tag('div', \implode(PHP_EOL, \array_map(function (Category $category) {
             $active = $this->active && ($this->active->id == $category->id);
             return Html::a(
                 Html::encode($category->name),
                 ['/blog/post/category', 'slug' => $category->slug],
                 ['class' => $active ? 'list-group-item active' : 'list-group-item']
             );
-        }, $this->categories->getAll())), [
+        }, $this->_categories->getAll())), [
             'class' => 'list-group',
         ]);
     }

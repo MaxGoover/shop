@@ -46,10 +46,79 @@ class Order extends ActiveRecord
         return $order;
     }
 
+    public function canBePaid(): bool
+    {
+        return $this->isNew();
+    }
+
+    public function cancel($reason): void
+    {
+        if ($this->isCancelled()) {
+            throw new \DomainException('Order is already cancelled.');
+        }
+        $this->cancel_reason = $reason;
+        $this->_addStatus(Status::CANCELLED);
+    }
+
+    public function complete(): void
+    {
+        if ($this->isCompleted()) {
+            throw new \DomainException('Order is already completed.');
+        }
+        $this->_addStatus(Status::COMPLETED);
+    }
+
     public function edit(CustomerData $customerData, $note): void
     {
         $this->customerData = $customerData;
         $this->note = $note;
+    }
+
+    public function getTotalCost(): int
+    {
+        return $this->cost + $this->delivery_cost;
+    }
+
+    public function isCancelled(): bool
+    {
+        return $this->current_status == Status::CANCELLED;
+    }
+
+    public function isCompleted(): bool
+    {
+        return $this->current_status == Status::COMPLETED;
+    }
+
+    public function isPaid(): bool
+    {
+        return $this->current_status == Status::PAID;
+    }
+
+    public function isNew(): bool
+    {
+        return $this->current_status == Status::NEW;
+    }
+
+    public function isSent(): bool
+    {
+        return $this->current_status == Status::SENT;
+    }
+
+    public function pay($method): void
+    {
+        if ($this->isPaid()) {
+            throw new \DomainException('Order is already paid.');
+        }
+        $this->payment_method = $method;
+        $this->_addStatus(Status::PAID);
+    }
+
+    public function send(): void
+    {
+        if ($this->isSent()) {
+            throw new \DomainException('Order is already sent.');
+        }
+        $this->_addStatus(Status::SENT);
     }
 
     public function setDeliveryInfo(DeliveryMethod $method, DeliveryData $deliveryData): void
@@ -60,87 +129,13 @@ class Order extends ActiveRecord
         $this->deliveryData = $deliveryData;
     }
 
-    public function pay($method): void
-    {
-        if ($this->isPaid()) {
-            throw new \DomainException('Order is already paid.');
-        }
-        $this->payment_method = $method;
-        $this->addStatus(Status::PAID);
-    }
-
-    public function send(): void
-    {
-        if ($this->isSent()) {
-            throw new \DomainException('Order is already sent.');
-        }
-        $this->addStatus(Status::SENT);
-    }
-
-    public function complete(): void
-    {
-        if ($this->isCompleted()) {
-            throw new \DomainException('Order is already completed.');
-        }
-        $this->addStatus(Status::COMPLETED);
-    }
-
-    public function cancel($reason): void
-    {
-        if ($this->isCancelled()) {
-            throw new \DomainException('Order is already cancelled.');
-        }
-        $this->cancel_reason = $reason;
-        $this->addStatus(Status::CANCELLED);
-    }
-
-    public function getTotalCost(): int
-    {
-        return $this->cost + $this->delivery_cost;
-    }
-
-    public function canBePaid(): bool
-    {
-        return $this->isNew();
-    }
-
-    public function isNew(): bool
-    {
-        return $this->current_status == Status::NEW;
-    }
-
-    public function isPaid(): bool
-    {
-        return $this->current_status == Status::PAID;
-    }
-
-    public function isSent(): bool
-    {
-        return $this->current_status == Status::SENT;
-    }
-
-    public function isCompleted(): bool
-    {
-        return $this->current_status == Status::COMPLETED;
-    }
-
-    public function isCancelled(): bool
-    {
-        return $this->current_status == Status::CANCELLED;
-    }
-
-    private function addStatus($value): void
+    private function _addStatus($value): void
     {
         $this->statuses[] = new Status($value, time());
         $this->current_status = $value;
     }
 
-    ##########################
-
-    public function getUser(): ActiveQuery
-    {
-        return $this->hasMany(User::class, ['id' => 'user_id']);
-    }
+    ##################################################
 
     public function getDeliveryMethod(): ActiveQuery
     {
@@ -152,7 +147,12 @@ class Order extends ActiveRecord
         return $this->hasMany(OrderItem::class, ['order_id' => 'id']);
     }
 
-    ##########################
+    public function getUser(): ActiveQuery
+    {
+        return $this->hasMany(User::class, ['id' => 'user_id']);
+    }
+
+    ##################################################
 
     public static function tableName(): string
     {
@@ -163,22 +163,15 @@ class Order extends ActiveRecord
     {
         return [
             [
-                'class' => SaveRelationsBehavior::className(),
+                'class' => SaveRelationsBehavior::class,
                 'relations' => ['items'],
             ],
         ];
     }
 
-    public function transactions(): array
-    {
-        return [
-            self::SCENARIO_DEFAULT => self::OP_ALL,
-        ];
-    }
-
     public function afterFind(): void
     {
-        $this->statuses = array_map(function ($row) {
+        $this->statuses = \array_map(function ($row) {
             return new Status(
                 $row['value'],
                 $row['created_at']
@@ -200,7 +193,7 @@ class Order extends ActiveRecord
 
     public function beforeSave($insert): bool
     {
-        $this->setAttribute('statuses_json', Json::encode(array_map(function (Status $status) {
+        $this->setAttribute('statuses_json', Json::encode(\array_map(function (Status $status) {
             return [
                 'value' => $status->value,
                 'created_at' => $status->created_at,
@@ -214,5 +207,12 @@ class Order extends ActiveRecord
         $this->setAttribute('delivery_address', $this->deliveryData->address);
 
         return parent::beforeSave($insert);
+    }
+
+    public function transactions(): array
+    {
+        return [
+            self::SCENARIO_DEFAULT => self::OP_ALL,
+        ];
     }
 }

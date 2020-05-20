@@ -21,7 +21,7 @@ class Sitemap
             $writer->startElement('sitemap');
             $writer->writeElement('loc', $item->location);
             if ($item->lastModified !== null) {
-                $writer->writeElement('lastmod', date('c', $item->lastModified));
+                $writer->writeElement('lastmod', \date('c', $item->lastModified));
             }
             $writer->endElement();
         }
@@ -50,13 +50,13 @@ class Sitemap
 
             $writer->writeElement('loc', $item->location);
             if ($item->lastModified !== null) {
-                $writer->writeElement('lastmod', date('c', $item->lastModified));
+                $writer->writeElement('lastmod', \date('c', $item->lastModified));
             }
             if ($item->changeFrequency !== null) {
                 $writer->writeElement('changefreq', $item->changeFrequency);
             }
             if ($item->priority !== null) {
-                $writer->writeElement('priority', number_format($item->priority, 1, '.', ','));
+                $writer->writeElement('priority', \number_format($item->priority, 1, '.', ','));
             }
             $writer->endElement();
         }

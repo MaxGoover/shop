@@ -7,78 +7,78 @@ use shop\entities\Shop\Product\Product;
 
 class CartItem
 {
-    private $product;
-    private $modificationId;
-    private $quantity;
+    private $_product;
+    private $_modificationId;
+    private $_quantity;
 
     public function __construct(Product $product, $modificationId, $quantity)
     {
         if (!$product->canBeCheckout($modificationId, $quantity)) {
             throw new \DomainException('Quantity is too big.');
         }
-        $this->product = $product;
-        $this->modificationId = $modificationId;
-        $this->quantity = $quantity;
+        $this->_product = $product;
+        $this->_modificationId = $modificationId;
+        $this->_quantity = $quantity;
     }
 
-    public function getId(): string
+    public function changeQuantity($quantity): self
     {
-        return md5(serialize([$this->product->id, $this->modificationId]));
-    }
-
-    public function getProductId(): int
-    {
-        return $this->product->id;
-    }
-
-    public function getProduct(): Product
-    {
-        return $this->product;
-    }
-
-    public function getModificationId(): ?int
-    {
-        return $this->modificationId;
-    }
-
-    public function getModification(): ?Modification
-    {
-        if ($this->modificationId) {
-            return $this->product->getModification($this->modificationId);
-        }
-        return null;
-    }
-
-    public function getQuantity(): int
-    {
-        return $this->quantity;
-    }
-
-    public function getPrice(): int
-    {
-        if ($this->modificationId) {
-            return $this->product->getModificationPrice($this->modificationId);
-        }
-        return $this->product->price_new;
-    }
-
-    public function getWeight(): int
-    {
-        return $this->product->weight * $this->quantity;
+        return new static($this->_product, $this->_modificationId, $quantity);
     }
 
     public function getCost(): int
     {
-        return $this->getPrice() * $this->quantity;
+        return $this->getPrice() * $this->_quantity;
     }
 
-    public function plus($quantity)
+    public function getId(): string
     {
-        return new static($this->product, $this->modificationId, $this->quantity + $quantity);
+        return \md5(serialize([$this->_product->id, $this->_modificationId]));
     }
 
-    public function changeQuantity($quantity)
+    public function getModification(): ?Modification
     {
-        return new static($this->product, $this->modificationId, $quantity);
+        if ($this->_modificationId) {
+            return $this->_product->getModification($this->_modificationId);
+        }
+        return null;
+    }
+
+    public function getModificationId(): ?int
+    {
+        return $this->_modificationId;
+    }
+
+    public function getPrice(): int
+    {
+        if ($this->_modificationId) {
+            return $this->_product->getModificationPrice($this->_modificationId);
+        }
+        return $this->_product->price_new;
+    }
+
+    public function getProductId(): int
+    {
+        return $this->_product->id;
+    }
+
+    public function getProduct(): Product
+    {
+        return $this->_product;
+    }
+
+    public function getQuantity(): int
+    {
+        return $this->_quantity;
+    }
+
+    public function getWeight(): int
+    {
+        return $this->_product->weight * $this->_quantity;
+    }
+
+    public function plus($quantity): self
+    {
+        return new static($this->_product, $this->_modificationId, $this->_quantity + $quantity);
     }
 }

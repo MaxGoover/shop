@@ -6,41 +6,43 @@ use shop\entities\Shop\Product\events\ProductAppearedInStock;
 use shop\entities\Shop\Product\Product;
 use shop\entities\User\User;
 use shop\repositories\UserRepository;
-
 use yii\base\ErrorHandler;
 use yii\mail\MailerInterface;
 
 class ProductAppearedInStockListener
 {
-    private $users;
-    private $mailer;
-    private $errorHandler;
+    private $_userRepository;
+    private $_mailer;
+    private $_errorHandler;
 
-    public function __construct(UserRepository $users, MailerInterface $mailer, ErrorHandler $errorHandler)
+    public function __construct(
+        UserRepository $userRepository,
+        MailerInterface $mailer,
+        ErrorHandler $errorHandler)
     {
-        $this->users = $users;
-        $this->mailer = $mailer;
-        $this->errorHandler = $errorHandler;
+        $this->_userRepository = $userRepository;
+        $this->_mailer = $mailer;
+        $this->_errorHandler = $errorHandler;
     }
 
     public function handle(ProductAppearedInStock $event): void
     {
         if ($event->product->isActive()) {
-            foreach ($this->users->getAllByProductInWishList($event->product->id) as $user) {
+            foreach ($this->_userRepository->getAllByProductInWishList($event->product->id) as $user) {
                 if ($user->isActive()) {
                     try {
-                        $this->sendEmailNotification($user, $event->product);
+                        $this->_sendEmailNotification($user, $event->product);
                     } catch (\Exception $e) {
-                        $this->errorHandler->handleException($e);
+                        $this->_errorHandler->handleException($e);
                     }
                 }
             }
         }
     }
 
-    private function sendEmailNotification(User $user, Product $product): void
+    private function _sendEmailNotification(User $user, Product $product): void
     {
-        $sent = $this->mailer
+        $sent = $this->_mailer
             ->compose(
                 ['html' => 'shop/wishlist/available-html', 'text' => 'shop/wishlist/available-text'],
                 ['user' => $user, 'product' => $product]

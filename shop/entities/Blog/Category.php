@@ -43,13 +43,15 @@ class Category extends ActiveRecord
 
     public function getSeoTitle(): string
     {
-        return $this->meta->title ?: $this->getHeadingTile();
+        return $this->meta->title ?: $this->_getHeadingTitle();
     }
 
-    public function getHeadingTile(): string
+    private function _getHeadingTitle(): string
     {
         return $this->title ?: $this->name;
     }
+
+    ##################################################
 
     public static function tableName(): string
     {
@@ -59,7 +61,7 @@ class Category extends ActiveRecord
     public function behaviors(): array
     {
         return [
-            MetaBehavior::className(),
+            MetaBehavior::class,
         ];
     }
 }

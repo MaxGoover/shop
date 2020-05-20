@@ -15,17 +15,17 @@ class BrandRepository
         return $brand;
     }
 
-    public function save(Brand $brand): void
-    {
-        if (!$brand->save()) {
-            throw new \RuntimeException('Saving error.');
-        }
-    }
-
     public function remove(Brand $brand): void
     {
         if (!$brand->delete()) {
             throw new \RuntimeException('Removing error.');
+        }
+    }
+
+    public function save(Brand $brand): void
+    {
+        if (!$brand->save()) {
+            throw new \RuntimeException('Saving error.');
         }
     }
 }

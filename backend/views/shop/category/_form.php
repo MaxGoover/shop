@@ -20,7 +20,7 @@ use yii\widgets\ActiveForm;
             <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
             <?= $form->field($model, 'slug')->textInput(['maxlength' => true]) ?>
             <?= $form->field($model, 'title')->textInput(['maxlength' => true]) ?>
-            <?= $form->field($model, 'description')->widget(CKEditor::className()) ?>
+            <?= $form->field($model, 'description')->widget(CKEditor::class) ?>
 
         </div>
     </div>

@@ -15,19 +15,19 @@ class ContactForm extends Model
     public $body;
     public $verifyCode;
 
-    public function rules()
+    public function attributeLabels()
+    {
+        return [
+            'verifyCode' => 'Verification Code',
+        ];
+    }
+
+    public function rules(): array
     {
         return [
             [['name', 'email', 'subject', 'body'], 'required'],
             ['email', 'email'],
             ['verifyCode', 'captcha'],
-        ];
-    }
-
-    public function attributeLabels()
-    {
-        return [
-            'verifyCode' => 'Verification Code',
         ];
     }
 }

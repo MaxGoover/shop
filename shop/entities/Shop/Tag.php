@@ -25,7 +25,7 @@ class Tag extends ActiveRecord
         $this->slug = $slug;
     }
 
-    ##########################
+    ##################################################
 
     public static function tableName()
     {

@@ -3,10 +3,10 @@
 namespace backend\forms\Blog;
 
 use shop\entities\Blog\Category;
+use shop\entities\Blog\Post\Post;
 use shop\helpers\PostHelper;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use shop\entities\Blog\Post\Post;
 use yii\helpers\ArrayHelper;
 
 class PostSearch extends Model
@@ -16,12 +16,9 @@ class PostSearch extends Model
     public $status;
     public $category_id;
 
-    public function rules(): array
+    public function categoriesList(): array
     {
-        return [
-            [['id', 'status', 'category_id',], 'integer'],
-            [['title'], 'safe'],
-        ];
+        return ArrayHelper::map(Category::find()->orderBy('sort')->asArray()->all(), 'id', 'title');
     }
 
     /**
@@ -57,13 +54,18 @@ class PostSearch extends Model
         return $dataProvider;
     }
 
-    public function categoriesList(): array
-    {
-        return ArrayHelper::map(Category::find()->orderBy('sort')->asArray()->all(), 'id', 'title');
-    }
-
     public function statusList(): array
     {
         return PostHelper::statusList();
+    }
+
+    ##################################################
+
+    public function rules(): array
+    {
+        return [
+            [['id', 'status', 'category_id',], 'integer'],
+            [['title'], 'safe'],
+        ];
     }
 }

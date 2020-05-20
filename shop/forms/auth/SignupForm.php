@@ -1,4 +1,5 @@
 <?php
+
 namespace shop\forms\auth;
 
 use yii\base\Model;
@@ -14,10 +15,7 @@ class SignupForm extends Model
     public $phone;
     public $password;
 
-    /**
-     * @inheritdoc
-     */
-    public function rules()
+    public function rules(): array
     {
         return [
             ['username', 'trim'],

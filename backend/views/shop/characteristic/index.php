@@ -3,8 +3,8 @@
 use shop\entities\Shop\Characteristic;
 use shop\helpers\CharacteristicHelper;
 use yii\grid\ActionColumn;
-use yii\helpers\Html;
 use yii\grid\GridView;
+use yii\helpers\Html;
 
 /* @var $this yii\web\View */
 /* @var $searchModel backend\forms\Shop\CharacteristicSearch */

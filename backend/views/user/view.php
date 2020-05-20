@@ -3,11 +3,10 @@
 use shop\helpers\UserHelper;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
-use yii\rbac\Item;
 use yii\widgets\DetailView;
 
 /* @var $this yii\web\View */
-/* @var $model shop\entities\User */
+/* @var $model shop\entities\User\User */
 
 $this->title = $model->id;
 $this->params['breadcrumbs'][] = ['label' => 'Users', 'url' => ['index']];
@@ -42,7 +41,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     ],
                     [
                         'label' => 'Role',
-                        'value' => implode(', ', ArrayHelper::getColumn(Yii::$app->authManager->getRolesByUser($model->id), 'description')),
+                        'value' => \implode(', ', ArrayHelper::getColumn(Yii::$app->authManager->getRolesByUser($model->id), 'description')),
                         'format' => 'raw',
                     ],
                     'created_at:datetime',

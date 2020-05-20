@@ -2,10 +2,10 @@
 
 namespace backend\forms\Shop;
 
+use shop\entities\Shop\Characteristic;
 use shop\helpers\CharacteristicHelper;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use shop\entities\Shop\Characteristic;
 
 class CharacteristicSearch extends Model
 {
@@ -14,11 +14,11 @@ class CharacteristicSearch extends Model
     public $type;
     public $required;
 
-    public function rules(): array
+    public function requiredList(): array
     {
         return [
-            [['id', 'type', 'required'], 'integer'],
-            [['name'], 'safe'],
+            1 => \Yii::$app->formatter->asBoolean(true),
+            0 => \Yii::$app->formatter->asBoolean(false),
         ];
     }
 
@@ -61,11 +61,13 @@ class CharacteristicSearch extends Model
         return CharacteristicHelper::typeList();
     }
 
-    public function requiredList(): array
+    ##################################################
+
+    public function rules(): array
     {
         return [
-            1 => \Yii::$app->formatter->asBoolean(true),
-            0 => \Yii::$app->formatter->asBoolean(false),
+            [['id', 'type', 'required'], 'integer'],
+            [['name'], 'safe'],
         ];
     }
 }

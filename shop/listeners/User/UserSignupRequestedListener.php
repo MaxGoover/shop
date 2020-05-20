@@ -7,16 +7,16 @@ use yii\mail\MailerInterface;
 
 class UserSignupRequestedListener
 {
-    private $mailer;
+    private $_mailer;
 
     public function __construct(MailerInterface $mailer)
     {
-        $this->mailer = $mailer;
+        $this->_mailer = $mailer;
     }
 
     public function handle(UserSignUpRequested $event): void
     {
-        $sent = $this->mailer
+        $sent = $this->_mailer
             ->compose(
                 ['html' => 'auth/signup/confirm-html', 'text' => 'auth/signup/confirm-text'],
                 ['user' => $event->user]

@@ -9,24 +9,11 @@ use yii\helpers\ArrayHelper;
 
 class CategoryReadRepository
 {
-    private $client;
+    private $_client;
 
     public function __construct(Client $client)
     {
-        $this->client = $client;
-    }
-
-    public function getRoot(): Category
-    {
-        return Category::find()->roots()->one();
-    }
-
-    /**
-     * @return Category[]
-     */
-    public function getAll(): array
-    {
-        return Category::find()->andWhere(['>', 'depth', 0])->orderBy('lft')->all();
+        $this->_client = $client;
     }
 
     public function find($id): ?Category
@@ -37,6 +24,14 @@ class CategoryReadRepository
     public function findBySlug($slug): ?Category
     {
         return Category::find()->andWhere(['slug' => $slug])->andWhere(['>', 'depth', 0])->one();
+    }
+
+    /**
+     * @return Category[]
+     */
+    public function getAll(): array
+    {
+        return Category::find()->andWhere(['>', 'depth', 0])->orderBy('lft')->all();
     }
 
     public function getTreeWithSubsOf(Category $category = null): array
@@ -53,7 +48,7 @@ class CategoryReadRepository
             $query->andWhere(['depth' => 1]);
         }
 
-        $aggs = $this->client->search([
+        $aggs = $this->_client->search([
             'index' => 'shop',
             'type' => 'products',
             'body' => [
@@ -70,8 +65,13 @@ class CategoryReadRepository
 
         $counts = ArrayHelper::map($aggs['aggregations']['group_by_category']['buckets'], 'key', 'doc_count');
 
-        return array_map(function (Category $category) use ($counts) {
+        return \array_map(function (Category $category) use ($counts) {
             return new CategoryView($category, ArrayHelper::getValue($counts, $category->id, 0));
         }, $query->all());
+    }
+
+    public function getRoot(): Category
+    {
+        return Category::find()->roots()->one();
     }
 }

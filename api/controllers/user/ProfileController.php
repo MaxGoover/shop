@@ -5,7 +5,6 @@ namespace api\controllers\user;
 use api\helpers\DateHelper;
 use shop\entities\User\User;
 use shop\helpers\UserHelper;
-use yii\helpers\Url;
 use yii\rest\Controller;
 
 class ProfileController extends Controller
@@ -23,24 +22,24 @@ class ProfileController extends Controller
      *     security={{"Bearer": {}, "OAuth2": {}}}
      * )
      */
-    public function actionIndex(): User
+    public function actionIndex(): array
     {
-        return $this->serializeUser($this->findModel());
+        return $this->_serializeUser($this->_findModel());
     }
 
-    public function verbs(): array
+    protected function verbs(): array
     {
         return [
             'index' => ['get'],
         ];
     }
 
-    private function findModel(): User
+    private function _findModel(): User
     {
         return User::findOne(\Yii::$app->user->id);
     }
 
-    private function serializeUser(User $user): array
+    private function _serializeUser(User $user): array
     {
         return [
             'id' => $user->id,

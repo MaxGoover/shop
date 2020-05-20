@@ -4,54 +4,57 @@ namespace shop\cart\storage;
 
 use shop\cart\CartItem;
 use yii\db\Connection;
-use yii\web\Session;
 use yii\web\User;
 
 class HybridStorage implements StorageInterface
 {
-    private $storage;
-    private $user;
-    private $cookieKey;
-    private $cookieTimeout;
-    private $db;
+    private $_cookieKey;
+    private $_cookieTimeout;
+    private $_db;
+    private $_storage;
+    private $_user;
 
-    public function __construct(User $user, $cookieKey, $cookieTimeout, Connection $db)
+    public function __construct(
+        $cookieKey,
+        $cookieTimeout,
+        Connection $db,
+        User $user)
     {
-        $this->user = $user;
-        $this->cookieKey = $cookieKey;
-        $this->cookieTimeout = $cookieTimeout;
-        $this->db = $db;
+        $this->_user = $user;
+        $this->_cookieKey = $cookieKey;
+        $this->_cookieTimeout = $cookieTimeout;
+        $this->_db = $db;
     }
 
     public function load(): array
     {
-        return $this->getStorage()->load();
+        return $this->_getStorage()->load();
     }
 
     public function save(array $items): void
     {
-        $this->getStorage()->save($items);
+        $this->_getStorage()->save($items);
     }
 
-    private function getStorage()
+    private function _getStorage()
     {
-        if ($this->storage === null) {
-            $cookieStorage = new CookieStorage($this->cookieKey, $this->cookieTimeout);
-            if ($this->user->isGuest) {
-                $this->storage = $cookieStorage;
+        if ($this->_storage === null) {
+            $cookieStorage = new CookieStorage($this->_cookieKey, $this->_cookieTimeout);
+            if ($this->_user->isGuest) {
+                $this->_storage = $cookieStorage;
             } else {
-                $dbStorage = new DbStorage($this->user->id, $this->db);
+                $dbStorage = new DbStorage($this->_user->id, $this->_db);
                 if ($cookieItems = $cookieStorage->load()) {
                     $dbItems = $dbStorage->load();
-                    $items = array_merge($dbItems, array_udiff($cookieItems, $dbItems, function (CartItem $first, CartItem $second) {
+                    $items = \array_merge($dbItems, \array_udiff($cookieItems, $dbItems, function (CartItem $first, CartItem $second) {
                         return $first->getId() === $second->getId();
                     }));
                     $dbStorage->save($items);
                     $cookieStorage->save([]);
                 }
-                $this->storage = $dbStorage;
+                $this->_storage = $dbStorage;
             }
         }
-        return $this->storage;
+        return $this->_storage;
     }
 }

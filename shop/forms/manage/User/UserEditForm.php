@@ -22,10 +22,17 @@ class UserEditForm extends Model
         $this->email = $user->email;
         $this->phone = $user->phone;
         $roles = Yii::$app->authManager->getRolesByUser($user->id);
-        $this->role = $roles ? reset($roles)->name : null;
+        $this->role = $roles ? \reset($roles)->name : null;
         $this->_user = $user;
         parent::__construct($config);
     }
+
+    public function rolesList(): array
+    {
+        return ArrayHelper::map(Yii::$app->authManager->getRoles(), 'name', 'description');
+    }
+
+    ##################################################
 
     public function rules(): array
     {
@@ -36,10 +43,5 @@ class UserEditForm extends Model
             ['phone', 'integer'],
             [['username', 'email', 'phone'], 'unique', 'targetClass' => User::class, 'filter' => ['<>', 'id', $this->_user->id]],
         ];
-    }
-
-    public function rolesList(): array
-    {
-        return ArrayHelper::map(Yii::$app->authManager->getRoles(), 'name', 'description');
     }
 }

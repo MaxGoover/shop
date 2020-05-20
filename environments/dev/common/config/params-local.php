@@ -1,11 +1,11 @@
 <?php
 return [
-    'cookieValidationKey' => '',
-    'cookieDomain' => '.shop.test',
-    'frontendHostInfo' => 'http://shop.test',
     'backendHostInfo' => 'http://backend.shop.test',
-    'staticHostInfo' => 'http://static.shop.test',
+    'cookieDomain' => '.shop.test',
+    'cookieValidationKey' => '',
+    'frontendHostInfo' => 'http://shop.test',
     'mailChimpKey' => '<your-key>',
     'mailChimpListId' => '',
     'smsRuKey' => '',
+    'staticHostInfo' => 'http://static.shop.test',
 ];

@@ -15,25 +15,81 @@ use yii\web\NotFoundHttpException;
 
 class CartController extends Controller
 {
-    private $products;
-    private $service;
+    private $_products;
+    private $_service;
 
-    public function __construct($id, $module, CartService $service, ProductReadRepository $products, $config = [])
+    public function __construct(
+        $id,
+        $module,
+        CartService $service,
+        ProductReadRepository $products,
+        $config = [])
     {
         parent::__construct($id, $module, $config);
-        $this->products = $products;
-        $this->service = $service;
+        $this->_products = $products;
+        $this->_service = $service;
     }
 
-    public function verbs(): array
+    /**
+     * @SWG\Post(
+     *     path="/shop/products/{productId}/cart",
+     *     tags={"Cart"},
+     *     @SWG\Parameter(name="productId", in="path", required=true, type="integer"),
+     *     @SWG\Parameter(name="modification", in="formData", required=false, type="integer"),
+     *     @SWG\Parameter(name="quantity", in="formData", required=true, type="integer"),
+     *     @SWG\Response(
+     *         response=201,
+     *         description="Success response",
+     *     ),
+     *     security={{"Bearer": {}, "OAuth2": {}}}
+     * )
+     * @param $id
+     * @return array|AddToCartForm
+     * @throws BadRequestHttpException
+     * @throws NotFoundHttpException
+     */
+    public function actionAdd($id)
     {
-        return [
-            'index' => ['GET'],
-            'add' => ['GET'],
-            'quantity' => ['POST'],
-            'delete' => ['DELETE'],
-            'clear' => ['DELETE'],
-        ];
+        if (!$product = $this->_products->find($id)) {
+            throw new NotFoundHttpException('The requested page does not exist.');
+        }
+
+        $form = new AddToCartForm($product);
+        $form->load(Yii::$app->request->getBodyParams(), '');
+
+        if ($form->validate()) {
+            try {
+                $this->_service->add($product->id, $form->modification, $form->quantity);
+                Yii::$app->getResponse()->setStatusCode(201);
+                return [];
+            } catch (\DomainException $e) {
+                throw new BadRequestHttpException($e->getMessage(), null, $e);
+            }
+        }
+
+        return $form;
+    }
+
+    /**
+     * @SWG\Delete(
+     *     path="/shop/cart",
+     *     tags={"Cart"},
+     *     @SWG\Response(
+     *         response=204,
+     *         description="Success response",
+     *     ),
+     *     security={{"Bearer": {}, "OAuth2": {}}}
+     * )
+     * @throws BadRequestHttpException
+     */
+    public function actionClear(): void
+    {
+        try {
+            $this->_service->clear();
+            Yii::$app->getResponse()->setStatusCode(204);
+        } catch (\DomainException $e) {
+            throw new BadRequestHttpException($e->getMessage(), null, $e);
+        }
     }
 
     /**
@@ -50,13 +106,13 @@ class CartController extends Controller
      */
     public function actionIndex(): array
     {
-        $cart = $this->service->getCart();
+        $cart = $this->_service->getCart();
         $cost = $cart->getCost();
 
         return [
             'weight' => $cart->getWeight(),
             'amount' => $cart->getAmount(),
-            'items' => array_map(function (CartItem $item) {
+            'items' => \array_map(function (CartItem $item) {
                 $product = $item->getProduct();
                 $modification = $item->getModification();
                 return [
@@ -85,7 +141,7 @@ class CartController extends Controller
             }, $cart->getItems()),
             'cost' => [
                 'origin' => $cost->getOrigin(),
-                'discounts' => array_map(function (Discount $discount) {
+                'discounts' => \array_map(function (Discount $discount) {
                     return [
                         'name' => $discount->getName(),
                         'value' => $discount->getValue(),
@@ -100,43 +156,28 @@ class CartController extends Controller
     }
 
     /**
-     * @SWG\Post(
-     *     path="/shop/products/{productId}/cart",
+     * @SWG\Delete(
+     *     path="/shop/cart/{id}",
      *     tags={"Cart"},
-     *     @SWG\Parameter(name="productId", in="path", required=true, type="integer"),
-     *     @SWG\Parameter(name="modification", in="formData", required=false, type="integer"),
-     *     @SWG\Parameter(name="quantity", in="formData", required=true, type="integer"),
+     *     @SWG\Parameter(name="id", in="path", required=true, type="string"),
      *     @SWG\Response(
-     *         response=201,
+     *         response=204,
      *         description="Success response",
      *     ),
      *     security={{"Bearer": {}, "OAuth2": {}}}
      * )
      * @param $id
-     * @return array|AddToCartForm
      * @throws BadRequestHttpException
      * @throws NotFoundHttpException
      */
-    public function actionAdd($id)
+    public function actionDelete($id): void
     {
-        if (!$product = $this->products->find($id)) {
-            throw new NotFoundHttpException('The requested page does not exist.');
+        try {
+            $this->_service->remove($id);
+            Yii::$app->getResponse()->setStatusCode(204);
+        } catch (\DomainException $e) {
+            throw new BadRequestHttpException($e->getMessage(), null, $e);
         }
-
-        $form = new AddToCartForm($product);
-        $form->load(Yii::$app->request->getBodyParams(), '');
-
-        if ($form->validate()) {
-            try {
-                $this->service->add($product->id, $form->modification, $form->quantity);
-                Yii::$app->getResponse()->setStatusCode(201);
-                return [];
-            } catch (\DomainException $e) {
-                throw new BadRequestHttpException($e->getMessage(), null, $e);
-            }
-        }
-
-        return $form;
     }
 
     /**
@@ -158,57 +199,21 @@ class CartController extends Controller
     public function actionQuantity($id): void
     {
         try {
-            $this->service->set($id, (int)Yii::$app->request->post('quantity'));
+            $this->_service->set($id, (int)Yii::$app->request->post('quantity'));
         } catch (\DomainException $e) {
             throw new BadRequestHttpException($e->getMessage(), null, $e);
         }
     }
 
-    /**
-     * @SWG\Delete(
-     *     path="/shop/cart/{id}",
-     *     tags={"Cart"},
-     *     @SWG\Parameter(name="id", in="path", required=true, type="string"),
-     *     @SWG\Response(
-     *         response=204,
-     *         description="Success response",
-     *     ),
-     *     security={{"Bearer": {}, "OAuth2": {}}}
-     * )
-     * @param $id
-     * @throws BadRequestHttpException
-     * @throws NotFoundHttpException
-     */
-    public function actionDelete($id): void
+    protected function verbs(): array
     {
-        try {
-            $this->service->remove($id);
-            Yii::$app->getResponse()->setStatusCode(204);
-        } catch (\DomainException $e) {
-            throw new BadRequestHttpException($e->getMessage(), null, $e);
-        }
-    }
-
-    /**
-     * @SWG\Delete(
-     *     path="/shop/cart",
-     *     tags={"Cart"},
-     *     @SWG\Response(
-     *         response=204,
-     *         description="Success response",
-     *     ),
-     *     security={{"Bearer": {}, "OAuth2": {}}}
-     * )
-     * @throws BadRequestHttpException
-     */
-    public function actionClear(): void
-    {
-        try {
-            $this->service->clear();
-            Yii::$app->getResponse()->setStatusCode(204);
-        } catch (\DomainException $e) {
-            throw new BadRequestHttpException($e->getMessage(), null, $e);
-        }
+        return [
+            'add' => ['GET'],
+            'clear' => ['DELETE'],
+            'delete' => ['DELETE'],
+            'index' => ['GET'],
+            'quantity' => ['POST'],
+        ];
     }
 }
 

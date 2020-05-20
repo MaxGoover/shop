@@ -2,35 +2,62 @@
 
 namespace backend\controllers\shop;
 
+use backend\forms\Shop\CharacteristicSearch;
+use shop\entities\Shop\Characteristic;
 use shop\forms\manage\Shop\CharacteristicForm;
 use shop\useCases\manage\Shop\CharacteristicManageService;
 use Yii;
-use shop\entities\Shop\Characteristic;
-use backend\forms\Shop\CharacteristicSearch;
+use yii\filters\VerbFilter;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
-use yii\filters\VerbFilter;
 
 class CharacteristicController extends Controller
 {
-    private $service;
+    private $_manageService;
 
-    public function __construct($id, $module, CharacteristicManageService $service, $config = [])
+    public function __construct(
+        $id,
+        $module,
+        CharacteristicManageService $manageService,
+        $config = [])
     {
         parent::__construct($id, $module, $config);
-        $this->service = $service;
+        $this->_manageService = $manageService;
     }
 
-    public function behaviors(): array
+    /**
+     * @return mixed
+     */
+    public function actionCreate()
     {
-        return [
-            'verbs' => [
-                'class' => VerbFilter::className(),
-                'actions' => [
-                    'delete' => ['POST'],
-                ],
-            ],
-        ];
+        $form = new CharacteristicForm();
+        if ($form->load(Yii::$app->request->post()) && $form->validate()) {
+            try {
+                $characteristic = $this->_manageService->create($form);
+                return $this->redirect(['view', 'id' => $characteristic->id]);
+            } catch (\DomainException $e) {
+                Yii::$app->errorHandler->logException($e);
+                Yii::$app->session->setFlash('error', $e->getMessage());
+            }
+        }
+        return $this->render('create', [
+            'model' => $form,
+        ]);
+    }
+
+    /**
+     * @param integer $id
+     * @return mixed
+     */
+    public function actionDelete($id)
+    {
+        try {
+            $this->_manageService->remove($id);
+        } catch (\DomainException $e) {
+            Yii::$app->errorHandler->logException($e);
+            Yii::$app->session->setFlash('error', $e->getMessage());
+        }
+        return $this->redirect(['index']);
     }
 
     /**
@@ -51,37 +78,6 @@ class CharacteristicController extends Controller
      * @param integer $id
      * @return mixed
      */
-    public function actionView($id)
-    {
-        return $this->render('view', [
-            'characteristic' => $this->findModel($id),
-        ]);
-    }
-
-    /**
-     * @return mixed
-     */
-    public function actionCreate()
-    {
-        $form = new CharacteristicForm();
-        if ($form->load(Yii::$app->request->post()) && $form->validate()) {
-            try {
-                $characteristic = $this->service->create($form);
-                return $this->redirect(['view', 'id' => $characteristic->id]);
-            } catch (\DomainException $e) {
-                Yii::$app->errorHandler->logException($e);
-                Yii::$app->session->setFlash('error', $e->getMessage());
-            }
-        }
-        return $this->render('create', [
-            'model' => $form,
-        ]);
-    }
-
-    /**
-     * @param integer $id
-     * @return mixed
-     */
     public function actionUpdate($id)
     {
         $characteristic = $this->findModel($id);
@@ -89,7 +85,7 @@ class CharacteristicController extends Controller
         $form = new CharacteristicForm($characteristic);
         if ($form->load(Yii::$app->request->post()) && $form->validate()) {
             try {
-                $this->service->edit($characteristic->id, $form);
+                $this->_manageService->edit($characteristic->id, $form);
                 return $this->redirect(['view', 'id' => $characteristic->id]);
             } catch (\DomainException $e) {
                 Yii::$app->errorHandler->logException($e);
@@ -106,15 +102,11 @@ class CharacteristicController extends Controller
      * @param integer $id
      * @return mixed
      */
-    public function actionDelete($id)
+    public function actionView($id)
     {
-        try {
-            $this->service->remove($id);
-        } catch (\DomainException $e) {
-            Yii::$app->errorHandler->logException($e);
-            Yii::$app->session->setFlash('error', $e->getMessage());
-        }
-        return $this->redirect(['index']);
+        return $this->render('view', [
+            'characteristic' => $this->findModel($id),
+        ]);
     }
 
     /**
@@ -128,5 +120,19 @@ class CharacteristicController extends Controller
             return $model;
         }
         throw new NotFoundHttpException('The requested page does not exist.');
+    }
+
+    ##################################################
+
+    public function behaviors(): array
+    {
+        return [
+            'verbs' => [
+                'class' => VerbFilter::class,
+                'actions' => [
+                    'delete' => ['POST'],
+                ],
+            ],
+        ];
     }
 }

@@ -1,11 +1,11 @@
 <?php
 
+use yii\bootstrap\ActiveForm;
+use yii\helpers\Html;
+
 /* @var $this yii\web\View */
 /* @var $order shop\entities\Shop\Order\Order */
 /* @var $model shop\forms\manage\Shop\Order\OrderEditForm */
-
-use yii\bootstrap\ActiveForm;
-use yii\helpers\Html;
 
 $this->title = 'Update Order: ' . $order->id;
 $this->params['breadcrumbs'][] = ['label' => 'Orders', 'url' => ['index']];

@@ -25,12 +25,12 @@ class SitemapController extends Controller
 {
     const ITEMS_PER_PAGE = 100;
 
-    private $sitemap;
-    private $pages;
-    private $blogCategories;
-    private $posts;
-    private $shopCategories;
-    private $products;
+    private $_sitemap;
+    private $_pages;
+    private $_blogCategories;
+    private $_posts;
+    private $_shopCategories;
+    private $_products;
 
     public function __construct(
         $id,
@@ -45,18 +45,53 @@ class SitemapController extends Controller
     )
     {
         parent::__construct($id, $module, $config);
-        $this->sitemap = $sitemap;
-        $this->pages = $pages;
-        $this->blogCategories = $blogCategories;
-        $this->posts = $posts;
-        $this->shopCategories = $shopCategories;
-        $this->products = $products;
+        $this->_sitemap = $sitemap;
+        $this->_pages = $pages;
+        $this->_blogCategories = $blogCategories;
+        $this->_posts = $posts;
+        $this->_shopCategories = $shopCategories;
+        $this->_products = $products;
+    }
+
+    public function actionBlogCategories(): Response
+    {
+        return $this->_renderSitemap('sitemap-blog-categories', function () {
+            return $this->_sitemap->generateMap(\array_map(function (BlogCategory $category) {
+                return new MapItem(
+                    Url::to(['/blog/posts/category', 'slug' => $category->slug], true),
+                    null,
+                    MapItem::WEEKLY
+                );
+            }, $this->_blogCategories->getAll()));
+        });
+    }
+
+    public function actionBlogPosts($start = 0): Response
+    {
+        return $this->_renderSitemap(['sitemap-blog-posts', $start], function () use ($start) {
+            return $this->_sitemap->generateMap(\array_map(function (Post $post) {
+                return new MapItem(
+                    Url::to(['/blog/post/post', 'id' => $post->id], true),
+                    null,
+                    MapItem::DAILY
+                );
+            }, $this->_posts->getAllByRange($start, self::ITEMS_PER_PAGE)));
+        });
+    }
+
+    public function actionBlogPostsIndex(): Response
+    {
+        return $this->_renderSitemap('sitemap-blog-posts-index', function (){
+            return $this->_sitemap->generateIndex(\array_map(function ($start) {
+                return new IndexItem(Url::to(['blog-posts', 'start' => $start * self::ITEMS_PER_PAGE], true));
+            }, \range(0, (int)($this->posts->count() / self::ITEMS_PER_PAGE))));
+        });
     }
 
     public function actionIndex(): Response
     {
-        return $this->renderSitemap('sitemap-index', function () {
-            return $this->sitemap->generateIndex([
+        return $this->_renderSitemap('sitemap-index', function () {
+            return $this->_sitemap->generateIndex([
                 new IndexItem(Url::to(['pages'], true)),
                 new IndexItem(Url::to(['blog-categories'], true)),
                 new IndexItem(Url::to(['blog-posts-index'], true)),
@@ -68,88 +103,53 @@ class SitemapController extends Controller
 
     public function actionPages(): Response
     {
-        return $this->renderSitemap('sitemap-pages', function () {
-            return $this->sitemap->generateMap(array_map(function (Page $page) {
+        return $this->_renderSitemap('sitemap-pages', function () {
+            return $this->_sitemap->generateMap(\array_map(function (Page $page) {
                 return new MapItem(
                     Url::to(['/page/view', 'id' => $page->id], true),
                     null,
                     MapItem::WEEKLY
                 );
-            }, $this->pages->getAll()));
-        });
-    }
-
-    public function actionBlogCategories(): Response
-    {
-        return $this->renderSitemap('sitemap-blog-categories', function () {
-            return $this->sitemap->generateMap(array_map(function (BlogCategory $category) {
-                return new MapItem(
-                    Url::to(['/blog/posts/category', 'slug' => $category->slug], true),
-                    null,
-                    MapItem::WEEKLY
-                );
-            }, $this->blogCategories->getAll()));
-        });
-    }
-
-    public function actionBlogPostsIndex(): Response
-    {
-        return $this->renderSitemap('sitemap-blog-posts-index', function (){
-            return $this->sitemap->generateIndex(array_map(function ($start) {
-                return new IndexItem(Url::to(['blog-posts', 'start' => $start * self::ITEMS_PER_PAGE], true));
-            }, range(0, (int)($this->posts->count() / self::ITEMS_PER_PAGE))));
-        });
-    }
-
-    public function actionBlogPosts($start = 0): Response
-    {
-        return $this->renderSitemap(['sitemap-blog-posts', $start], function () use ($start) {
-            return $this->sitemap->generateMap(array_map(function (Post $post) {
-                return new MapItem(
-                    Url::to(['/blog/post/post', 'id' => $post->id], true),
-                    null,
-                    MapItem::DAILY
-                );
-            }, $this->posts->getAllByRange($start, self::ITEMS_PER_PAGE)));
+            }, $this->_pages->getAll()));
         });
     }
 
     public function actionShopCategories(): Response
     {
-        return $this->renderSitemap('sitemap-blog-categories', function () {
-            return $this->sitemap->generateMap(array_map(function (ShopCategory $category) {
+        return $this->_renderSitemap('sitemap-blog-categories', function () {
+            return $this->_sitemap->generateMap(\array_map(function (ShopCategory $category) {
                 return new MapItem(
                     Url::to(['/shop/catalog/category', 'id' => $category->id], true),
                     null,
                     MapItem::WEEKLY
                 );
-            }, $this->shopCategories->getAll()));
+            }, $this->_shopCategories->getAll()));
         }, new TagDependency(['tags' => ['categories']]));
-    }
-
-    public function actionShopProductsIndex(): Response
-    {
-        return $this->renderSitemap('sitemap-shop-products-index', function (){
-            return $this->sitemap->generateIndex(array_map(function ($start) {
-                return new IndexItem(Url::to(['shop-products', 'start' => $start * self::ITEMS_PER_PAGE], true));
-            }, range(0, (int)($this->products->count() / self::ITEMS_PER_PAGE))));
-        }, new TagDependency(['tags' => ['products']]));
     }
 
     public function actionShopProducts($start = 0): Response
     {
-        return $this->renderSitemap(['sitemap-shop-products', $start], function () use ($start) {
-            return $this->sitemap->generateMap(array_map(function (Product $product) {
+        return $this->_renderSitemap(['sitemap-shop-products', $start], function () use ($start) {
+            return $this->_sitemap->generateMap(\array_map(function (Product $product) {
                 return new MapItem(
                     Url::to(['/shop/catalog/product', 'id' => $product->id], true),
                     null,
                     MapItem::DAILY
                 );
-            }, $this->products->getAllByRange($start, self::ITEMS_PER_PAGE)));
+            }, $this->_products->getAllByRange($start, self::ITEMS_PER_PAGE)));
         }, new TagDependency(['tags' => ['products']]));
     }
 
-    private function renderSitemap($key, callable $callback, Dependency $dependency = null): Response
+    public function actionShopProductsIndex(): Response
+    {
+        return $this->_renderSitemap('sitemap-shop-products-index', function (){
+            return $this->_sitemap->generateIndex(\array_map(function ($start) {
+                return new IndexItem(Url::to(['shop-products', 'start' => $start * self::ITEMS_PER_PAGE], true));
+            }, \range(0, (int)($this->_products->count() / self::ITEMS_PER_PAGE))));
+        }, new TagDependency(['tags' => ['products']]));
+    }
+
+    private function _renderSitemap($key, callable $callback, Dependency $dependency = null): Response
     {
         return \Yii::$app->response->sendContentAsFile(\Yii::$app->cache->getOrSet($key, $callback, null, $dependency), Url::canonical(), [
             'mimeType' => 'application/xml',

@@ -3,34 +3,58 @@
 namespace backend\controllers\blog;
 
 use backend\forms\Blog\CommentSearch;
+use shop\entities\Blog\Post\Post;
 use shop\forms\manage\Blog\Post\CommentEditForm;
 use shop\useCases\manage\Blog\CommentManageService;
 use Yii;
-use shop\entities\Blog\Post\Post;
+use yii\filters\VerbFilter;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
-use yii\filters\VerbFilter;
 
 class CommentController extends Controller
 {
-    private $service;
+    private $_manageService;
 
-    public function __construct($id, $module, CommentManageService $service, $config = [])
+    public function __construct(
+        $id,
+        $module,
+        CommentManageService $manageService,
+        $config = [])
     {
         parent::__construct($id, $module, $config);
-        $this->service = $service;
+        $this->_manageService = $manageService;
     }
 
-    public function behaviors(): array
+    /**
+     * @param $post_id
+     * @param integer $id
+     * @return mixed
+     */
+    public function actionActivate($post_id, $id)
     {
-        return [
-            'verbs' => [
-                'class' => VerbFilter::className(),
-                'actions' => [
-                    'delete' => ['POST'],
-                ],
-            ],
-        ];
+        $post = $this->findModel($post_id);
+        try {
+            $this->_manageService->activate($post->id, $id);
+        } catch (\DomainException $e) {
+            Yii::$app->session->setFlash('error', $e->getMessage());
+        }
+        return $this->redirect(['view', 'post_id' => $post_id, 'id' => $id]);
+    }
+
+    /**
+     * @param $post_id
+     * @param integer $id
+     * @return mixed
+     */
+    public function actionDelete($post_id, $id)
+    {
+        $post = $this->findModel($post_id);
+        try {
+            $this->_manageService->remove($post->id, $id);
+        } catch (\DomainException $e) {
+            Yii::$app->session->setFlash('error', $e->getMessage());
+        }
+        return $this->redirect(['index']);
     }
 
     /**
@@ -52,6 +76,22 @@ class CommentController extends Controller
      * @param integer $id
      * @return mixed
      */
+    public function actionView($post_id, $id)
+    {
+        $post = $this->findModel($post_id);
+        $comment = $post->getComment($id);
+
+        return $this->render('view', [
+            'post' => $post,
+            'comment' => $comment,
+        ]);
+    }
+
+    /**
+     * @param integer $post_id
+     * @param integer $id
+     * @return mixed
+     */
     public function actionUpdate($post_id, $id)
     {
         $post = $this->findModel($post_id);
@@ -60,7 +100,7 @@ class CommentController extends Controller
         $form = new CommentEditForm($comment);
         if ($form->load(Yii::$app->request->post()) && $form->validate()) {
             try {
-                $this->service->edit($post->id, $comment->id, $form);
+                $this->_manageService->edit($post->id, $comment->id, $form);
                 return $this->redirect(['view', 'post_id' => $post->id, 'id' => $comment->id]);
             } catch (\DomainException $e) {
                 Yii::$app->errorHandler->logException($e);
@@ -75,54 +115,6 @@ class CommentController extends Controller
     }
 
     /**
-     * @param integer $post_id
-     * @param integer $id
-     * @return mixed
-     */
-    public function actionView($post_id, $id)
-    {
-        $post = $this->findModel($post_id);
-        $comment = $post->getComment($id);
-
-        return $this->render('view', [
-            'post' => $post,
-            'comment' => $comment,
-        ]);
-    }
-
-    /**
-     * @param $post_id
-     * @param integer $id
-     * @return mixed
-     */
-    public function actionActivate($post_id, $id)
-    {
-        $post = $this->findModel($post_id);
-        try {
-            $this->service->activate($post->id, $id);
-        } catch (\DomainException $e) {
-            Yii::$app->session->setFlash('error', $e->getMessage());
-        }
-        return $this->redirect(['view', 'post_id' => $post_id, 'id' => $id]);
-    }
-
-    /**
-     * @param $post_id
-     * @param integer $id
-     * @return mixed
-     */
-    public function actionDelete($post_id, $id)
-    {
-        $post = $this->findModel($post_id);
-        try {
-            $this->service->remove($post->id, $id);
-        } catch (\DomainException $e) {
-            Yii::$app->session->setFlash('error', $e->getMessage());
-        }
-        return $this->redirect(['index']);
-    }
-
-    /**
      * @param integer $id
      * @return Post the loaded model
      * @throws NotFoundHttpException if the model cannot be found
@@ -133,5 +125,19 @@ class CommentController extends Controller
             return $model;
         }
         throw new NotFoundHttpException('The requested page does not exist.');
+    }
+
+    ##################################################
+
+    public function behaviors(): array
+    {
+        return [
+            'verbs' => [
+                'class' => VerbFilter::class,
+                'actions' => [
+                    'delete' => ['POST'],
+                ],
+            ],
+        ];
     }
 }

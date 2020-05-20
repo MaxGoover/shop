@@ -37,7 +37,7 @@ class Brand extends ActiveRecord
         return $this->meta->title ?: $this->name;
     }
 
-    ##########################
+    ##################################################
 
     public static function tableName(): string
     {
@@ -47,7 +47,7 @@ class Brand extends ActiveRecord
     public function behaviors(): array
     {
         return [
-            MetaBehavior::className(),
+            MetaBehavior::class,
         ];
     }
 }

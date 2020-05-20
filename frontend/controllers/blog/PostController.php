@@ -15,10 +15,10 @@ class PostController extends Controller
 {
     public $layout = 'blog';
 
-    private $service;
-    private $posts;
-    private $categories;
-    private $tags;
+    private $_service;
+    private $_posts;
+    private $_categories;
+    private $_tags;
 
     public function __construct(
         $id,
@@ -31,22 +31,10 @@ class PostController extends Controller
     )
     {
         parent::__construct($id, $module, $config);
-        $this->service = $service;
-        $this->posts = $posts;
-        $this->categories = $categories;
-        $this->tags = $tags;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function actionIndex()
-    {
-        $dataProvider = $this->posts->getAll();
-
-        return $this->render('index', [
-            'dataProvider' => $dataProvider,
-        ]);
+        $this->_service = $service;
+        $this->_posts = $posts;
+        $this->_categories = $categories;
+        $this->_tags = $tags;
     }
 
     /**
@@ -56,11 +44,11 @@ class PostController extends Controller
      */
     public function actionCategory($slug)
     {
-        if (!$category = $this->categories->findBySlug($slug)) {
+        if (!$category = $this->_categories->findBySlug($slug)) {
             throw new NotFoundHttpException('The requested page does not exist.');
         }
 
-        $dataProvider = $this->posts->getAllByCategory($category);
+        $dataProvider = $this->_posts->getAllByCategory($category);
 
         return $this->render('category', [
             'category' => $category,
@@ -69,20 +57,42 @@ class PostController extends Controller
     }
 
     /**
-     * @param $slug
+     * @param $id
      * @return mixed
      * @throws NotFoundHttpException
      */
-    public function actionTag($slug)
+    public function actionComment($id)
     {
-        if (!$tag = $this->tags->findBySlug($slug)) {
+        if (!$post = $this->_posts->find($id)) {
             throw new NotFoundHttpException('The requested page does not exist.');
         }
 
-        $dataProvider = $this->posts->getAllByTag($tag);
+        $form = new CommentForm();
 
-        return $this->render('tag', [
-            'tag' => $tag,
+        if ($form->load(Yii::$app->request->post()) && $form->validate()) {
+            try {
+                $comment = $this->_service->create($post->id, Yii::$app->user->id, $form);
+                return $this->redirect(['post', 'id' => $post->id, '#' => 'comment_' . $comment->id]);
+            } catch (\DomainException $e) {
+                Yii::$app->errorHandler->logException($e);
+                Yii::$app->session->setFlash('error', $e->getMessage());
+            }
+        }
+
+        return $this->render('comment', [
+            'post' => $post,
+            'model' => $form,
+        ]);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function actionIndex()
+    {
+        $dataProvider = $this->_posts->getAll();
+
+        return $this->render('index', [
             'dataProvider' => $dataProvider,
         ]);
     }
@@ -94,7 +104,7 @@ class PostController extends Controller
      */
     public function actionPost($id)
     {
-        if (!$post = $this->posts->find($id)) {
+        if (!$post = $this->_posts->find($id)) {
             throw new NotFoundHttpException('The requested page does not exist.');
         }
 
@@ -104,31 +114,21 @@ class PostController extends Controller
     }
 
     /**
-     * @param $id
+     * @param $slug
      * @return mixed
      * @throws NotFoundHttpException
      */
-    public function actionComment($id)
+    public function actionTag($slug)
     {
-        if (!$post = $this->posts->find($id)) {
+        if (!$tag = $this->_tags->findBySlug($slug)) {
             throw new NotFoundHttpException('The requested page does not exist.');
         }
 
-        $form = new CommentForm();
+        $dataProvider = $this->_posts->getAllByTag($tag);
 
-        if ($form->load(Yii::$app->request->post()) && $form->validate()) {
-            try {
-                $comment = $this->service->create($post->id, Yii::$app->user->id, $form);
-                return $this->redirect(['post', 'id' => $post->id, '#' => 'comment_' . $comment->id]);
-            } catch (\DomainException $e) {
-                Yii::$app->errorHandler->logException($e);
-                Yii::$app->session->setFlash('error', $e->getMessage());
-            }
-        }
-
-        return $this->render('comment', [
-            'post' => $post,
-            'model' => $form,
+        return $this->render('tag', [
+            'tag' => $tag,
+            'dataProvider' => $dataProvider,
         ]);
     }
 }

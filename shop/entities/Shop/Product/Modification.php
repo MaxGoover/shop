@@ -23,14 +23,6 @@ class Modification extends ActiveRecord
         return $modification;
     }
 
-    public function edit($code, $name, $price, $quantity): void
-    {
-        $this->code = $code;
-        $this->name = $name;
-        $this->price = $price;
-        $this->quantity = $quantity;
-    }
-
     public function checkout($quantity): void
     {
         if ($quantity > $this->quantity) {
@@ -39,15 +31,25 @@ class Modification extends ActiveRecord
         $this->quantity -= $quantity;
     }
 
-    public function isIdEqualTo($id)
+    public function edit($code, $name, $price, $quantity): void
     {
-        return $this->id == $id;
+        $this->code = $code;
+        $this->name = $name;
+        $this->price = $price;
+        $this->quantity = $quantity;
     }
 
     public function isCodeEqualTo($code)
     {
         return $this->code === $code;
     }
+
+    public function isIdEqualTo($id)
+    {
+        return $this->id === $id;
+    }
+
+    ##################################################
 
     public static function tableName(): string
     {

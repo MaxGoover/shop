@@ -19,8 +19,10 @@ class RelatedAssignment extends ActiveRecord
 
     public function isForProduct($id): bool
     {
-        return $this->related_id == $id;
+        return $this->related_id === $id;
     }
+
+    ##################################################
 
     public static function tableName(): string
     {

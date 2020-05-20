@@ -2,42 +2,65 @@
 
 namespace backend\controllers;
 
+use backend\forms\UserSearch;
+use shop\entities\User\User;
 use shop\forms\manage\User\UserCreateForm;
 use shop\forms\manage\User\UserEditForm;
 use shop\useCases\manage\UserManageService;
 use Yii;
-use shop\entities\User\User;
-use backend\forms\UserSearch;
+use yii\filters\VerbFilter;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
-use yii\filters\VerbFilter;
 
 /**
  * UserController implements the CRUD actions for User model.
  */
 class UserController extends Controller
 {
-    private $service;
+    private $_manageService;
 
-    public function __construct($id, $module, UserManageService $service, $config = [])
+    public function __construct(
+        $id,
+        $module,
+        UserManageService $manageService,
+        $config = [])
     {
         parent::__construct($id, $module, $config);
-        $this->service = $service;
+        $this->_manageService = $manageService;
     }
 
     /**
-     * @inheritdoc
+     * Creates a new User model.
+     * If creation is successful, the browser will be redirected to the 'view' page.
+     * @return mixed
      */
-    public function behaviors()
+    public function actionCreate()
     {
-        return [
-            'verbs' => [
-                'class' => VerbFilter::className(),
-                'actions' => [
-                    'delete' => ['POST'],
-                ],
-            ],
-        ];
+        $form = new UserCreateForm();
+        if ($form->load(Yii::$app->request->post()) && $form->validate()) {
+            try {
+                $user = $this->_manageService->create($form);
+                return $this->redirect(['view', 'id' => $user->id]);
+            } catch (\DomainException $e) {
+                Yii::$app->errorHandler->logException($e);
+                Yii::$app->session->setFlash('error', $e->getMessage());
+            }
+        }
+        return $this->render('create', [
+            'model' => $form,
+        ]);
+    }
+
+    /**
+     * Deletes an existing User model.
+     * If deletion is successful, the browser will be redirected to the 'index' page.
+     * @param integer $id
+     * @return mixed
+     */
+    public function actionDelete($id)
+    {
+        $this->_manageService->remove($id);
+        return $this->redirect(['index']);
     }
 
     /**
@@ -56,40 +79,6 @@ class UserController extends Controller
     }
 
     /**
-     * Displays a single User model.
-     * @param integer $id
-     * @return mixed
-     */
-    public function actionView($id)
-    {
-        return $this->render('view', [
-            'model' => $this->findModel($id),
-        ]);
-    }
-
-    /**
-     * Creates a new User model.
-     * If creation is successful, the browser will be redirected to the 'view' page.
-     * @return mixed
-     */
-    public function actionCreate()
-    {
-        $form = new UserCreateForm();
-        if ($form->load(Yii::$app->request->post()) && $form->validate()) {
-            try {
-                $user = $this->service->create($form);
-                return $this->redirect(['view', 'id' => $user->id]);
-            } catch (\DomainException $e) {
-                Yii::$app->errorHandler->logException($e);
-                Yii::$app->session->setFlash('error', $e->getMessage());
-            }
-        }
-        return $this->render('create', [
-            'model' => $form,
-        ]);
-    }
-
-    /**
      * Updates an existing User model.
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param integer $id
@@ -102,7 +91,7 @@ class UserController extends Controller
         $form = new UserEditForm($user);
         if ($form->load(Yii::$app->request->post()) && $form->validate()) {
             try {
-                $this->service->edit($user->id, $form);
+                $this->_manageService->edit($user->id, $form);
                 return $this->redirect(['view', 'id' => $user->id]);
             } catch (\DomainException $e) {
                 Yii::$app->errorHandler->logException($e);
@@ -116,15 +105,15 @@ class UserController extends Controller
     }
 
     /**
-     * Deletes an existing User model.
-     * If deletion is successful, the browser will be redirected to the 'index' page.
+     * Displays a single User model.
      * @param integer $id
      * @return mixed
      */
-    public function actionDelete($id)
+    public function actionView($id)
     {
-        $this->service->remove($id);
-        return $this->redirect(['index']);
+        return $this->render('view', [
+            'model' => $this->findModel($id),
+        ]);
     }
 
     /**
@@ -141,5 +130,22 @@ class UserController extends Controller
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');
         }
+    }
+
+    ##################################################
+
+    /**
+     * @inheritdoc
+     */
+    public function behaviors(): array
+    {
+        return [
+            'verbs' => [
+                'class' => VerbFilter::class,
+                'actions' => [
+                    'delete' => ['POST'],
+                ],
+            ],
+        ];
     }
 }

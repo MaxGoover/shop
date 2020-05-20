@@ -10,18 +10,18 @@ use shop\repositories\Shop\OrderRepository;
 
 class OrderManageService
 {
-    private $orders;
-    private $deliveryMethods;
+    private $_orders;
+    private $_deliveryMethods;
 
     public function __construct(OrderRepository $orders, DeliveryMethodRepository $deliveryMethods)
     {
-        $this->orders = $orders;
-        $this->deliveryMethods = $deliveryMethods;
+        $this->_orders = $orders;
+        $this->_deliveryMethods = $deliveryMethods;
     }
 
     public function edit($id, OrderEditForm $form): void
     {
-        $order = $this->orders->get($id);
+        $order = $this->_orders->get($id);
 
         $order->edit(
             new CustomerData(
@@ -32,19 +32,19 @@ class OrderManageService
         );
 
         $order->setDeliveryInfo(
-            $this->deliveryMethods->get($form->delivery->method),
+            $this->_deliveryMethods->get($form->delivery->method),
             new DeliveryData(
                 $form->delivery->index,
                 $form->delivery->address
             )
         );
 
-        $this->orders->save($order);
+        $this->_orders->save($order);
     }
 
     public function remove($id): void
     {
-        $order = $this->orders->get($id);
-        $this->orders->remove($order);
+        $order = $this->_orders->get($id);
+        $this->_orders->remove($order);
     }
 }

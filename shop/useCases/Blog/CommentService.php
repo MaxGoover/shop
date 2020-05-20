@@ -9,23 +9,23 @@ use shop\repositories\UserRepository;
 
 class CommentService
 {
-    private $posts;
-    private $users;
+    private $_posts;
+    private $_users;
 
     public function __construct(PostRepository $posts, UserRepository $users)
     {
-        $this->posts = $posts;
-        $this->users = $users;
+        $this->_posts = $posts;
+        $this->_users = $users;
     }
 
     public function create($postId, $userId, CommentForm $form): Comment
     {
-        $post = $this->posts->get($postId);
-        $user = $this->users->get($userId);
+        $post = $this->_posts->get($postId);
+        $user = $this->_users->get($userId);
 
         $comment = $post->addComment($user->id, $form->parentId, $form->text);
 
-        $this->posts->save($post);
+        $this->_posts->save($post);
 
         return $comment;
     }

@@ -13,29 +13,19 @@ class CheckoutController extends Controller
 {
     public $layout = 'blank';
 
-    private $service;
-    private $cart;
+    private $_service;
+    private $_cart;
 
-    public function __construct($id, $module, OrderService $service, Cart $cart, $config = [])
+    public function __construct(
+        $id,
+        $module,
+        OrderService $service,
+        Cart $cart,
+        $config = [])
     {
         parent::__construct($id, $module, $config);
-        $this->service = $service;
-        $this->cart = $cart;
-    }
-
-    public function behaviors(): array
-    {
-        return [
-            'access' => [
-                'class' => AccessControl::className(),
-                'rules' => [
-                    [
-                        'allow' => true,
-                        'roles' => ['@'],
-                    ],
-                ],
-            ],
-        ];
+        $this->_service = $service;
+        $this->_cart = $cart;
     }
 
     /**
@@ -43,11 +33,11 @@ class CheckoutController extends Controller
      */
     public function actionIndex()
     {
-        $form = new OrderForm($this->cart->getWeight());
+        $form = new OrderForm($this->_cart->getWeight());
 
         if ($form->load(Yii::$app->request->post()) && $form->validate()) {
             try {
-                $order = $this->service->checkout(Yii::$app->user->id, $form);
+                $order = $this->_service->checkout(Yii::$app->user->id, $form);
                 return $this->redirect(['/cabinet/order/view', 'id' => $order->id]);
             } catch (\DomainException $e) {
                 Yii::$app->errorHandler->logException($e);
@@ -56,8 +46,25 @@ class CheckoutController extends Controller
         }
 
         return $this->render('index', [
-            'cart' => $this->cart,
+            'cart' => $this->_cart,
             'model' => $form,
         ]);
+    }
+
+    ##################################################
+
+    public function behaviors(): array
+    {
+        return [
+            'access' => [
+                'class' => AccessControl::class,
+                'rules' => [
+                    [
+                        'allow' => true,
+                        'roles' => ['@'],
+                    ],
+                ],
+            ],
+        ];
     }
 }

@@ -16,26 +16,56 @@ class CategoryUrlRule extends BaseObject implements UrlRuleInterface
 {
     public $prefix = 'catalog';
 
-    private $repository;
-    private $cache;
+    private $_repository;
+    private $_cache;
 
     public function __construct(CategoryReadRepository $repository, Cache $cache, $config = [])
     {
         parent::__construct($config);
-        $this->repository = $repository;
-        $this->cache = $cache;
+        $this->_repository = $repository;
+        $this->_cache = $cache;
+    }
+
+    public function createUrl($manager, $route, $params)
+    {
+        if ($route == 'shop/catalog/category') {
+            if (empty($params['id'])) {
+                throw new InvalidArgumentException('Empty id.');
+            }
+            $id = $params['id'];
+
+            $url = $this->_cache->getOrSet(['category_route', 'id' => $id], function () use ($id) {
+                if (!$category = $this->_repository->find($id)) {
+                    return null;
+                }
+                return $this->_getCategoryPath($category);
+            }, null, new TagDependency(['tags' => ['categories']]));
+
+            if (!$url) {
+                throw new InvalidArgumentException('Undefined id.');
+            }
+
+            $url = $this->prefix . '/' . $url;
+            unset($params['id']);
+            if (!empty($params) && ($query = \http_build_query($params)) !== '') {
+                $url .= '?' . $query;
+            }
+
+            return $url;
+        }
+        return false;
     }
 
     public function parseRequest($manager, $request)
     {
-        if (preg_match('#^' . $this->prefix . '/(.*[a-z])$#is', $request->pathInfo, $matches)) {
+        if (\preg_match('#^' . $this->prefix . '/(.*[a-z])$#is', $request->pathInfo, $matches)) {
             $path = $matches['1'];
 
-            $result = $this->cache->getOrSet(['category_route', 'path' => $path], function () use ($path) {
-                if (!$category = $this->repository->findBySlug($this->getPathSlug($path))) {
+            $result = $this->_cache->getOrSet(['category_route', 'path' => $path], function () use ($path) {
+                if (!$category = $this->_repository->findBySlug($this->_getPathSlug($path))) {
                     return ['id' => null, 'path' => null];
                 }
-                return ['id' => $category->id, 'path' => $this->getCategoryPath($category)];
+                return ['id' => $category->id, 'path' => $this->_getCategoryPath($category)];
             }, null, new TagDependency(['tags' => ['categories']]));
 
             if (empty($result['id'])) {
@@ -51,46 +81,16 @@ class CategoryUrlRule extends BaseObject implements UrlRuleInterface
         return false;
     }
 
-    public function createUrl($manager, $route, $params)
-    {
-        if ($route == 'shop/catalog/category') {
-            if (empty($params['id'])) {
-                throw new InvalidArgumentException('Empty id.');
-            }
-            $id = $params['id'];
-
-            $url = $this->cache->getOrSet(['category_route', 'id' => $id], function () use ($id) {
-                if (!$category = $this->repository->find($id)) {
-                    return null;
-                }
-                return $this->getCategoryPath($category);
-            }, null, new TagDependency(['tags' => ['categories']]));
-
-            if (!$url) {
-                throw new InvalidArgumentException('Undefined id.');
-            }
-
-            $url = $this->prefix . '/' . $url;
-            unset($params['id']);
-            if (!empty($params) && ($query = http_build_query($params)) !== '') {
-                $url .= '?' . $query;
-            }
-
-            return $url;
-        }
-        return false;
-    }
-
-    private function getPathSlug($path): string
-    {
-        $chunks = explode('/', $path);
-        return end($chunks);
-    }
-
-    private function getCategoryPath(Category $category): string
+    private function _getCategoryPath(Category $category): string
     {
         $chunks = ArrayHelper::getColumn($category->getParents()->andWhere(['>', 'depth', 0])->all(), 'slug');
         $chunks[] = $category->slug;
-        return implode('/', $chunks);
+        return \implode('/', $chunks);
+    }
+
+    private function _getPathSlug($path): string
+    {
+        $chunks = \explode('/', $path);
+        return \end($chunks);
     }
 }

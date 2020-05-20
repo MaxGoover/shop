@@ -4,22 +4,22 @@ namespace shop\cart\cost;
 
 final class Discount
 {
-    private $value;
-    private $name;
+    private $_value;
+    private $_name;
 
     public function __construct(float $value, string $name)
     {
-        $this->value = $value;
-        $this->name = $name;
-    }
-
-    public function getValue(): float
-    {
-        return $this->value;
+        $this->_value = $value;
+        $this->_name = $name;
     }
 
     public function getName(): string
     {
-        return $this->name;
+        return $this->_name;
+    }
+
+    public function getValue(): float
+    {
+        return $this->_value;
     }
 }

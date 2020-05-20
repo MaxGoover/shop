@@ -8,19 +8,6 @@ use yii\helpers\Html;
 
 class PostHelper
 {
-    public static function statusList(): array
-    {
-        return [
-            Product::STATUS_DRAFT => 'Draft',
-            Product::STATUS_ACTIVE => 'Active',
-        ];
-    }
-
-    public static function statusName($status): string
-    {
-        return ArrayHelper::getValue(self::statusList(), $status);
-    }
-
     public static function statusLabel($status): string
     {
         switch ($status) {
@@ -37,5 +24,18 @@ class PostHelper
         return Html::tag('span', ArrayHelper::getValue(self::statusList(), $status), [
             'class' => $class,
         ]);
+    }
+
+    public static function statusList(): array
+    {
+        return [
+            Product::STATUS_DRAFT => 'Draft',
+            Product::STATUS_ACTIVE => 'Active',
+        ];
+    }
+
+    public static function statusName($status): string
+    {
+        return ArrayHelper::getValue(self::statusList(), $status);
     }
 }

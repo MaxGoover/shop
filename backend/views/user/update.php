@@ -1,11 +1,11 @@
 <?php
 
-/* @var $this yii\web\View */
-/* @var $model shop\forms\manage\User\UserEditForm */
-/* @var $user shop\entities\User */
-
 use yii\bootstrap\ActiveForm;
 use yii\helpers\Html;
+
+/* @var $this yii\web\View */
+/* @var $model shop\forms\manage\User\UserEditForm */
+/* @var $user shop\entities\User\User */
 
 $this->title = 'Update User: ' . $user->id;
 $this->params['breadcrumbs'][] = ['label' => 'Users', 'url' => ['index']];

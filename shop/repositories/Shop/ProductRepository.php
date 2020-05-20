@@ -10,19 +10,11 @@ use shop\repositories\NotFoundException;
 
 class ProductRepository
 {
-    private $dispatcher;
+    private $_eventDispatcher;
 
-    public function __construct(EventDispatcher $dispatcher)
+    public function __construct(EventDispatcher $eventDispatcher)
     {
-        $this->dispatcher = $dispatcher;
-    }
-
-    public function get($id): Product
-    {
-        if (!$product = Product::findOne($id)) {
-            throw new NotFoundException('Product is not found.');
-        }
-        return $product;
+        $this->_eventDispatcher = $eventDispatcher;
     }
 
     public function existsByBrand($id): bool
@@ -35,13 +27,12 @@ class ProductRepository
         return Product::find()->andWhere(['category_id' => $id])->exists();
     }
 
-    public function save(Product $product): void
+    public function get($id): Product
     {
-        if (!$product->save()) {
-            throw new \RuntimeException('Saving error.');
+        if (!$product = Product::findOne($id)) {
+            throw new NotFoundException('Product is not found.');
         }
-        $this->dispatcher->dispatchAll($product->releaseEvents());
-        $this->dispatcher->dispatch(new EntityPersisted($product));
+        return $product;
     }
 
     public function remove(Product $product): void
@@ -49,7 +40,16 @@ class ProductRepository
         if (!$product->delete()) {
             throw new \RuntimeException('Removing error.');
         }
-        $this->dispatcher->dispatchAll($product->releaseEvents());
-        $this->dispatcher->dispatch(new EntityRemoved($product));
+        $this->_eventDispatcher->dispatchAll($product->releaseEvents());
+        $this->_eventDispatcher->dispatch(new EntityRemoved($product));
+    }
+
+    public function save(Product $product): void
+    {
+        if (!$product->save()) {
+            throw new \RuntimeException('Saving error.');
+        }
+        $this->_eventDispatcher->dispatchAll($product->releaseEvents());
+        $this->_eventDispatcher->dispatch(new EntityPersisted($product));
     }
 }

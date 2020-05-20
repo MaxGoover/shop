@@ -2,20 +2,20 @@
 
 namespace shop\listeners\User;
 
-use shop\services\newsletter\Newsletter;
 use shop\entities\User\events\UserSignUpConfirmed;
+use shop\services\newsletter\Newsletter;
 
 class UserSignupConfirmedListener
 {
-    private $newsletter;
+    private $_newsletter;
 
     public function __construct(Newsletter $newsletter)
     {
-        $this->newsletter = $newsletter;
+        $this->_newsletter = $newsletter;
     }
 
     public function handle(UserSignUpConfirmed $event): void
     {
-        $this->newsletter->subscribe($event->user->email);
+        $this->_newsletter->subscribe($event->user->email);
     }
 }

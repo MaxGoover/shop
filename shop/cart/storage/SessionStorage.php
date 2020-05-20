@@ -6,22 +6,22 @@ use yii\web\Session;
 
 class SessionStorage implements StorageInterface
 {
-    private $key;
-    private $session;
+    private $_key;
+    private $_session;
 
     public function __construct($key, Session $session)
     {
-        $this->key = $key;
-        $this->session = $session;
+        $this->_key = $key;
+        $this->_ = $session;
     }
 
     public function load(): array
     {
-        return $this->session->get($this->key, []);
+        return $this->_session->get($this->_key, []);
     }
 
     public function save(array $items): void
     {
-        $this->session->set($this->key, $items);
+        $this->_session->set($this->_key, $items);
     }
 } 

@@ -1,4 +1,5 @@
 <?php
+
 namespace shop\forms\auth;
 
 use yii\base\Model;
@@ -12,7 +13,7 @@ class LoginForm extends Model
     public $password;
     public $rememberMe = false;
 
-    public function rules()
+    public function rules(): array
     {
         return [
             [['username', 'password'], 'required'],

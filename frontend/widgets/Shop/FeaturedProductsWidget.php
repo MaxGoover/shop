@@ -9,18 +9,18 @@ class FeaturedProductsWidget extends Widget
 {
     public $limit;
 
-    private $repository;
+    private $_repository;
 
     public function __construct(ProductReadRepository $repository, $config = [])
     {
         parent::__construct($config);
-        $this->repository = $repository;
+        $this->_repository = $repository;
     }
 
     public function run()
     {
         return $this->render('featured', [
-            'products' => $this->repository->getFeatured($this->limit)
+            'products' => $this->_repository->getFeatured($this->limit)
         ]);
     }
 }

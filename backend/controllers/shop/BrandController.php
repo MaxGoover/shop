@@ -2,35 +2,62 @@
 
 namespace backend\controllers\shop;
 
+use backend\forms\Shop\BrandSearch;
+use shop\entities\Shop\Brand;
 use shop\forms\manage\Shop\BrandForm;
 use shop\useCases\manage\Shop\BrandManageService;
 use Yii;
-use shop\entities\Shop\Brand;
-use backend\forms\Shop\BrandSearch;
+use yii\filters\VerbFilter;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
-use yii\filters\VerbFilter;
 
 class BrandController extends Controller
 {
-    private $service;
+    private $_manageService;
 
-    public function __construct($id, $module, BrandManageService $service, $config = [])
+    public function __construct(
+        $id,
+        $module,
+        BrandManageService $manageService,
+        $config = [])
     {
         parent::__construct($id, $module, $config);
-        $this->service = $service;
+        $this->_manageService = $manageService;
     }
 
-    public function behaviors(): array
+    /**
+     * @return mixed
+     */
+    public function actionCreate()
     {
-        return [
-            'verbs' => [
-                'class' => VerbFilter::className(),
-                'actions' => [
-                    'delete' => ['POST'],
-                ],
-            ],
-        ];
+        $form = new BrandForm();
+        if ($form->load(Yii::$app->request->post()) && $form->validate()) {
+            try {
+                $brand = $this->_manageService->create($form);
+                return $this->redirect(['view', 'id' => $brand->id]);
+            } catch (\DomainException $e) {
+                Yii::$app->errorHandler->logException($e);
+                Yii::$app->session->setFlash('error', $e->getMessage());
+            }
+        }
+        return $this->render('create', [
+            'model' => $form,
+        ]);
+    }
+
+    /**
+     * @param integer $id
+     * @return mixed
+     */
+    public function actionDelete($id)
+    {
+        try {
+            $this->_manageService->remove($id);
+        } catch (\DomainException $e) {
+            Yii::$app->errorHandler->logException($e);
+            Yii::$app->session->setFlash('error', $e->getMessage());
+        }
+        return $this->redirect(['index']);
     }
 
     /**
@@ -51,37 +78,6 @@ class BrandController extends Controller
      * @param integer $id
      * @return mixed
      */
-    public function actionView($id)
-    {
-        return $this->render('view', [
-            'brand' => $this->findModel($id),
-        ]);
-    }
-
-    /**
-     * @return mixed
-     */
-    public function actionCreate()
-    {
-        $form = new BrandForm();
-        if ($form->load(Yii::$app->request->post()) && $form->validate()) {
-            try {
-                $brand = $this->service->create($form);
-                return $this->redirect(['view', 'id' => $brand->id]);
-            } catch (\DomainException $e) {
-                Yii::$app->errorHandler->logException($e);
-                Yii::$app->session->setFlash('error', $e->getMessage());
-            }
-        }
-        return $this->render('create', [
-            'model' => $form,
-        ]);
-    }
-
-    /**
-     * @param integer $id
-     * @return mixed
-     */
     public function actionUpdate($id)
     {
         $brand = $this->findModel($id);
@@ -89,7 +85,7 @@ class BrandController extends Controller
         $form = new BrandForm($brand);
         if ($form->load(Yii::$app->request->post()) && $form->validate()) {
             try {
-                $this->service->edit($brand->id, $form);
+                $this->_manageService->edit($brand->id, $form);
                 return $this->redirect(['view', 'id' => $brand->id]);
             } catch (\DomainException $e) {
                 Yii::$app->errorHandler->logException($e);
@@ -106,15 +102,11 @@ class BrandController extends Controller
      * @param integer $id
      * @return mixed
      */
-    public function actionDelete($id)
+    public function actionView($id)
     {
-        try {
-            $this->service->remove($id);
-        } catch (\DomainException $e) {
-            Yii::$app->errorHandler->logException($e);
-            Yii::$app->session->setFlash('error', $e->getMessage());
-        }
-        return $this->redirect(['index']);
+        return $this->render('view', [
+            'brand' => $this->findModel($id),
+        ]);
     }
 
     /**
@@ -128,5 +120,19 @@ class BrandController extends Controller
             return $model;
         }
         throw new NotFoundHttpException('The requested page does not exist.');
+    }
+
+    ##################################################
+
+    public function behaviors(): array
+    {
+        return [
+            'verbs' => [
+                'class' => VerbFilter::class,
+                'actions' => [
+                    'delete' => ['POST'],
+                ],
+            ],
+        ];
     }
 }

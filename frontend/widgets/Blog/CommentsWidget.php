@@ -3,7 +3,6 @@
 namespace frontend\widgets\Blog;
 
 use shop\entities\Blog\Post\Comment;
-use frontend\widgets\Blog\CommentView;
 use shop\entities\Blog\Post\Post;
 use shop\forms\Blog\CommentForm;
 use yii\base\InvalidConfigException;
@@ -49,7 +48,7 @@ class CommentsWidget extends Widget
     {
         $items = [];
         foreach ($comments as $comment) {
-            if ($comment->parent_id == $parentId) {
+            if ($comment->parent_id === $parentId) {
                 $items[] = new CommentView($comment, $this->treeRecursive($comments, $comment->id));
             }
         }

@@ -56,21 +56,6 @@ class Post extends ActiveRecord
         return $post;
     }
 
-    public function setPhoto(UploadedFile $photo): void
-    {
-        $this->photo = $photo;
-    }
-
-
-    public function edit($categoryId, $title, $description, $content, Meta $meta): void
-    {
-        $this->category_id = $categoryId;
-        $this->title = $title;
-        $this->description = $description;
-        $this->content = $content;
-        $this->meta = $meta;
-    }
-
     public function activate(): void
     {
         if ($this->isActive()) {
@@ -87,11 +72,19 @@ class Post extends ActiveRecord
         $this->status = self::STATUS_DRAFT;
     }
 
+    public function edit($categoryId, $title, $description, $content, Meta $meta): void
+    {
+        $this->category_id = $categoryId;
+        $this->title = $title;
+        $this->description = $description;
+        $this->content = $content;
+        $this->meta = $meta;
+    }
+
     public function isActive(): bool
     {
         return $this->status == self::STATUS_ACTIVE;
     }
-
 
     public function isDraft(): bool
     {
@@ -101,6 +94,11 @@ class Post extends ActiveRecord
     public function getSeoTitle(): string
     {
         return $this->meta->title ?: $this->title;
+    }
+
+    public function setPhoto(UploadedFile $photo): void
+    {
+        $this->photo = $photo;
     }
 
     // Tags
@@ -137,6 +135,19 @@ class Post extends ActiveRecord
 
     // Comments
 
+    public function activateComment($id): void
+    {
+        $comments = $this->comments;
+        foreach ($comments as $comment) {
+            if ($comment->isIdEqualTo($id)) {
+                $comment->activate();
+                $this->updateComments($comments);
+                return;
+            }
+        }
+        throw new \DomainException('Comment is not found.');
+    }
+
     public function addComment($userId, $parentId, $text): Comment
     {
         $parent = $parentId ? $this->getComment($parentId) : null;
@@ -156,36 +167,6 @@ class Post extends ActiveRecord
         foreach ($comments as $comment) {
             if ($comment->isIdEqualTo($id)) {
                 $comment->edit($parent ? $parent->id : null, $text);
-                $this->updateComments($comments);
-                return;
-            }
-        }
-        throw new \DomainException('Comment is not found.');
-    }
-
-    public function activateComment($id): void
-    {
-        $comments = $this->comments;
-        foreach ($comments as $comment) {
-            if ($comment->isIdEqualTo($id)) {
-                $comment->activate();
-                $this->updateComments($comments);
-                return;
-            }
-        }
-        throw new \DomainException('Comment is not found.');
-    }
-
-    public function removeComment($id): void
-    {
-        $comments = $this->comments;
-        foreach ($comments as $i => $comment) {
-            if ($comment->isIdEqualTo($id)) {
-                if ($this->hasChildren($comment->id)) {
-                    $comment->draft();
-                } else {
-                    unset($comments[$i]);
-                }
                 $this->updateComments($comments);
                 return;
             }
@@ -213,19 +194,41 @@ class Post extends ActiveRecord
         return false;
     }
 
+    public function removeComment($id): void
+    {
+        $comments = $this->comments;
+        foreach ($comments as $i => $comment) {
+            if ($comment->isIdEqualTo($id)) {
+                if ($this->hasChildren($comment->id)) {
+                    $comment->draft();
+                } else {
+                    unset($comments[$i]);
+                }
+                $this->updateComments($comments);
+                return;
+            }
+        }
+        throw new \DomainException('Comment is not found.');
+    }
+
     private function updateComments(array $comments): void
     {
         $this->comments = $comments;
-        $this->comments_count = count(array_filter($comments, function (Comment $comment) {
+        $this->comments_count = \count(\array_filter($comments, function (Comment $comment) {
             return $comment->isActive();
         }));
     }
 
-    ##########################
+    ##################################################
 
     public function getCategory(): ActiveQuery
     {
         return $this->hasOne(Category::class, ['id' => 'category_id']);
+    }
+
+    public function getComments(): ActiveQuery
+    {
+        return $this->hasMany(Comment::class, ['post_id' => 'id']);
     }
 
     public function getTagAssignments(): ActiveQuery
@@ -238,12 +241,12 @@ class Post extends ActiveRecord
         return $this->hasMany(Tag::class, ['id' => 'tag_id'])->via('tagAssignments');
     }
 
-    public function getComments(): ActiveQuery
-    {
-        return $this->hasMany(Comment::class, ['post_id' => 'id']);
-    }
+    ##################################################
 
-    ##########################
+    public static function find(): PostQuery
+    {
+        return new PostQuery(static::class);
+    }
 
     public static function tableName(): string
     {
@@ -253,13 +256,13 @@ class Post extends ActiveRecord
     public function behaviors(): array
     {
         return [
-            MetaBehavior::className(),
+            MetaBehavior::class,
             [
-                'class' => SaveRelationsBehavior::className(),
+                'class' => SaveRelationsBehavior::class,
                 'relations' => ['tagAssignments', 'comments'],
             ],
             [
-                'class' => ImageUploadBehavior::className(),
+                'class' => ImageUploadBehavior::class,
                 'attribute' => 'photo',
                 'createThumbsOnRequest' => true,
                 'filePath' => '@staticRoot/origin/posts/[[id]].[[extension]]',
@@ -282,10 +285,5 @@ class Post extends ActiveRecord
         return [
             self::SCENARIO_DEFAULT => self::OP_ALL,
         ];
-    }
-
-    public static function find(): PostQuery
-    {
-        return new PostQuery(static::class);
     }
 }

@@ -1,10 +1,10 @@
 <?php
 
-/** @var $posts shop\entities\Blog\Post\Post[] */
-
 use yii\helpers\Html;
 use yii\helpers\StringHelper;
 use yii\helpers\Url;
+
+/** @var $posts shop\entities\Blog\Post\Post[] */
 ?>
 
 <div class="row">

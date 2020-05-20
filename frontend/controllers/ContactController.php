@@ -8,12 +8,16 @@ use shop\forms\ContactForm;
 
 class ContactController extends Controller
 {
-    private $service;
+    private $_service;
 
-    public function __construct($id, $module, ContactService $service, $config = [])
+    public function __construct(
+        $id,
+        $module,
+        ContactService $service,
+        $config = [])
     {
         parent::__construct($id, $module, $config);
-        $this->service = $service;
+        $this->_service = $service;
     }
 
     public function actionIndex()
@@ -21,7 +25,7 @@ class ContactController extends Controller
         $form = new ContactForm();
         if ($form->load(Yii::$app->request->post()) && $form->validate()) {
             try {
-                $this->service->send($form);
+                $this->_service->send($form);
                 Yii::$app->session->setFlash('success', 'Thank you for contacting us. We will respond to you as soon as possible.');
                 return $this->goHome();
             } catch (\Exception $e) {

@@ -11,18 +11,22 @@ use yii\web\Response;
 
 class MarketController extends Controller
 {
-    private $generator;
+    private $_generator;
 
-    public function __construct($id, $module, YandexMarket $generator, $config = [])
+    public function __construct(
+        $id,
+        $module,
+        YandexMarket $generator,
+        $config = [])
     {
         parent::__construct($id, $module, $config);
-        $this->generator = $generator;
+        $this->_generator = $generator;
     }
 
     public function actionIndex(): Response
     {
         $xml = \Yii::$app->cache->getOrSet('yandex-market', function () {
-            return $this->generator->generate(function (Product $product) {
+            return $this->_generator->generate(function (Product $product) {
                 return Url::to(['/shop/catalog/product', 'id' => $product->id], true);
             });
         }, null, new TagDependency(['tags' => ['categories', 'products']]));

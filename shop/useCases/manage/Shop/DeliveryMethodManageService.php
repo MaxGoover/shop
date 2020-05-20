@@ -8,11 +8,11 @@ use shop\repositories\Shop\DeliveryMethodRepository;
 
 class DeliveryMethodManageService
 {
-    private $methods;
+    private $_methods;
 
     public function __construct(DeliveryMethodRepository $methods)
     {
-        $this->methods = $methods;
+        $this->_methods = $methods;
     }
 
     public function create(DeliveryMethodForm $form): DeliveryMethod
@@ -24,13 +24,13 @@ class DeliveryMethodManageService
             $form->maxWeight,
             $form->sort
         );
-        $this->methods->save($method);
+        $this->_methods->save($method);
         return $method;
     }
 
     public function edit($id, DeliveryMethodForm $form): void
     {
-        $method = $this->methods->get($id);
+        $method = $this->_methods->get($id);
         $method->edit(
             $form->name,
             $form->cost,
@@ -38,12 +38,12 @@ class DeliveryMethodManageService
             $form->maxWeight,
             $form->sort
         );
-        $this->methods->save($method);
+        $this->_methods->save($method);
     }
 
     public function remove($id): void
     {
-        $method = $this->methods->get($id);
-        $this->methods->remove($method);
+        $method = $this->_methods->get($id);
+        $this->_methods->remove($method);
     }
 }

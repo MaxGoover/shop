@@ -7,6 +7,11 @@ use shop\repositories\NotFoundException;
 
 class TagRepository
 {
+    public function findByName($name): ?Tag
+    {
+        return Tag::findOne(['name' => $name]);
+    }
+
     public function get($id): Tag
     {
         if (!$tag = Tag::findOne($id)) {
@@ -15,22 +20,17 @@ class TagRepository
         return $tag;
     }
 
-    public function findByName($name): ?Tag
+    public function remove(Tag $tag): void
     {
-        return Tag::findOne(['name' => $name]);
+        if (!$tag->delete()) {
+            throw new \RuntimeException('Removing error.');
+        }
     }
 
     public function save(Tag $tag): void
     {
         if (!$tag->save()) {
             throw new \RuntimeException('Saving error.');
-        }
-    }
-
-    public function remove(Tag $tag): void
-    {
-        if (!$tag->delete()) {
-            throw new \RuntimeException('Removing error.');
         }
     }
 }

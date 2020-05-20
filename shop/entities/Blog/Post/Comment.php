@@ -29,12 +29,6 @@ class Comment extends ActiveRecord
         return $review;
     }
 
-    public function edit($parentId, $text): void
-    {
-        $this->parent_id = $parentId;
-        $this->text = $text;
-    }
-
     public function activate(): void
     {
         $this->active = true;
@@ -45,14 +39,20 @@ class Comment extends ActiveRecord
         $this->active = false;
     }
 
+    public function edit($parentId, $text): void
+    {
+        $this->parent_id = $parentId;
+        $this->text = $text;
+    }
+
+    public function getPost(): PostQuery
+    {
+        return $this->hasOne(Post::class, ['id' => 'post_id']);
+    }
+
     public function isActive(): bool
     {
         return $this->active == true;
-    }
-
-    public function isIdEqualTo($id): bool
-    {
-        return $this->id == $id;
     }
 
     public function isChildOf($id): bool
@@ -60,10 +60,12 @@ class Comment extends ActiveRecord
         return $this->parent_id == $id;
     }
 
-    public function getPost(): PostQuery
+    public function isIdEqualTo($id): bool
     {
-        return $this->hasOne(Post::class, ['id' => 'post_id']);
+        return $this->id == $id;
     }
+
+    ##################################################
 
     public static function tableName(): string
     {

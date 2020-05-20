@@ -10,16 +10,16 @@ use yii\helpers\ArrayHelper;
 
 class ProductIndexer
 {
-    private $client;
+    private $_client;
 
     public function __construct(Client $client)
     {
-        $this->client = $client;
+        $this->_client = $client;
     }
 
     public function clear(): void
     {
-        $this->client->deleteByQuery([
+        $this->_client->deleteByQuery([
             'index' => 'shop',
             'type' => 'products',
             'body' => [
@@ -32,14 +32,14 @@ class ProductIndexer
 
     public function index(Product $product): void
     {
-        $this->client->index([
+        $this->_client->index([
             'index' => 'shop',
             'type' => 'products',
             'id' => $product->id,
             'body' => [
                 'id' => $product->id,
                 'name' => $product->name,
-                'description' => strip_tags($product->description),
+                'description' => \strip_tags($product->description),
                 'price' => $product->price_new,
                 'rating' => $product->rating,
                 'brand' => $product->brand_id,
@@ -47,12 +47,12 @@ class ProductIndexer
                     [$product->category->id],
                     ArrayHelper::getColumn($product->category->parents, 'id'),
                     ArrayHelper::getColumn($product->categories, 'id'),
-                    array_reduce(array_map(function (Category $category) {
+                    \array_reduce(\array_map(function (Category $category) {
                         return ArrayHelper::getColumn($category->parents, 'id');
                     }, $product->categories), 'array_merge', [])
                 ),
                 'tags' => ArrayHelper::getColumn($product->tagAssignments, 'tag_id'),
-                'values' => array_map(function (Value $value) {
+                'values' => \array_map(function (Value $value) {
                     return [
                         'characteristic' => $value->characteristic_id,
                         'value_string' => (string)$value->value,
@@ -65,7 +65,7 @@ class ProductIndexer
 
     public function remove(Product $product): void
     {
-        $this->client->delete([
+        $this->_client->delete([
             'index' => 'shop',
             'type' => 'products',
             'id' => $product->id,

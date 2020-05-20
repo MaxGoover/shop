@@ -4,13 +4,38 @@ namespace shop\dispatchers;
 
 class DeferredEventDispatcher implements EventDispatcher
 {
-    private $defer = false;
-    private $queue = [];
-    private $next;
+    private $_eventDispatcher;
+    private $_defer = false;
+    private $_queue = [];
 
-    public function __construct(EventDispatcher $next)
+    public function __construct(
+        EventDispatcher $eventDispatcher,
+        $defer = false,
+        $queue = [])
     {
-        $this->next = $next;
+        $this->_eventDispatcher = $eventDispatcher;
+        $this->_defer = $defer;
+        $this->_queue = $queue;
+    }
+
+    public function clean(): void
+    {
+        $this->_queue = [];
+        $this->_defer = false;
+    }
+
+    public function defer(): void
+    {
+        $this->_defer = true;
+    }
+
+    public function dispatch($event): void
+    {
+        if ($this->_defer) {
+            $this->_queue[] = $event;
+        } else {
+            $this->_eventDispatcher->dispatch($event);
+        }
     }
 
     public function dispatchAll(array $events): void
@@ -20,32 +45,12 @@ class DeferredEventDispatcher implements EventDispatcher
         }
     }
 
-    public function dispatch($event): void
-    {
-        if ($this->defer) {
-            $this->queue[] = $event;
-        } else {
-            $this->next->dispatch($event);
-        }
-    }
-
-    public function defer(): void
-    {
-        $this->defer = true;
-    }
-
-    public function clean(): void
-    {
-        $this->queue = [];
-        $this->defer = false;
-    }
-
     public function release(): void
     {
-        foreach ($this->queue as $i => $event) {
-            $this->next->dispatch($event);
-            unset($this->queue[$i]);
+        foreach ($this->_queue as $i => $event) {
+            $this->_eventDispatcher->dispatch($event);
+            unset($this->_queue[$i]);
         }
-        $this->defer = false;
+        $this->_defer = false;
     }
 }

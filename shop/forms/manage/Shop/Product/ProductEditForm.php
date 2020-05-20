@@ -35,12 +35,24 @@ class ProductEditForm extends CompositeForm
         $this->meta = new MetaForm($product->meta);
         $this->categories = new CategoriesForm($product);
         $this->tags = new TagsForm($product);
-        $this->values = array_map(function (Characteristic $characteristic) use ($product) {
+        $this->values = \array_map(function (Characteristic $characteristic) use ($product) {
             return new ValueForm($characteristic, $product->getValue($characteristic->id));
         }, Characteristic::find()->orderBy('sort')->all());
         $this->_product = $product;
         parent::__construct($config);
     }
+
+    public function brandsList(): array
+    {
+        return ArrayHelper::map(Brand::find()->orderBy('name')->asArray()->all(), 'id', 'name');
+    }
+
+    protected function internalForms(): array
+    {
+        return ['meta', 'categories', 'tags', 'values'];
+    }
+
+    ##################################################
 
     public function rules(): array
     {
@@ -52,15 +64,5 @@ class ProductEditForm extends CompositeForm
             ['description', 'string'],
             ['weight', 'integer', 'min' => 0],
         ];
-    }
-
-    public function brandsList(): array
-    {
-        return ArrayHelper::map(Brand::find()->orderBy('name')->asArray()->all(), 'id', 'name');
-    }
-
-    protected function internalForms(): array
-    {
-        return ['meta', 'categories', 'tags', 'values'];
     }
 }
