@@ -38,7 +38,11 @@ class User extends ActiveRecord implements AggregateRoot
     const STATUS_WAIT = 0;
     const STATUS_ACTIVE = 10;
 
-    public static function create(string $username, string $email, string $phone, string $password): self
+    public static function create(
+        string $username,
+        string $email,
+        string $phone,
+        string $password): self
     {
         $user = new User();
         $user->username = $username;
@@ -51,7 +55,11 @@ class User extends ActiveRecord implements AggregateRoot
         return $user;
     }
 
-    public static function requestSignup(string $username, string $email, string $phone, string $password): self
+    public static function requestSignup(
+        string $username,
+        string $email,
+        string $phone,
+        string $password): self
     {
         $user = new User();
         $user->username = $username;
@@ -61,7 +69,7 @@ class User extends ActiveRecord implements AggregateRoot
         $user->created_at = \time();
         $user->status = self::STATUS_WAIT;
         $user->email_confirm_token = Yii::$app->security->generateRandomString();
-        $user->generateAuthKey();
+        $user->_generateAuthKey();
         $user->recordEvent(new UserSignUpRequested($user));
         return $user;
     }
