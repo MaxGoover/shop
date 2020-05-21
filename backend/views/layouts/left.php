@@ -30,6 +30,7 @@
             [
                 'options' => ['class' => 'sidebar-menu'],
                 'items' => [
+                    ['label' => 'Management', 'options' => ['class' => 'header']],
                     ['label' => 'Shop', 'icon' => 'folder', 'items' => [
                         ['label' => 'Orders', 'icon' => 'file-o', 'url' => ['/shop/order/index'], 'active' => $this->context->id == 'shop/order'],
                         ['label' => 'Products', 'icon' => 'file-o', 'url' => ['/shop/product/index'], 'active' => $this->context->id == 'shop/product'],
