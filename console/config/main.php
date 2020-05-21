@@ -1,5 +1,7 @@
 <?php
 
+use yii\console\controllers\MigrateController;
+
 $params = \array_merge(
     require(__DIR__ . '/../../common/config/params.php'),
     require(__DIR__ . '/../../common/config/params-local.php'),
@@ -21,19 +23,26 @@ return [
             'namespace' => 'common\fixtures',
         ],
         'migrate-mysql'      => [
-            'class'          => \yii\console\controllers\MigrateController::class,
+            'class'          => MigrateController::class,
             'migrationPath'  => [
                 '@app/migrations/mysql',
             ],
             'migrationTable' => 'migration',
         ],
         'migrate-rbac'       => [
-            'class'          => \yii\console\controllers\MigrateController::class,
+            'class'          => MigrateController::class,
             'migrationPath'  => [
                 '@app/migrations/rbac',
                 '@yii/rbac/migrations',
             ],
             'migrationTable' => 'migration_rbac',
+        ],
+        'migrate-mysql-fill'      => [
+            'class'          => MigrateController::class,
+            'migrationPath'  => [
+                '@app/migrations/mysql-fill',
+            ],
+            'migrationTable' => 'migration-fill',
         ],
 // todo Разобраться почему пакет fishvision не находит миграции RBAC
 //        'migrate-rbac' => [
