@@ -6,7 +6,7 @@ use yii\db\Migration;
 /**
  * Class m200520_142427_add_root
  */
-class m200520_142427_add_root extends Migration
+class m200520_142427_add_admin extends Migration
 {
     public function safeUp()
     {
@@ -29,11 +29,11 @@ class m200520_142427_add_root extends Migration
             [
                 [
                     1,
-                    'root',
+                    'admin',
                     'UTNjBf6CD5ALzqGfFlzznfB2pRvZccLx',
                     '$2y$13$3QwBeDWD4aj9m.r69ixZkOgAgYO/UnCY.uqyUGDQ84aC4ZbTJiMoS',
                     null,
-                    'root@gmail.ru',
+                    'admin@gmail.ru',
                     10,
                     1538038342,
                     1538038342,
@@ -59,7 +59,7 @@ class m200520_142427_add_root extends Migration
                 // Add root role with access to everything
                 ['/*', 2, null, null, null, 1538039242, 1538039242],
                 ['full_access', 2, 'Full super administrator access', null, null, 1538039321, 1538039321],
-                ['root', 1, 'Super administrator', null, null, 1538039368, 1538039368],
+                ['admin', 1, 'Super administrator', null, null, 1538039368, 1538039368],
             ]
         );
 
@@ -72,7 +72,7 @@ class m200520_142427_add_root extends Migration
             ],
             [
                 ['full_access', '/*'],
-                ['root', 'full_access'],
+                ['admin', 'full_access'],
             ]
         );
 
@@ -86,7 +86,7 @@ class m200520_142427_add_root extends Migration
             ],
             [
                 // Root role binding to root user
-                ['root', 1, '1538039392'],
+                ['admin', 1, '1538039392'],
             ]
         );
     }

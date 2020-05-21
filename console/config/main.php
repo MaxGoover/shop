@@ -37,13 +37,6 @@ return [
             ],
             'migrationTable' => 'migration_rbac',
         ],
-        'migrate-mysql-fill'      => [
-            'class'          => MigrateController::class,
-            'migrationPath'  => [
-                '@app/migrations/mysql-fill',
-            ],
-            'migrationTable' => 'migration-fill',
-        ],
 // todo Разобраться почему пакет fishvision не находит миграции RBAC
 //        'migrate-rbac' => [
 //            'class' => \fishvision\migrate\controllers\MigrateController::class,
